@@ -1,20 +1,20 @@
 #include <stddef.h>
 #include "smp.h"
 
-ChFontTable const* ChFontTable_search(unsigned key) {
+ChFontTable const* ChFontTable_search(unsigned keyCode) {
     int     high = g_chFontTableInfo.chCount;
     int     low  = 0;
     ChFontTable const* tbl = &g_chFontTable[0];
     while (low < high) {
         int mid = (low + high - 1) / 2;
-        ChFontTable const* tgt = &tbl[mid];
-        unsigned           tgtCode = tgt->code;
-        if (key < tbl->code)
+        ChFontTable const* midp    = &tbl[mid];
+        unsigned           midCode = midp->code;
+        if (keyCode < midCode)
             high = mid;
-        else if (key > tbl->code)
+        else if (keyCode > midCode)
             low  = mid + 1;
         else
-            return tgt;
+            return midp;
     }
     return NULL;
 }
