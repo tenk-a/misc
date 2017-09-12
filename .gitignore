@@ -1,0 +1,10 @@
+tmp
+*.tmp
+sav
+*.sav
+bak
+*.bak
+*.obj
+*.pdb
+*.sdf
+*.opensdf
