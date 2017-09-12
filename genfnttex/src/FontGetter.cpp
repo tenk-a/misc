@@ -1,8 +1,16 @@
+/**
+ *  @file   FontGetter.cpp
+ *  @brief  get font images
+ *  @author Masashi KITAMURA
+ *  @date   2017-09
+ */
 #include "FontGetter.hpp"
 #include <windows.h>
 #include <map>
 
 
+/** get fonts
+ */
 bool FontGetter::get(FontVec& rFonts) {
     LOGFONT     logfont = {0};                              // フォントデータ
     logfont.lfHeight            = (fontW_ * mul_) * (-1);   // フォントの高さ
@@ -49,9 +57,7 @@ bool FontGetter::get(FontVec& rFonts) {
 }
 
 
-
-
-/** 文字のフォントをデータとして吐き出す
+/** get font data
  */
 bool FontGetter::getFont(void* hdc0, Font& font) {
     HDC         hdc     = (HDC)hdc0;
@@ -105,7 +111,6 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     if (mul_ == 1) {
         for ( int j = 0 ; j < dh && j < cellW_ && j < fontW_; ++j ) {
             for ( int i = 0 ; i < dw && i < cellW_ && i < fontW_; ++i ) {
-                // 色の取得
                 unsigned alp  = wkBuf_[j * pitch + i];
                 alp   = (alp * 15 ) / 64;
                 font.data[((j+offset_y) * cellW_) + (i + offset_x)]   = alp;
@@ -129,6 +134,8 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
 }
 
 
+/** calc font size
+ */
 bool FontGetter::adjustFontSize(Font& rFont) {
     unsigned x0 = cellW_;
     unsigned y0 = cellW_;
@@ -163,9 +170,11 @@ bool FontGetter::adjustFontSize(Font& rFont) {
     return true;
 }
 
+
 typedef std::map<std::string, unsigned> FontNames;
 
 static int count = 0;
+
 static int CALLBACK enumFontFamExProc(
   ENUMLOGFONTEXW *lpelfe,   // 論理的なフォントデータ
   NEWTEXTMETRICEXW *lpntme, // 物理的なフォントデータ
@@ -180,6 +189,8 @@ static int CALLBACK enumFontFamExProc(
     return 1;
 }
 
+/** print font list
+ */
 void FontGetter::printFontInfo() {
     LOGFONT     logfont = {0};
     logfont.lfCharSet   = DEFAULT_CHARSET;

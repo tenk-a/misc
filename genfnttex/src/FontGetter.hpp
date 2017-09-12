@@ -1,3 +1,12 @@
+/**
+ *  @file   FontGetter.hpp
+ *  @brief  get font images
+ *  @author Masashi KITAMURA
+ *  @date   2017-09
+ */
+#ifndef FONTGETTER_HPP
+#define FONTGETTER_HPP
+
 #pragma once
 
 #include <stdint.h>
@@ -26,7 +35,7 @@ public:
 
     bool get(FontVec& fonts);
 
-	static void printFontInfo();
+    static void printFontInfo();
 
 private:
     bool getFont(void* hdc0, Font& font);
@@ -40,3 +49,4 @@ private:
     std::vector<uint8_t>    wkBuf_;
 };
 
+#endif
