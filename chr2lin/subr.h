@@ -6,153 +6,148 @@
 #ifndef __SUBR_H__
 #define __SUBR_H__
 
-#define FIL_NMSZ	1024
+#define FIL_NMSZ        1024
 
-typedef unsigned char  UCHAR;
-typedef signed   char  SCHAR;
-typedef unsigned       UINT;
-typedef unsigned short USHORT;
-typedef unsigned long  ULONG;
-#if 1
-typedef int 			Int;
-typedef signed char 	Sint8;
-typedef short			Sint16;
-typedef long			Sint32;
-typedef unsigned		Uint;
-typedef unsigned char	Uint8;
-typedef unsigned short	Uint16;
-typedef unsigned long	Uint32;
+#if defined(_MSC_VER) && _MSC_VER < 1600
+typedef int             int_t;
+typedef signed char     int8_t;
+typedef short           int16_t;
+typedef long            int32_t;
+typedef unsigned        uint_t;
+typedef unsigned char   uint8_t;
+typedef unsigned short  uint16_t;
+typedef unsigned long   uint32_t;
 #else
-typedef int 			int_t;
-typedef signed char 	int8_t;
-typedef short			int16_t;
-typedef long			int32_t;
-typedef unsigned		uint_t;
-typedef unsigned char	uint8_t;
-typedef unsigned short	uint16_t;
-typedef unsigned long	uint32_t;
+#include <stdint.h>
 #endif
 
 
-#define MEMBER_OFFSET(t,m)	((long)&(((t*)0)->m))	/* 構造体メンバ名の、オフセット値を求める */
+#define MEMBER_OFFSET(t,m)  ((long)&(((t*)0)->m))   /* 構造体メンバ名の、オフセット値を求める */
 
 #define ISDIGIT(c)  (((unsigned)(c) - '0') < 10U)
-#define ISLOWER(c)	(((unsigned)(c)-'a') < 26U)
+#define ISLOWER(c)  (((unsigned)(c)-'a') < 26U)
 #define TOUPPER(c)  (ISLOWER(c) ? (c) - 0x20 : (c) )
-#define ISKANJI(c)	((unsigned)((c)^0x20) - 0xA1 < 0x3C)
-#define ISKANJI2(c) ((UCHAR)(c) >= 0x40 && (UCHAR)(c) <= 0xfc && (c) != 0x7f)
-#define STREND(p)	((p)+strlen(p))
+#define ISKANJI(c)    ((unsigned short)((c)^0x20) - 0xA1 < 0x3C)
+//#define ISKANJI2(c) ((UCHAR)(c) >= 0x40 && (UCHAR)(c) <= 0xfc && (c) != 0x7f)
+#define STREND(p)   ((p)+strlen(p))
 #define STRINS(d,s) (memmove((d)+strlen(s),(d),strlen(d)+1),memcpy((d),(s),strlen(s)))
+#if defined(_MSC_VER)
+#define STRCASECMP(a,b) _stricmp((a),(b))
+#define STRNCASECMP(a,b,l) _strnicmp((a),(b),(l))
+#else
+#define STRCASECMP(a,b) strcasecmp((a),(b))
+#define STRNCASECMP(a,b,l) strncasecmp((a),(b),(l))
+#endif
 
-#define MAX(x, y)		((x) > (y) ? (x) : (y)) /* 最大値 */
-#define MIN(x, y)		((x) < (y) ? (x) : (y)) /* 最小値 */
-#define ABS(x)			((x) < 0 ? -(x) : (x))	/* 絶対値 */
+#define MAX(x, y)       ((x) > (y) ? (x) : (y)) /* 最大値 */
+#define MIN(x, y)       ((x) < (y) ? (x) : (y)) /* 最小値 */
+#define ABS(x)          ((x) < 0 ? -(x) : (x))  /* 絶対値 */
 
-#define REVW(a)			((((a) >> 8) & 0xff)|(((a) & 0xff) << 8))
-#define REVL(a)			( (((a) & 0xff000000) >> 24)|(((a) & 0x00ff0000) >>  8)|(((a) & 0x0000ff00) <<  8)|(((a) & 0x000000ff) << 24) )
+#define REVW(a)         ((((a) >> 8) & 0xff)|(((a) & 0xff) << 8))
+#define REVL(a)         ( (((a) & 0xff000000) >> 24)|(((a) & 0x00ff0000) >>  8)|(((a) & 0x0000ff00) <<  8)|(((a) & 0x000000ff) << 24) )
 
-#define	BB(a,b)			((((unsigned char)(a))<<8)+(unsigned char)(b))
-#define	WW(a,b)			((((unsigned short)(a))<<16)+(unsigned short)(b))
-#define	BBBB(a,b,c,d)	((((unsigned char)(a))<<24)+(((unsigned char)(b))<<16)+(((unsigned char)(c))<<8)+((unsigned char)(d)))
+#define BB(a,b)         ((((unsigned char)(a))<<8)+(unsigned char)(b))
+#define WW(a,b)         ((((unsigned short)(a))<<16)+(unsigned short)(b))
+#define BBBB(a,b,c,d)   ((((unsigned char)(a))<<24)+(((unsigned char)(b))<<16)+(((unsigned char)(c))<<8)+((unsigned char)(d)))
 
-#define	GLB(a)			((unsigned char)(a))
-#define	GHB(a)			GLB(((unsigned short)(a))>>8)
-#define	GLLB(a)			GLB(a)
-#define	GLHB(a)			GHB(a)
-#define	GHLB(a)			GLB(((unsigned long)(a))>>16)
-#define	GHHB(a)			GLB(((unsigned long)(a))>>24)
-#define	GLW(a)			((unsigned short)(a))
-#define	GHW(a)			GLW(((unsigned long)(a))>>16)
+#define GLB(a)          ((unsigned char)(a))
+#define GHB(a)          GLB(((unsigned short)(a))>>8)
+#define GLLB(a)         GLB(a)
+#define GLHB(a)         GHB(a)
+#define GHLB(a)         GLB(((unsigned long)(a))>>16)
+#define GHHB(a)         GLB(((unsigned long)(a))>>24)
+#define GLW(a)          ((unsigned short)(a))
+#define GHW(a)          GLW(((unsigned long)(a))>>16)
 
-#define	PEEKB(a)		(*(unsigned char  *)(a))
-#define	PEEKW(a)		(*(unsigned short *)(a))
-#define	PEEKD(a)		(*(unsigned long  *)(a))
-#define	POKEB(a,b)		(*(unsigned char  *)(a) = (b))
-#define	POKEW(a,b)		(*(unsigned short *)(a) = (b))
-#define	POKED(a,b)		(*(unsigned long  *)(a) = (b))
-#define	PEEKiW(a)		( PEEKB(a) | (PEEKB((unsigned long)(a)+1)<< 8) )
-#define	PEEKiD(a)		( PEEKiW(a) | (PEEKiW((unsigned long)(a)+2) << 16) )
-#define	PEEKmW(a)		( (PEEKB(a)<<8) | PEEKB((unsigned long)(a)+1) )
-#define	PEEKmD(a)		( (PEEKmW(a)<<16) | PEEKmW((unsigned long)(a)+2) )
-#define	POKEmW(a,b)		(POKEB((a),GHB(b)), POKEB((ULONG)(a)+1,GLB(b)))
-#define	POKEmD(a,b)		(POKEmW((a),GHW(b)), POKEmW((ULONG)(a)+2,GLW(b)))
-#define	POKEiW(a,b)		(POKEB((a),GLB(b)), POKEB((ULONG)(a)+1,GHB(b)))
-#define	POKEiD(a,b)		(POKEiW((a),GLW(b)), POKEiW((ULONG)(a)+2,GHW(b)))
+#define PEEKB(a)        (*(unsigned char  *)(a))
+#define PEEKW(a)        (*(unsigned short *)(a))
+#define PEEKD(a)        (*(unsigned long  *)(a))
+#define POKEB(a,b)      (*(unsigned char  *)(a) = (b))
+#define POKEW(a,b)      (*(unsigned short *)(a) = (b))
+#define POKED(a,b)      (*(unsigned long  *)(a) = (b))
+#define PEEKiW(a)       ( PEEKB(a) | (PEEKB((unsigned long)(a)+1)<< 8) )
+#define PEEKiD(a)       ( PEEKiW(a) | (PEEKiW((unsigned long)(a)+2) << 16) )
+#define PEEKmW(a)       ( (PEEKB(a)<<8) | PEEKB((unsigned long)(a)+1) )
+#define PEEKmD(a)       ( (PEEKmW(a)<<16) | PEEKmW((unsigned long)(a)+2) )
+#define POKEmW(a,b)     (POKEB((a),GHB(b)), POKEB((ULONG)(a)+1,GLB(b)))
+#define POKEmD(a,b)     (POKEmW((a),GHW(b)), POKEmW((ULONG)(a)+2,GLW(b)))
+#define POKEiW(a,b)     (POKEB((a),GLB(b)), POKEB((ULONG)(a)+1,GHB(b)))
+#define POKEiD(a,b)     (POKEiW((a),GLW(b)), POKEiW((ULONG)(a)+2,GHW(b)))
 
-#define	SETBTS(d,s,msk,pos)	(  (d) = ((d) & ~(msk << pos)) | (((s) & msk) << pos)  )
+#define SETBTS(d,s,msk,pos) (  (d) = ((d) & ~(msk << pos)) | (((s) & msk) << pos)  )
 
-#define	DB			if (debugflag)
-extern int		debugflag;
+#define DB          if (debugflag)
+extern int          debugflag;
 
 
 /* memマクロ */
-#define MEMCPY(d0,s0,c0) do {		\
-	char *d__ = (void*)(d0);		\
-	char *s__ = (void*)(s0);		\
-	int c__ = (c0);					\
-	do {							\
-		*d__++ = *s__++;			\
-	} while (--c__);				\
+#define MEMCPY(d0,s0,c0) do {       \
+    char *d__ = (void*)(d0);        \
+    char *s__ = (void*)(s0);        \
+    int c__ = (c0);                 \
+    do {                            \
+        *d__++ = *s__++;            \
+    } while (--c__);                \
 } while(0)
 
-#define MEMCPY2(d0,s0,c0) do {		\
-	short *d__ = (void*)(d0); 		\
-	short *s__ = (void*)(s0); 		\
-	int c__ = (c0)>>1;				\
-	do {							\
-		*d__++ = *s__++;			\
-	} while (--c__);				\
+#define MEMCPY2(d0,s0,c0) do {      \
+    short *d__ = (void*)(d0);       \
+    short *s__ = (void*)(s0);       \
+    int c__ = (c0)>>1;              \
+    do {                            \
+        *d__++ = *s__++;            \
+    } while (--c__);                \
 } while(0)
 
-#define MEMCPY4(d0,s0,c0) do {		\
-	long *d__ = (void*)(d0);		\
-	long *s__ = (void*)(s0);		\
-	int c__ = (unsigned)(c0)>>2;	\
-	do {							\
-		*d__++ = *s__++;			\
-	} while (--c__);				\
+#define MEMCPY4(d0,s0,c0) do {      \
+    long *d__ = (void*)(d0);        \
+    long *s__ = (void*)(s0);        \
+    int c__ = (unsigned)(c0)>>2;    \
+    do {                            \
+        *d__++ = *s__++;            \
+    } while (--c__);                \
 } while(0)
 
-#define MEMCPYW(d0,s0,c0) do {		\
-	short *d__ = (void*)(d0); 		\
-	short *s__ = (void*)(s0); 		\
-	int c__ = (c0);					\
-	do {							\
-		*d__++ = *s__++;			\
-	} while (--c__);				\
+#define MEMCPYW(d0,s0,c0) do {      \
+    short *d__ = (void*)(d0);       \
+    short *s__ = (void*)(s0);       \
+    int c__ = (c0);                 \
+    do {                            \
+        *d__++ = *s__++;            \
+    } while (--c__);                \
 } while(0)
 
-#define MEMCPYD(d0,s0,c0) do {		\
-	long *d__ = (void*)(d0);		\
-	long *s__ = (void*)(s0);		\
-	int c__ = (c0);					\
-	do {							\
-		*d__++ = *s__++;			\
-	} while (--c__);				\
+#define MEMCPYD(d0,s0,c0) do {      \
+    long *d__ = (void*)(d0);        \
+    long *s__ = (void*)(s0);        \
+    int c__ = (c0);                 \
+    do {                            \
+        *d__++ = *s__++;            \
+    } while (--c__);                \
 } while(0)
 
-#define MEMSET(d0,s0,c0) do {		\
-	char *d__ = (void*)(d0);		\
-	int c__ = (c0);					\
-	do {							\
-		*d__++ = (char)(s0);		\
-	} while(--c__);					\
+#define MEMSET(d0,s0,c0) do {       \
+    char *d__ = (void*)(d0);        \
+    int c__ = (c0);                 \
+    do {                            \
+        *d__++ = (char)(s0);        \
+    } while(--c__);                 \
 } while(0)
 
-#define MEMSETW(d0,s0,c0) do {		\
-	short *d__ = (void*)(d0); 		\
-	int c__ = (c0);					\
-	do {							\
-		*d__++ = (short)(s0); 		\
-	} while(--c__);					\
+#define MEMSETW(d0,s0,c0) do {      \
+    short *d__ = (void*)(d0);       \
+    int c__ = (c0);                 \
+    do {                            \
+        *d__++ = (short)(s0);       \
+    } while(--c__);                 \
 } while(0)
 
-#define MEMSETD(d0,s0,c0) do {		\
-	long *d__ = (void*)(d0);		\
-	int c__ = (c0);					\
-	do {							\
-		*d__++ = (long)(s0);		\
-	} while(--c__);					\
+#define MEMSETD(d0,s0,c0) do {      \
+    long *d__ = (void*)(d0);        \
+    int c__ = (c0);                 \
+    do {                            \
+        *d__++ = (long)(s0);        \
+    } while(--c__);                 \
 } while(0)
 
 
@@ -160,7 +155,7 @@ extern int		debugflag;
 /*------------------------------------------*/
 /*------------------------------------------*/
 /*------------------------------------------*/
-#define STDERR		stdout
+#define STDERR      stdout
 
 char *StrNCpyZ(char *dst, char *src, size_t size);
 char *StrSkipSpc(char *s);
@@ -177,7 +172,7 @@ void FIL_LoadE(char *name, void *buf, int size);
 void FIL_SaveE(char *name, void *buf, int size);
 void *FIL_LoadM(char *name);
 void *FIL_LoadME(char *name);
-extern int	FIL_loadsize;
+extern int  FIL_loadsize;
 
 volatile void err_exit(char *fmt, ...);
 void *mallocE(size_t a);
@@ -206,13 +201,13 @@ void TXT1_Close(void);
 char *TXT1_GetsE(char *buf, int sz);
 void TXT1_Error(char *fmt, ...);
 void TXT1_ErrorE(char *fmt, ...);
-extern ULONG	TXT1_line;
-extern char		TXT1_name[FIL_NMSZ];
-extern FILE		*TXT1_fp;
+extern unsigned long    TXT1_line;
+extern char     TXT1_name[FIL_NMSZ];
+extern FILE     *TXT1_fp;
 
 typedef struct SLIST {
-	struct SLIST	*link;
-	char			*s;
+    struct SLIST    *link;
+    char            *s;
 } SLIST;
 SLIST *SLIST_Add(SLIST **root, char *s);
 void   SLIST_Free(SLIST **p0);
@@ -222,8 +217,8 @@ STBL_CMP STBL_SetFncCmp(STBL_CMP fncCmp);
 int STBL_Add(void *t[], int *tblcnt, void *key);
 int STBL_Search(void *tbl[], int nn, void *key);
 
-int StrExpr(char *s_old, char **s_new, long *val);		/* 戻り値0:no error  !0:error */
+int StrExpr(char *s_old, char **s_new, long *val);      /* 戻り値0:no error  !0:error */
 void StrExpr_SetNameChkFunc(int (*name2valFnc)(char *name, long *valp));
-	/* name2valFnc は、名前が渡され、正常なら0を返しその名前の値を *valpにいれる. 異常なら-1を返す関数を設定すること */
+    /* name2valFnc は、名前が渡され、正常なら0を返しその名前の値を *valpにいれる. 異常なら-1を返す関数を設定すること */
 
-#endif	/* __SUBR_H__ */
+#endif  /* __SUBR_H__ */
