@@ -36,7 +36,7 @@ bool ChFontTable_getPageUVWH(unsigned ch, unsigned& rPage, unsigned& rU, unsigne
     rPage = page;
     rU    = cx * info.fontW + fnd->x;
     //rV  = cy * info.fontH + fnd->y;
-    rV    = cy * info.fontH + fnd->y;
+    rV    = cy * info.fontH;
     rW    = fnd->w;
     //rH  = fnd->h;
     rH    = info.fontH;
