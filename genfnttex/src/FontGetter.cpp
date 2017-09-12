@@ -1,6 +1,6 @@
 #include "FontGetter.hpp"
 #include <windows.h>
-
+#include <map>
 
 
 bool FontGetter::get(FontVec& rFonts) {
@@ -19,15 +19,15 @@ bool FontGetter::get(FontVec& rFonts) {
     logfont.lfStrikeOut         = FALSE;                    // 取り消し線を付けるかどうか
     //logfont.lfCharSet         = SHIFTJIS_CHARSET;         // 文字セットの識別子
     logfont.lfCharSet           = DEFAULT_CHARSET;          // 文字セットの識別子
-	logfont.lfOutPrecision      = OUT_DEFAULT_PRECIS;       // 出力精度
+    logfont.lfOutPrecision      = OUT_DEFAULT_PRECIS;       // 出力精度
     logfont.lfClipPrecision     = CLIP_DEFAULT_PRECIS;      // クリッピング精度
     logfont.lfQuality           = ANTIALIASED_QUALITY;      // 出力品質
     logfont.lfPitchAndFamily    = DEFAULT_PITCH;            // ピッチとファミリ
-	wchar_t wbuf[0x4000] = {0};
-	//mbstowcs(wbuf, ttfname_.c_str(), ttfname_.size());
-	::MultiByteToWideChar(CP_OEMCP,0,ttfname_.c_str(), ttfname_.size()+1, wbuf, 0x4000);
+    wchar_t wbuf[0x4000] = {0};
+    //mbstowcs(wbuf, ttfname_.c_str(), ttfname_.size());
+    ::MultiByteToWideChar(CP_OEMCP,0,ttfname_.c_str(), ttfname_.size()+1, wbuf, 0x4000);
     wcsncpy( logfont.lfFaceName, wbuf, 31 );         // フォント名
-	logfont.lfFaceName[31] = 0;
+    logfont.lfFaceName[31] = 0;
 
     HFONT   new_hfont   = ::CreateFontIndirect(&logfont);
     if (new_hfont == 0) {
@@ -80,11 +80,10 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     // バッファを確保
     wkBuf_.clear();
     wkBuf_.resize(size);
-	if (!size)
-		return false;
+    if (!size)
+        return false;
     int rc = ::GetGlyphOutline( hdc, nChar, GGO_GRAY8_BITMAP, &gm, size, (LPVOID)&wkBuf_[0], &mat2 );
     if(rc <= 0) {
-        // バッファを開放
         return false;
     }
 
@@ -113,8 +112,8 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     ofset_y = (ofset_y) / mul_;
 
     if (mul_ == 1) {
-        for ( int j = 0 ; j < dh && j < cellW_; ++j ) {
-            for ( int i = 0 ; i < dw && i < cellW_; ++i ) {
+        for ( int j = 0 ; j < dh && j < cellW_ && j < fontW_; ++j ) {
+            for ( int i = 0 ; i < dw && i < cellW_ && i < fontW_; ++i ) {
                 // 色の取得
                 unsigned alpha  = wkBuf_[j * pitch + i];
                 alpha   = (alpha * 15 ) / 64;
@@ -122,8 +121,8 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
             }
         }
     }else {
-        for ( int j = 0 ; j < dh && j < cellW_; ++j ) {
-            for ( int i = 0 ; i < dw && i < cellW_; ++i ) {
+        for ( int j = 0 ; j < dh && j < cellW_ && j < fontW_; ++j ) {
+            for ( int i = 0 ; i < dw && i < cellW_ && i < fontW_; ++i ) {
                 unsigned alpha2     = 0;
                 for(int y = 0 ; y < mul_ && y+(j*mul_) < gm.gmBlackBoxY ; ++y) {
                     for(int x = 0 ; x < mul_ && x+(i*mul_) < gm.gmBlackBoxX ; ++x) {
@@ -177,6 +176,8 @@ bool FontGetter::adjustFontSize(Font& rFont) {
 
 //static int fontEnumProcW(CONST LOGFONTW *logfont, CONST VOID *, DWORD, LPARAM)
 //static int fontEnumProcW(CONST LOGFONTW *logfont, CONST TEXTMETRICW *, DWORD, LPARAM) 
+typedef std::map<std::string, unsigned> FontNames;
+
 static int count = 0;
 static int CALLBACK enumFontFamExProc(
   ENUMLOGFONTEXW *lpelfe,    // 論理的なフォントデータ
@@ -184,11 +185,13 @@ static int CALLBACK enumFontFamExProc(
   DWORD FontType,           // フォントの種類
   LPARAM lParam             // アプリケーション定義のデータ
 ){
-	char buf[0x1000];
-	WideCharToMultiByte(0,0,lpelfe->elfLogFont.lfFaceName, 32, buf, 0x1000, 0, 0);
-	++count;
-	printf("%s\n", buf);
-	return 1;
+    ++count;
+    char buf[0x1000];
+    WideCharToMultiByte(0,0,lpelfe->elfLogFont.lfFaceName, 32, buf, 0x1000, 0, 0);
+    FontNames* pFontNames = (FontNames*)lParam;
+    (*pFontNames)[buf] = 1;
+    //printf("%s\n", buf);
+    return 1;
 }
 
 void FontGetter::printFontInfo() {
@@ -197,12 +200,16 @@ void FontGetter::printFontInfo() {
     logfont.lfCharSet   = DEFAULT_CHARSET;         // 文字セットの識別子
     HDC     hdc         = ::CreateCompatibleDC(NULL);
 
+    FontNames   fntNames;
+    int rc = EnumFontFamiliesExW(
+      hdc,                  // デバイスコンテキストのハンドル
+      &logfont,             // フォント情報
+      (FONTENUMPROCW)enumFontFamExProc, // コールバック関数
+      (LPARAM)&fntNames,    // 追加データ
+      0                     // 未使用；必ず 0 を指定
+    );
 
-	int rc = EnumFontFamiliesExW(
-	  hdc,					// デバイスコンテキストのハンドル
-	  &logfont,				// フォント情報
-	  (FONTENUMPROCW)enumFontFamExProc,	// コールバック関数
-	  NULL,					// 追加データ
-	  0						// 未使用；必ず 0 を指定
-	);
+    for (FontNames::iterator ite = fntNames.begin(); ite != fntNames.end(); ++ite) {
+        printf("%s\n", ite->first.c_str());
+    }
 }
