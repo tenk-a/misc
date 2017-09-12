@@ -100,6 +100,16 @@ public:
 private:
     int usage() {
         fprintf(stderr, "usage>%s [-opts] file(s)\n", appname_);
+		fprintf(stderr,
+		   " -ttf=[TTFNAME]  ttf font name\n"
+		   " -o=[OUTPUT]     output base name (no ext.)\n"
+		   " -ts[W:H]        texture size W*H (2^N)\n"
+		   " -cs[N]          put font size (pixel)\n"
+		   " -fs[N]          get font size (pixel)\n"
+		   " -mul[N]         get-font-size*N(/N)\n"
+		   " -addascii       generate 0x21..0x7E\n"
+		   " -fontlist       output font name list\n"
+		);
         return 1;
     }
 
