@@ -1,0 +1,2 @@
+gcc -Wall -O2 -o os9img2file -I /usr/include os9img2file.c
+chmod 777 os9img2file
