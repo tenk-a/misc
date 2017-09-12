@@ -1,0 +1,1 @@
+bmptg :png *.tga

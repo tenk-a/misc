@@ -1,0 +1,26 @@
+/**
+ *  @file   cinttypes
+ *  @brief  Format conversion of integer types
+ */
+#ifndef CINTTYPES_INCLUDED
+#define CINTTYPES_INCLUDED
+
+#include "inttypes.h"
+
+#ifdef __cplusplus
+
+namespace std {
+    using   ::imaxdiv_t;
+    using   ::imaxabs;
+    using   ::imaxdiv;
+ #if 0
+    using   ::strtoimax;
+    using   ::strtoumax;
+    using   ::wcstoimax;
+    using   ::wcstoumax;
+ #endif
+}
+
+#endif
+
+#endif  /* INTTYPES_INCLUDED */

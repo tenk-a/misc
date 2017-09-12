@@ -1,0 +1,1 @@
+cl -c smp.c
