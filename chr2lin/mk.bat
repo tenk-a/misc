@@ -1,3 +1,2 @@
-bcc32 -Ox chr2lin.c subr.c c:\borland\bcc55\lib\wildargs.obj
-del *.tds
+cl -Ox chr2lin.c subr.c ExArgv.c mbc.c
 del *.obj
