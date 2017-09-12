@@ -1,1 +1,1 @@
-cl -c smp.c
+cl -c smp_func.cpp smp.c
