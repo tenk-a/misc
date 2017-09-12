@@ -1,3 +1,9 @@
+/**
+ *  @file   main.cpp
+ *  @brief  generate font texture(.tga) for Win32
+ *  @author Masashi KITAMURA (tenka@6809.net)
+ *  @date   2017-09-09
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

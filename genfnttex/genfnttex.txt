@@ -1,0 +1,10 @@
+usage>genfnttex [-opts] file(s)
+       https://github.com/tenk-a/misc/tree/master/genfnttex
+ -ttf=[TTFNAME]  ttf font name
+ -o=[OUTPUT]     output base name (no ext.)
+ -ts[W:H]        texture size W*H (2^N)
+ -cs[N]          put font size (pixel)
+ -fs[N]          get font size (pixel)
+ -mul[N]         get-font-size*N(/N)
+ -addascii       generate 0x21..0x7E
+ -fontlist       output font name list
