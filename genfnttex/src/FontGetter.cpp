@@ -95,21 +95,23 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
 
     int dw          = gm.gmBlackBoxX;
     int dh          = gm.gmBlackBoxY;
-    int ofset_x     = gm.gmptGlyphOrigin.x;
-    int ofset_y     = tm.tmAscent - gm.gmptGlyphOrigin.y;
+    int offset_x    = gm.gmptGlyphOrigin.x;
+    int offset_y    = tm.tmAscent - gm.gmptGlyphOrigin.y;
     if (tm.tmInternalLeading != 0) {
-        ofset_y     = ofset_y - tm.tmDescent;
+        offset_y    = offset_y - tm.tmDescent;
     }
-    //ofset_y       = font_H_ - gm.gmptGlyphOrigin.y;
-    //ofset_y       = tm.tmAscent - gm.gmptGlyphOrigin.y;
-    if (ofset_y < 0) {
-        ofset_y     = 0;
+    //offset_y      = font_H_ - gm.gmptGlyphOrigin.y;
+    //offset_y      = tm.tmAscent - gm.gmptGlyphOrigin.y;
+    if (offset_y < 0) {
+        offset_y     = 0;
     }
 
-    dw      = (dw+(mul_-1)) / mul_;
-    dh      = (dh+(mul_-1)) / mul_;
-    ofset_x = (ofset_x) / mul_;
-    ofset_y = (ofset_y) / mul_;
+    dw       = (dw+(mul_-1)) / mul_;
+    dh       = (dh+(mul_-1)) / mul_;
+    offset_x = (offset_x) / mul_;
+    offset_y = (offset_y) / mul_;
+	if (offset_x < 0)
+		offset_x = 0;
 
     if (mul_ == 1) {
         for ( int j = 0 ; j < dh && j < cellW_ && j < fontW_; ++j ) {
@@ -117,7 +119,7 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
                 // F‚ÌŽæ“¾
                 unsigned alpha  = wkBuf_[j * pitch + i];
                 alpha   = (alpha * 15 ) / 64;
-                font.data[((j+ofset_y) * cellW_) + (i + ofset_x)]   = alpha;
+                font.data[((j+offset_y) * cellW_) + (i + offset_x)]   = alpha;
             }
         }
     }else {
@@ -131,7 +133,7 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
                     }
                 }
                 //printf("%x",(alpha2 * 15) / (mul_ * mul_ * 64));
-                font.data[(j + ofset_y) * cellW_ +  (i + ofset_x)]  = (alpha2 * 15) / (mul_ * mul_ * 64);
+                font.data[(j + offset_y) * cellW_ +  (i + offset_x)]  = (alpha2 * 15) / (mul_ * mul_ * 64);
             }
             //printf("\n");
         }
