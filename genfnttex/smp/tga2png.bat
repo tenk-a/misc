@@ -1,1 +1,1 @@
-bmptg :png *.tga
+bmptg :png -b4 *.tga

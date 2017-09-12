@@ -35,25 +35,25 @@ public:
     int main(int argc, char* argv[]) {
 
         appname_ = strrchr(argv[0], '\\');
-		if (appname_)
-			++appname_;
-		else
-			appname_ = argv[0];
-		
+        if (appname_)
+            ++appname_;
+        else
+            appname_ = argv[0];
+        
         if (argc < 2)
             return usage();
-		int fno = 0;
+        int fno = 0;
         for (int i = 1; i < argc; ++i) {
             char* p = argv[i];
             if (*p == '-') {
                 if (scanOpts(p) == false)
                     return 1;
             } else {
-				++fno;
-			}
+                ++fno;
+            }
         }
-		if (fno == 0)
-			return 0;
+        if (fno == 0)
+            return 0;
         if (fontW_ == 0 && cellW_ == 0) {
             fontW_ = cellW_ = 32;
         } else if (fontW_ == 0) {
@@ -81,8 +81,8 @@ public:
                     return 1;
             }
         }
-		if (oname_ == NULL)
-			return 0;
+        if (oname_ == NULL)
+            return 0;
         if (getFonts() == false)
             return 1;
         if (makeTex() == false)
@@ -100,16 +100,17 @@ public:
 private:
     int usage() {
         fprintf(stderr, "usage>%s [-opts] file(s)\n", appname_);
-		fprintf(stderr,
-		   " -ttf=[TTFNAME]  ttf font name\n"
-		   " -o=[OUTPUT]     output base name (no ext.)\n"
-		   " -ts[W:H]        texture size W*H (2^N)\n"
-		   " -cs[N]          put font size (pixel)\n"
-		   " -fs[N]          get font size (pixel)\n"
-		   " -mul[N]         get-font-size*N(/N)\n"
-		   " -addascii       generate 0x21..0x7E\n"
-		   " -fontlist       output font name list\n"
-		);
+        fprintf(stderr,
+           "       https://github.com/tenk-a/misc/tree/master/genfnttex\n"
+           " -ttf=[TTFNAME]  ttf font name\n"
+           " -o=[OUTPUT]     output base name (no ext.)\n"
+           " -ts[W:H]        texture size W*H (2^N)\n"
+           " -cs[N]          put font size (pixel)\n"
+           " -fs[N]          get font size (pixel)\n"
+           " -mul[N]         get-font-size*N(/N)\n"
+           " -addascii       generate 0x21..0x7E\n"
+           " -fontlist       output font name list\n"
+        );
         return 1;
     }
 
@@ -146,8 +147,8 @@ private:
         } else if (paramEquLong(p, "-addascii", p)) {
             addascii_ = (*p != '-');
         } else if (paramEquLong(p, "-fontlist", p)) {
-			FontGetter::printFontInfo();
-			return true;
+            FontGetter::printFontInfo();
+            return true;
         } else {
             fprintf(stderr, "unkown option : %s\n", arg);
             return false;
