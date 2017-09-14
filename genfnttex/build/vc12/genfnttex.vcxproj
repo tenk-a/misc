@@ -171,14 +171,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\FontGetter.cpp" />
-    <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\genfnttex.cpp" />
     <ClCompile Include="..\..\src\misc\fks_fname.cpp" />
     <ClCompile Include="..\..\src\misc\mbc.c" />
     <ClCompile Include="..\..\src\misc\tga_wrt.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\FontGetter.hpp" />
-    <ClInclude Include="..\..\src\main.h" />
     <ClInclude Include="..\..\src\misc\fks_fname.h" />
     <ClInclude Include="..\..\src\misc\mbc.h" />
     <ClInclude Include="..\..\src\misc\tga_wrt.h" />

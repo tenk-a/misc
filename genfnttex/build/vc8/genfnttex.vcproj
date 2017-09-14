@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="sample"
+	Name="genfnttex"
 	ProjectGUID="{89A97424-7116-4165-9CB8-C1459A0B769D}"
 	RootNamespace="genfnttex"
 	Keyword="Win32Proj"
@@ -358,11 +358,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\main.h"
+				RelativePath="..\..\src\genfnttex.cpp"
 				>
 			</File>
 			<Filter

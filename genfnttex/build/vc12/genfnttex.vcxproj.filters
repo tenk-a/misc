@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\misc\mbc.c">
       <Filter>misc</Filter>
     </ClCompile>
@@ -12,9 +11,9 @@
     <ClCompile Include="..\..\src\misc\fks_fname.cpp">
       <Filter>misc</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\genfnttex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\main.h" />
     <ClInclude Include="..\..\src\misc\mbc.h">
       <Filter>misc</Filter>
     </ClInclude>
