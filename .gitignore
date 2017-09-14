@@ -8,3 +8,8 @@ bak
 *.pdb
 *.sdf
 *.opensdf
+*.tlog
+*.dep
+*.manifest
+*.manifest.res
+BuildLog.htm
