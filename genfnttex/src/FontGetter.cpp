@@ -30,7 +30,7 @@ bool FontGetter::get(FontVec& rFonts) {
     logfont.lfPitchAndFamily    = DEFAULT_PITCH;            // ピッチとファミリ
     wchar_t wbuf[0x4000] = {0};
     //mbstowcs(wbuf, ttfname_.c_str(), ttfname_.size());
-    ::MultiByteToWideChar(CP_OEMCP,0,ttfname_.c_str(), ttfname_.size()+1, wbuf, 0x4000);
+    ::MultiByteToWideChar(CP_OEMCP,0,ttfname_.c_str(), int(ttfname_.size())+1, wbuf, 0x4000);
     wcsncpy( logfont.lfFaceName, wbuf, 31 );         // フォント名
     logfont.lfFaceName[31] = 0;
 
@@ -186,7 +186,7 @@ static int count = 0;
 static int CALLBACK enumFontFamExProc(
   ENUMLOGFONTEXW *lpelfe,   // 論理的なフォントデータ
   NEWTEXTMETRICEXW *lpntme, // 物理的なフォントデータ
-  DWORD FontType,           // フォントの種類
+  unsigned/*DWORD*/ FontType,           // フォントの種類
   LPARAM lParam             // アプリケーション定義のデータ
 ){
     ++count;

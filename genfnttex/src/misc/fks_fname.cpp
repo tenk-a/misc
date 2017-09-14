@@ -1091,6 +1091,10 @@ FKS_LIB_DECL FKS_FNAME_CHAR*    fks_fnameRelativePathBS(FKS_FNAME_CHAR dst[], un
 }
 
 
+
+typedef char CHECK_MAX_PATH[(FKS_FNAME_MAX_PATH >= 16) ? 1 : -1];  // コンパイル時のサイズチェック.
+typedef char CHECK_MAX_URL [(FKS_FNAME_MAX_URL  >= 16) ? 1 : -1];  // コンパイル時のサイズチェック.
+
 /** currentDirからの相対パス生成.
  *  currentDir は絶対パスであること. そうでない場合の挙動は不定.
  *  '\'文字対策で、セパレータは'/'に置き換ている.
@@ -1098,8 +1102,6 @@ FKS_LIB_DECL FKS_FNAME_CHAR*    fks_fnameRelativePathBS(FKS_FNAME_CHAR dst[], un
  */
 FKS_LIB_DECL FKS_FNAME_CHAR*    fks_fnameRelativePathSL(FKS_FNAME_CHAR dst[], unsigned size, const FKS_FNAME_CHAR* path, const FKS_FNAME_CHAR* currentDir)
 {
-    enum { CHECK_MAX_PATH = sizeof(char[FKS_FNAME_MAX_PATH >= 16 ? 1 : -1]) };  // コンパイル時のサイズチェック.
-    enum { CHECK_MAX_URL  = sizeof(char[FKS_FNAME_MAX_URL  >= 16 ? 1 : -1]) };  // コンパイル時のサイズチェック.
     FKS_FNAME_CHAR      curDir  [ FKS_FNAME_MAX_URL + 1 ];
     FKS_FNAME_CHAR      fullName[ FKS_FNAME_MAX_URL + 1 ];
     FKS_FNAME_CHAR*     cp;
