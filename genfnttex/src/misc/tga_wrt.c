@@ -363,7 +363,7 @@ int  tga_writeEx(
 		/*mput_cpy(d, "TRUEVISION-TARGA.", 18, 1); */
 		d += 18;
 	}
-	return (int)d - (int)tga_data;
+	return d - (uint8_t*)tga_data;
 }
 
 

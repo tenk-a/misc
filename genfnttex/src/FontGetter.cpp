@@ -12,7 +12,7 @@
 /** get fonts
  */
 bool FontGetter::get(FontVec& rFonts) {
-    LOGFONT     logfont = {0};                              // フォントデータ
+    LOGFONTW    logfont = {0};                              // フォントデータ
     logfont.lfHeight            = (fontW_ * mul_) * (-1);   // フォントの高さ
     logfont.lfWidth             = 0;                        // フォントの幅（平均）
     logfont.lfEscapement        = 0;                        // 文字送り方向の角度
@@ -33,7 +33,7 @@ bool FontGetter::get(FontVec& rFonts) {
     wcsncpy( logfont.lfFaceName, wbuf, 31 );         // フォント名
     logfont.lfFaceName[31] = 0;
 
-    HFONT   new_hfont   = ::CreateFontIndirect(&logfont);
+    HFONT   new_hfont   = ::CreateFontIndirectW(&logfont);
     if (new_hfont == 0) {
         fprintf(stderr, "ERROR: bad font data\n");
         return false;
@@ -105,8 +105,15 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     dh       = (dh+(mul_-1)) / mul_;
     offset_x = (offset_x) / mul_;
     offset_y = (offset_y) / mul_;
+
+    if (offset_x + dw > cellW_)
+        offset_x = cellW_ - dw;
     if (offset_x < 0)
         offset_x = 0;
+    if (offset_y + dh > cellW_)
+        offset_y = cellW_ - dh;
+    if (offset_y < 0)
+        offset_y = 0;
 
     if (mul_ == 1) {
         for ( int j = 0 ; j < dh && j < cellW_ && j < fontW_; ++j ) {
@@ -192,7 +199,7 @@ static int CALLBACK enumFontFamExProc(
 /** print font list
  */
 void FontGetter::printFontInfo() {
-    LOGFONT     logfont = {0};
+    LOGFONTW    logfont = {0};
     logfont.lfCharSet   = DEFAULT_CHARSET;
     HDC     hdc         = ::CreateCompatibleDC(NULL);
 
