@@ -7,6 +7,7 @@
 #include "FontGetter.hpp"
 #include <windows.h>
 #include <map>
+#include <stdio.h>
 
 
 /** get fonts
@@ -106,29 +107,29 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     offset_x = (offset_x) / mul_;
     offset_y = (offset_y) / mul_;
 
-    if (offset_x + dw > cellW_)
-        offset_x = cellW_ - dw;
+    if (offset_x + dw > int(cellW_))
+        offset_x = int(cellW_) - dw;
     if (offset_x < 0)
         offset_x = 0;
-    if (offset_y + dh > cellW_)
-        offset_y = cellW_ - dh;
+    if (offset_y + dh > int(cellW_))
+        offset_y = int(cellW_) - dh;
     if (offset_y < 0)
         offset_y = 0;
 
     if (mul_ == 1) {
-        for ( int j = 0 ; j < dh && j < cellW_ && j < fontW_; ++j ) {
-            for ( int i = 0 ; i < dw && i < cellW_ && i < fontW_; ++i ) {
+        for ( unsigned j = 0 ; j < unsigned(dh) && j < cellW_ && j < fontW_; ++j ) {
+            for ( unsigned i = 0 ; i < unsigned(dw) && i < cellW_ && i < fontW_; ++i ) {
                 unsigned alp  = wkBuf_[j * pitch + i];
                 alp   = (alp * 15 ) / 64;
                 font.data[((j+offset_y) * cellW_) + (i + offset_x)]   = alp;
             }
         }
     }else {
-        for ( int j = 0 ; j < dh && j < cellW_ && j < fontW_; ++j ) {
-            for ( int i = 0 ; i < dw && i < cellW_ && i < fontW_; ++i ) {
+        for ( unsigned j = 0 ; j < unsigned(dh) && j < cellW_ && j < fontW_; ++j ) {
+            for ( unsigned i = 0 ; i < unsigned(dw) && i < cellW_ && i < fontW_; ++i ) {
                 unsigned total = 0;
-                for(int y = 0 ; y < mul_ && y+(j*mul_) < gm.gmBlackBoxY ; ++y) {
-                    for(int x = 0 ; x < mul_ && x+(i*mul_) < gm.gmBlackBoxX ; ++x) {
+                for(unsigned y = 0 ; y < mul_ && y+(j*mul_) < gm.gmBlackBoxY ; ++y) {
+                    for(unsigned x = 0 ; x < mul_ && x+(i*mul_) < gm.gmBlackBoxX ; ++x) {
                         uint8_t alp = wkBuf_[ (y + j * mul_) * pitch + (x + i * mul_) ];
                         total  += alp;
                     }
@@ -204,7 +205,7 @@ void FontGetter::printFontInfo() {
     HDC     hdc         = ::CreateCompatibleDC(NULL);
 
     FontNames   fntNames;
-    int rc = EnumFontFamiliesExW(
+    EnumFontFamiliesExW(
       hdc,                              // デバイスコンテキストのハンドル
       &logfont,                         // フォント情報
       (FONTENUMPROCW)enumFontFamExProc, // コールバック関数

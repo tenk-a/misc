@@ -12,6 +12,8 @@
  */
 
 #include "mbc.h"
+#include <string.h>
+#include <stdlib.h>
 #include <assert.h>
 
 #ifdef _WIN32
@@ -356,7 +358,7 @@ static unsigned eucjp_peekc(const char* pStr) {
         unsigned   k  = c;
         c = (c << 8) | *s++;
         if (k == 0x8f && *s) {
-            c = (c << 8) | *s++;
+            c = (c << 8) | *s;
         }
     }
     return c;
@@ -1152,13 +1154,11 @@ size_t  mbc_widthToSize(const Mbc_Env* mbc, const char* str, size_t width) {
 /// ”¼Šp•¶Žš’PˆÊ‚Ì•‚©‚ç•¶Žš”‚ð‹‚ß‚é.
 size_t  mbc_widthToChrs(const Mbc_Env* mbc, const char* str, size_t width) {
     const char* s = str;
-    const char* b;
     size_t      w = 0;
     size_t      n = 0;
     assert(str != 0);
     while (w < width) {
         unsigned c;
-        b  = s;
         c  = mbc->getC(&s);
         if (c == 0)
             break;

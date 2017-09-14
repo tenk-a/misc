@@ -40,9 +40,8 @@ typedef struct Mbc_Env {
     //size_t (*adjust_size)(const char* s, unsigned size);  // 半角全角を考慮して文字の幅を返す.
 
   #ifdef __cplusplus    //気力があれば、関数ポインタ化.
-    char*    inc   (const char* str)     const { return (char*)str + this->len1(str) ; }
-    void     putc  (char** d,unsigned c) const { *d = this->setC(*d, c); }
-
+    char*    inc(const char* str)     const;
+    void     putC(char** d, unsigned c) const;
     size_t   strLen(const char* src) const;
     size_t   adjust_size(const char* src, size_t sz) const;
     size_t   sizeToWidth(const char* str, size_t size) const ;
@@ -135,6 +134,8 @@ size_t          fnd_last_not_of (const C* a, size_t an, size_t ofs, const C* t, 
 
 
 #ifdef __cplusplus
+inline char*    Mbc_Env::inc(const char* str) const { return (char*)str + this->len1(str) ; }
+inline void     Mbc_Env::putC(char** d,unsigned c) const { *d = this->setC(*d, c); }
 inline size_t   Mbc_Env::strLen(const char* src) const { return mbc_adjust_size(this, src, ~(size_t)0); }
 inline size_t   Mbc_Env::adjust_size(const char* src, size_t sz) const { return mbc_adjust_size(this, src, sz); }
 

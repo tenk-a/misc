@@ -411,9 +411,9 @@ private:
 private:
     FontVec     fonts_;
     Cmap        cmap_;
-    char*       appname_;
-    char*       oname_;
-    char*       ttfname_;
+    char const* appname_;
+    char const* oname_;
+    char const* ttfname_;
     unsigned    texW_;
     unsigned    texH_;
     unsigned    fontW_;

@@ -21,13 +21,9 @@
 
 #include "fks_fname.h"
 
-#ifdef __cplusplus
-#include <cstdlib>
-#include <cstring>
-#else
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #ifndef assert
 #include <assert.h>
 #endif
@@ -396,7 +392,7 @@ FKS_LIB_DECL FKS_FNAME_CHAR *fks_fnameGetNoExt(FKS_FNAME_CHAR dst[], unsigned si
 {
     const FKS_FNAME_CHAR *s;
     const FKS_FNAME_CHAR *e;
-    unsigned         l = 0;
+    unsigned         l;
     assert(dst != 0 && size > 1 && src != 0);
     //if (dst == 0 || size == 0 || src == 0) return 0;
     s = fks_fnameBaseName(src);
@@ -418,7 +414,7 @@ FKS_LIB_DECL FKS_FNAME_CHAR *fks_fnameGetBaseNameNoExt(FKS_FNAME_CHAR dst[], uns
 {
     const FKS_FNAME_CHAR *s;
     const FKS_FNAME_CHAR *e;
-    unsigned         l = 0;
+    unsigned         l;
     assert(dst != 0 && size > 1 && src != 0);
     //if (dst == 0 || size == 0 || src == 0) return 0;
     s = fks_fnameBaseName(src);
@@ -561,7 +557,7 @@ FKS_LIB_DECL FKS_FNAME_CHAR *fks_fnameCheckPosSep(FKS_FNAME_const_CHAR* dir, int
               #ifdef FKS_FNAME_WCS_COMPILE
                 return (FKS_FNAME_CHAR *)p;
               #else     // adjust_sizeの結果がofs未満になってたら*pはマルチバイト文字の一部.
-                if (fks_fnameAdjustSize(s, ofs+1) == ofs)
+                if (fks_fnameAdjustSize(s, ofs+1) == unsigned(ofs))
                     return (FKS_FNAME_CHAR *)p;
               #endif
             }
@@ -940,14 +936,14 @@ FKS_LIB_DECL int   fks_fnameNCmp(const FKS_FNAME_CHAR* l, const FKS_FNAME_CHAR* 
         FKS_FNAME_GET_C(lc, l);
         FKS_FNAME_GET_C(rc, r);
 
-	 #ifdef FKS_FNAME_WINDOS
+     #ifdef FKS_FNAME_WINDOS
         if ((lc == FKS_FNAME_C('/') && rc == FKS_FNAME_C('\\')) || (lc == FKS_FNAME_C('\\') && rc == FKS_FNAME_C('/'))) {
             continue;
         }
 
-		lc = FKS_FNAME_TO_LOWER(lc);
-		rc = FKS_FNAME_TO_LOWER(rc);
-	 #endif
+        lc = FKS_FNAME_TO_LOWER(lc);
+        rc = FKS_FNAME_TO_LOWER(rc);
+     #endif
 
         n  = (int)(lc - rc);
         if (n == 0) {
@@ -994,9 +990,9 @@ FKS_LIB_DECL int   fks_fnameDigitCmp(const FKS_FNAME_CHAR* l, const FKS_FNAME_CH
             continue;
         }
 
-		lc = FKS_FNAME_TO_LOWER(lc);
-		rc = FKS_FNAME_TO_LOWER(rc);
-	  #endif
+        lc = FKS_FNAME_TO_LOWER(lc);
+        rc = FKS_FNAME_TO_LOWER(rc);
+      #endif
 
         if (lc <= 0x80 && FKS_FNAME_IS_DIGIT(lc) && rc <= 0x80 && FKS_FNAME_IS_DIGIT(rc)) {
             ptrdiff_t   lv = FKS_FNAME_STRTOL(l-1, (char**)&l, 10);
