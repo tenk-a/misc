@@ -270,10 +270,13 @@ static inline size_t    file_printf(FILE_HDL h, const TCHAR* fmt, ...) {
 }
 
 
-#ifdef _WIN32   // win-apiの wsprintf を用いた簡易な標準出力printf. 結果の文字数が1024バイト未満のこと.
+// win-apiの wsprintf を用いた簡易な標準出力printf. 結果の文字数が1024バイト未満のこと.
+#ifndef FILE_STDOUT_PRINTF
+#if defined(_WIN32)
 #define FILE_STDOUT_PRINTF(...) do { char bUf[1030]; wsprintfA(bUf, __VA_ARGS__); file_puts(bUf, FILE_HDL_STDOUT()); } while (0)
 #else
 #define FILE_STDOUT_PRINTF      printf
+#endif
 #endif
 
 // ---------------------------------------------------------------------------

@@ -38,7 +38,7 @@ if /i "%COMPILER%"=="clean"   goto J_CLEAN
 
 :J_VC
   set CC=cl
-  set O_CMN=-W4 -GR- -EHac -D_CRT_SECURE_NO_WARNINGS
+  set O_CMN=-W4 -GR- -D_CRT_SECURE_NO_WARNINGS
   set O_REL=-Ox -DNDEBUG -MT
   set O_DEB=-ZI -MTd
   set O_OUT=-Fe
@@ -46,7 +46,7 @@ if /i "%COMPILER%"=="clean"   goto J_CLEAN
   goto COMP
 
 :J_MINGW
-  set CC=g++
+  set CC=gcc
   set O_CMN=-Wall -D_WIN32
   set O_REL=-O2 -DNDEBUG
   set O_DEB=-g
@@ -56,7 +56,7 @@ if /i "%COMPILER%"=="clean"   goto J_CLEAN
 
 :J_BCC
   set CC=bcc32
-  set O_CMN=-w -w-8004 -w-8057 -w-8066 -w-8071 -w-8026 -w-8027
+  set O_CMN=-w -w-8004 -w-8057 -w-8066 -w-8071 -w-8026 -w-8027 -DFILE_STDOUT_PRINTF=printf
   set O_REL=-O2 -DNDEBUG -Ox
   set O_DEB=-v
   set O_OUT=-e
