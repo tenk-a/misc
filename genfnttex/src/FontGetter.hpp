@@ -10,7 +10,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <string>
 #include <vector>
 
 struct Font {
@@ -28,10 +27,8 @@ typedef std::vector<Font>   FontVec;
 
 class FontGetter {
 public:
-    FontGetter(char const* ttfname, unsigned fontW, unsigned cellW, unsigned mul)
-        : ttfname_(ttfname), fontW_(fontW), cellW_(cellW), mul_(mul)
-    {
-    }
+    FontGetter(char const* ttfname, unsigned fontW, unsigned cellW, unsigned mul, unsigned bpp);
+    ~FontGetter();
 
     bool get(FontVec& fonts);
 
@@ -42,10 +39,12 @@ private:
     bool adjustFontSize(Font& rFont);
 
 private:
-    std::string             ttfname_;
+    char*                   ttfname_;
     unsigned                fontW_;
     unsigned                cellW_;
     unsigned                mul_;
+    unsigned                bpp_;
+    unsigned                tone_;
     std::vector<uint8_t>    wkBuf_;
 };
 

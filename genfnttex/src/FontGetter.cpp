@@ -5,9 +5,23 @@
  *  @date   2017-09
  */
 #include "FontGetter.hpp"
-#include <windows.h>
-#include <map>
 #include <stdio.h>
+#include <string.h>
+#include <map>
+#include <windows.h>
+#include <assert.h>
+
+
+
+FontGetter::FontGetter(char const* ttfname, unsigned fontW, unsigned cellW, unsigned mul, unsigned bpp)
+    : ttfname_(strdup(ttfname ? ttfname : "")), fontW_(fontW), cellW_(cellW), mul_(mul), bpp_(bpp), tone_(1 << bpp)
+{
+    assert(1 <= bpp && bpp <= 8);
+}
+
+FontGetter::~FontGetter() {
+    free(ttfname_);
+}
 
 
 /** get fonts
@@ -29,8 +43,8 @@ bool FontGetter::get(FontVec& rFonts) {
     logfont.lfQuality           = ANTIALIASED_QUALITY;      // 出力品質
     logfont.lfPitchAndFamily    = DEFAULT_PITCH;            // ピッチとファミリ
     wchar_t wbuf[0x4000] = {0};
-    //mbstowcs(wbuf, ttfname_.c_str(), ttfname_.size());
-    ::MultiByteToWideChar(CP_OEMCP,0,ttfname_.c_str(), int(ttfname_.size())+1, wbuf, 0x4000);
+    //mbstowcs(wbuf, ttfname_, strlen(ttfname_));
+    ::MultiByteToWideChar(CP_OEMCP,0,ttfname_, int(strlen(ttfname_))+1, wbuf, 0x4000);
     wcsncpy( logfont.lfFaceName, wbuf, 31 );         // フォント名
     logfont.lfFaceName[31] = 0;
 
@@ -120,7 +134,7 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
         for ( unsigned j = 0 ; j < unsigned(dh) && j < cellW_ && j < fontW_; ++j ) {
             for ( unsigned i = 0 ; i < unsigned(dw) && i < cellW_ && i < fontW_; ++i ) {
                 unsigned alp  = wkBuf_[j * pitch + i];
-                alp   = (alp * 15 ) / 64;
+                alp   = (alp * (tone_-1) ) / 64;
                 font.data[((j+offset_y) * cellW_) + (i + offset_x)]   = alp;
             }
         }
@@ -134,7 +148,7 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
                         total  += alp;
                     }
                 }
-                font.data[(j + offset_y) * cellW_ +  (i + offset_x)]  = (total * 15) / (mul_ * mul_ * 64);
+                font.data[(j + offset_y) * cellW_ +  (i + offset_x)]  = (total * (tone_-1)) / (mul_ * mul_ * 64);
             }
         }
     }
@@ -179,23 +193,38 @@ bool FontGetter::adjustFontSize(Font& rFont) {
 }
 
 
+#if 1
+struct Str {
+    enum { SIZE = 260 };
+    Str() { memset(str_, 0, SIZE); }
+    Str(char const* str) { strncpy(str_,str,SIZE); str_[SIZE-1] = 0; }
+    Str(Str const& r) { memcpy(str_, r.str_, SIZE); }
+    bool operator<(Str const& r) const { return strcmp(str_, r.str_) < 0; }
+    char const* c_str() const { return str_; }
+private:
+    char    str_[SIZE];
+};
+typedef std::map<Str, unsigned> FontNames;
+#else
+#include <string>
 typedef std::map<std::string, unsigned> FontNames;
+#endif
 
-static int count = 0;
+
 
 static int CALLBACK enumFontFamExProc(
-  ENUMLOGFONTEXW *lpelfe,   // 論理的なフォントデータ
-  NEWTEXTMETRICEXW *lpntme, // 物理的なフォントデータ
-  unsigned/*DWORD*/ FontType,           // フォントの種類
-  LPARAM lParam             // アプリケーション定義のデータ
+  ENUMLOGFONTEXW*   lpelfe,     // 論理的なフォントデータ
+  NEWTEXTMETRICEXW* lpntme,     // 物理的なフォントデータ
+  unsigned/*DWORD*/ FontType,   // フォントの種類
+  LPARAM            lParam      // アプリケーション定義のデータ
 ){
-    ++count;
     char buf[0x1000];
     WideCharToMultiByte(0,0,lpelfe->elfLogFont.lfFaceName, 32, buf, 0x1000, 0, 0);
     FontNames* pFontNames = (FontNames*)lParam;
     (*pFontNames)[buf] = 1;
     return 1;
 }
+
 
 /** print font list
  */
