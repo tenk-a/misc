@@ -1,8 +1,8 @@
 txt2cstr
 
- SJISƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚ðA\‚â"'ƒ^ƒu‚âƒRƒ“ƒgƒ[ƒ‹•¶Žš“™‚ðl—¶‚µ‚ÄA
-c/c++ƒ\[ƒX—p‚Ì"•¶Žš—ñ"‚É•ÏŠ·‚·‚éƒRƒ}ƒ“ƒhƒ‰ƒCƒ“Eƒc[ƒ‹B
+ SJISãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã€\ã‚„"'ã‚¿ãƒ–ã‚„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«æ–‡å­—ç­‰ã‚’è€ƒæ…®ã—ã¦ã€
+c/c++ã‚½ãƒ¼ã‚¹ç”¨ã®"æ–‡å­—åˆ—"ã«å¤‰æ›ã™ã‚‹ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ãƒ»ãƒ„ãƒ¼ãƒ«ã€‚
 
-“ñð€BSDƒ‰ƒCƒZƒ“ƒX
+äºŒæ¡é …BSDãƒ©ã‚¤ã‚»ãƒ³ã‚¹
 
-txt2cstr.txt ‚ðŽQÆ‚Ì‚±‚ÆB
+txt2cstr.txt ã‚’å‚ç…§ã®ã“ã¨ã€‚

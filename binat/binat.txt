@@ -1,64 +1,64 @@
 binat  v1.16b
 
 
-��  �͂��߂�
+■  はじめに
 
-  (�o�C�i��)�t�@�C���̒��g���_���v������ C��A�Z���u���̃\�[�X�ɕϊ�����
-�R�}���h���C���c�[���B
-  ���o�C�g���� 16�o�C�g�Œ�łȂ��w��\�A�P�f�[�^�� 1,2or4�o�C�g�P�ʂ�
-�����ꂩ�ŃG���f�B�A���w��\�B
+  (バイナリ)ファイルの中身をダンプしたり Cやアセンブラのソースに変換する
+コマンドラインツール。
+  横バイト数は 16バイト固定でなく指定可能、１データは 1,2or4バイト単位の
+いずれかでエンディアン指定可能。
 
 
 
-��  ��������
+■  つかいかた
 
   usage: binat [-opts] [file(s)] ...
-   -?   �w���v                         -d    10�i�ŕ\��
-   -mw  BYTE�łȂ����g���[��WORD�ŏ��� -iw   BYTE�łȂ��C���e��WORD�ŏ���
-   -md  BYTE�łȂ����g���[��LONG�ŏ��� -id   BYTE�łȂ��C���e��DWORD�ŏ���
-   -am  68k�̃A�Z���u���̕\�L(dc.b)    -ai   80x86�̃A�Z���u���̕\�L(DB)
-   -n   ����dump                       -k    (-n�̂Ƃ�)�A�h���X��t��
-   -c   C�ł̕\�L    -g TRON��data     -b    BASIC��DATA��
-   -rN  ���͊J�n�ʒu(10�i)             -rxN  ���͊J�n�ʒu(16�i)
-   -sN  ���͂���ő�o�C�g��(10�i)     -sxN  ���͂���ő�o�C�g��(16�i)
-   -lN  1�s�̃o�C�g��(1-8192)          -tN   �s���̋�($20)�̐�
-   -yN  N�s�����ɋ�s��}��            -z    �W������(�w��t�@�C������)
-   -qN  �A�X�L�[�\���t(1=�S�p 2=7bit 3=�f)
-   -eSTR DB,dc.b,DATA���̑���ɍs���ɒu����������w��
+   -?   ヘルプ                         -d    10進で表示
+   -mw  BYTEでなくモトローラWORDで処理 -iw   BYTEでなくインテルWORDで処理
+   -md  BYTEでなくモトローラLONGで処理 -id   BYTEでなくインテルDWORDで処理
+   -am  68kのアセンブラの表記(dc.b)    -ai   80x86のアセンブラの表記(DB)
+   -n   安易dump                       -k    (-nのとき)アドレスを付加
+   -c   Cでの表記    -g TRON風data     -b    BASICのDATA文
+   -rN  入力開始位置(10進)             -rxN  入力開始位置(16進)
+   -sN  入力する最大バイト数(10進)     -sxN  入力する最大バイト数(16進)
+   -lN  1行のバイト数(1-8192)          -tN   行頭の空白($20)の数
+   -yN  N行おきに空行を挿入            -z    標準入力(指定ファイル無視)
+   -qN  アスキー表示付(1=全角 2=7bit 3=素)
+   -eSTR DB,dc.b,DATA等の代わりに行頭に置く文字列を指定
 
-  -r(x),-s(x)�ł̒l�͈̔͂�31bits������.
-  �t�@�C���͕����w��\.
-  �I�v�V�����͕����w��\�œ�����ނ̎w��͌��̂��̂��L��.
-  �I�v�V�����̃f�t�H���g�́A-l16 -t8 -r0 -sx7fffffff
-  �܂��A�I�v�V�������w��Ȃ�� -n -k -q �� dump �\���ɂȂ�.
-
-
-
-��  �ăR���p�C���ɂ���
-
-    �\�[�X�� ANSI �X�^�C���łȂ��Â��X�^�C���ŏ����Ă���܂��B
-
-    binat.exe ���̂� Win32 �R���\�[���p�ł��B
-    16�r�b�g��MS-DOS���p�� binat16.exe ��(rename����Ȃ肵��)�g���Ă�
-  �������B
-
-    win/DOS�Ȃ�΂����Ă��̂b�R���p�C���ŃR���p�C���ł���Ǝv���܂����A
-  �ꉞ LSI-C(���H��) ���g���̂��x�X�g�ł��B  -z �ł̕W�����͂́ALSI-C��
-  �O�ŃR���p�C������ƁA�����炭�e�L�X�g�E���[�h�ň����p�C�v(���_�C��
-  �N�g)�Ƃ�����Ɖ��s�R�[�h�ϊ��Ƃ�����ĕs�K�ł�
-  �i�����Ƃ� MS-DOS�Ńo�C�i���E�t�@�C�����p�C�v����l�Ȃ�Ă߂����ɂȂ�
-    ���낤���ǁj
-
-  v1.11�̒i�K�ł� xc(x68k)�ōăR���p�C���ł��Ă܂����B
-  v1.01�̒i�K�ł� mwc(os9/09(fm11)) + �N���C�_�['s CLIB(�Ђ���Ƃ�����
-  clib63�ˑ�) �ŃR���p�C���ł��Ă��悤�ł��B
-  ���݂͕s���ł��B
+  -r(x),-s(x)での値の範囲は31bits正整数.
+  ファイルは複数指定可能.
+  オプションは複数指定可能で同じ種類の指定は後ろのものが有効.
+  オプションのデフォルトは、-l16 -t8 -r0 -sx7fffffff
+  また、オプション無指定ならば -n -k -q で dump 表示になる.
 
 
 
-��  ���̑�
+■  再コンパイルについて
 
-  2����BSD���C�Z���X�B
+    ソースは ANSI スタイルでなく古いスタイルで書いてあります。
+
+    binat.exe 自体は Win32 コンソール用です。
+    16ビットなMS-DOS環境用は binat16.exe を(renameするなりして)使ってく
+  ださい。
+
+    win/DOSならばたいていのＣコンパイラでコンパイルできると思いますが、
+  一応 LSI-C(試食版) を使うのがベストです。  -z での標準入力は、LSI-C以
+  外でコンパイルすると、おそらくテキスト・モードで扱われパイプ(リダイレ
+  クト)とかすると改行コード変換とかされて不幸です
+  （もっとも MS-DOSでバイナリ・ファイルをパイプする人なんてめったにない
+    だろうけど）
+
+  v1.11の段階では xc(x68k)で再コンパイルできてました。
+  v1.01の段階では mwc(os9/09(fm11)) + クレイダー's CLIB(ひょっとしたら
+  clib63依存) でコンパイルできてたようです。
+  現在は不明です。
+
+
+
+■  その他
+
+  2条項BSDライセンス。
 
                                         Masashi KITAMURA (tenka@6809.net)
                          https://github.com/tenk-a/misc/tree/master/binat

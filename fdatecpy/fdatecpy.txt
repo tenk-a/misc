@@ -1,53 +1,53 @@
 FDateCpy v1.11                            for Win
 
 
-����t�@�C���̓��t���A�ʂ̃t�@�C���̓��t�ɂ��܂�.
+あるファイルの日付を、別のファイルの日付にします.
 
 
 
-����������
+■つかいかた
 
 1> fdatecpy InFile OutFile
 
-	OutFile �̓��t�� InFile �Ɠ����ɂ��܂��B
+	OutFile の日付を InFile と同じにします。
 
 2> fdatecpy -uOutFile InFile(s)...
 
-	�����̓��̓t�@�C���̂����A��ԐV�������t��
-	OutFile �̓��t�ɂ��܂��B
+	複数の入力ファイルのうち、一番新しい日付を
+	OutFile の日付にします。
 
-	���̓t�@�C���Ƃ��� @file ���w�肷��΃��X
-	�|���X�E�t�@�C���Ƃ��� file ���t�@�C����
-	�ꗗ��I�v�V������ǂ݂��݂܂��B
+	入力ファイルとして @file を指定すればレス
+	ポンス・ファイルとして file よりファイル名
+	一覧やオプションを読みこみます。
 
 
 
-��
-�@���������Ǖ����l�Ńv���O�����̍�Ƃ��Ă�Ƃ��A
-�@�X�V�\�[�X�n����邽��тɌ��ǑS.obj��������
-�@���R���p�C������󋵂��T�������̂ŁA��������B
+■
+　少数だけど複数人でプログラムの作業してるとき、
+　更新ソース渡されるたんびに結局全.objを消して
+　リコンパイルする状況が鬱陶しいので、やっつけた。
 
-�@makefile��
+　makefileで
 
 	.c.obj:
 		$(CC) -o$@ $<
 		fdatecpy -u$@ $**
 
-�@�̂悤�ɂ��Ďg�p�B
+　のようにして使用。
 
-�@�ق�Ƃ͉��^���̋�����Ǝx���c�[���̗ނ��g���̂�
-�@�����񂾂낤���ǁB�ʎ����̖����Ă��ƂŁB
-
-
-�� 2006
-borland-c�ˑ��̊֐����g�킸�A��r�I��ʓI��
-�֐����g���悤�ɏC��.
+　ほんとは何某かの共同作業支援ツールの類を使うのが
+　いいんだろうけど。別次元の問題ってことで。
 
 
-��
+■ 2006
+borland-c依存の関数を使わず、比較的一般的な
+関数を使うように修正.
 
-�����BSD���C�Z���X
+
+■
+
+二条項BSDライセンス
 
 
 
-�@                Masashi KITAMURA (tenka@6809.net)
+　                Masashi KITAMURA (tenka@6809.net)

@@ -1,25 +1,25 @@
 txt2cstr
 
- SJIS�e�L�X�g�t�@�C�����A\��"'�^�u��R���g���[�����������l�����āA
-c/c++�\�[�X�p��"������"�ɕϊ�����R�}���h���C���E�c�[���B
+ SJISテキストファイルを、\や"'タブやコントロール文字等を考慮して、
+c/c++ソース用の"文字列"に変換するコマンドライン・ツール。
 
 
-���g����
+■使い方
 usage>txt2cstr [-opts] file(s)
-  -o[FILE]  �o�̓t�@�C����
-  -s        ���̓t�@�C�����Ȃ���ΕW�����͂ɁA�o�͎w�肪������ΕW���o�͂ɂ���
-  -c        �s���̍Ō�� , ��u��
-  -fSTR     �o�͕������printf�`���Ŏw��B%s�����͍s�ɒu�������B
-            �Ⴆ�� -fputs(%s); �̂悤�Ɏw��
+  -o[FILE]  出力ファイル名
+  -s        入力ファイルがなければ標準入力に、出力指定が無ければ標準出力にする
+  -c        行毎の最後に , を置く
+  -fSTR     出力文字列をprintf形式で指定。%sが入力行に置き換わる。
+            例えば -fputs(%s); のように指定
 
 
-�����̑�
+■その他
 
-c2htm�쐬�ŁA�}篂ł����グ���㕨�ł�...�O�ɂ������悤�Ȃ�������
-�͂��������������̂ŁB
+c2htm作成で、急遽でっち上げた代物です...前にも似たようなもん作った
+はずだが見当たらんので。
 
 
-�����BSD���C�Z���X
+二条項BSDライセンス
 
 
                                              Masashi KITAMURA (tenka@6809.net)

@@ -1,121 +1,121 @@
-knjt v2.00 ---- JIS �S�p�����ꗗ�̏o��
+knjt v2.00 ---- JIS 全角文字一覧の出力
 
 
-�� ����
+■ 動作
 
-JIS�R�[�h��
-        0x2121�`0x7e7e
-�̕������A�V�t�gJIS(MS�S�p) �܂��� ���{��EUC,UTF8 ��
-�e�L�X�g�o�͂���c�[���ł��B
+JISコードで
+        0x2121～0x7e7e
+の文字を、シフトJIS(MS全角) または 日本語EUC,UTF8 で
+テキスト出力するツールです。
 
-  �o�͂̎d���Ƃ��āA
-    �E��s  1�����`94�����i���ʂ� 16����)
-    �E�s���� JIS�R�[�h�� �V�t�gJIS/EUC/Unicode(UCS2/UTF8) �R�[�h
-      �̒l��t���\.
-    �EJIS�̊e�o�C�g��0x21�`0x7e�Ȃ�΂��ׂďo�͂����A
-      �p���J�i�L��,1��,2���݂̂̎w���, ��͈̔͂𕡐��w��\�B
-�Ȃǂ��ł��܂��B�܂��A�������]���ȉ��s���Ȃ��ł�������
-�R�[�h������(�o�C�i��)�o�͂��邱�Ƃ��ł��܂��B
+  出力の仕方として、
+    ・一行  1文字～94文字（普通は 16文字)
+    ・行頭に JISコードや シフトJIS/EUC/Unicode(UCS2/UTF8) コード
+      の値を付加可能.
+    ・JISの各バイトが0x21～0x7eならばすべて出力だが、
+      英数カナ記号,1水,2水のみの指定や, 区の範囲を複数指定可能。
+などができます。また、いっそ余分な改行もなしでただ文字
+コードだけを(バイナリ)出力することもできます。
 
 
 
-�� �g����1
+■ 使い方1
 
 usage>knjt [-opts]
-usage>knjt [-opts] �V�t�gJIS������
+usage>knjt [-opts] シフトJIS文字列
 
-  �V�t�gJIS�����񂪂Ȃ���΁A�e�[�u���\���B
-  �����񂪂���΁A�e�����̕����R�[�h��\���B
+  シフトJIS文字列がなければ、テーブル表示。
+  文字列があれば、各文字の文字コードを表示。
 
-  -opts:  �i�f�t�H���g�� -l16 -c1 -t0�j
+  -opts:  （デフォルトは -l16 -c1 -t0）
     -w[seo]
-           �o�̓e�L�X�g�� s:SJIS e:EUC o:UTF8 �Ƃ��ďo��
-           �f�t�H���g��SJIS
+           出力テキストを s:SJIS e:EUC o:UTF8 として出力
+           デフォルトはSJIS
 
-    -t[kjseuo] �܂��� -t[N]
-           �e�s�̐擪�ɕ����R�[�h��t��.
-           k:��_ j:JIS s:SJIS e:EUC u:UCS2 o:UTF8 ��t��.
-           �g���킹�Ďw��.
-           [N]���l�w��̏ꍇ�́A
-           1:JIS 2:SJIS 4:EUC 8:UCS2 16:UTF8  32:��_
-           �����Z���đg�ݍ��킹�Ďw���.
-           ������ -t0 �Ȃ�t�����Ȃ�.
+    -t[kjseuo] または -t[N]
+           各行の先頭に文字コードを付加.
+           k:句点 j:JIS s:SJIS e:EUC u:UCS2 o:UTF8 を付加.
+           組合わせて指定.
+           [N]数値指定の場合は、
+           1:JIS 2:SJIS 4:EUC 8:UCS2 16:UTF8  32:句点
+           足し算して組み合わせて指定可.
+           ただし -t0 なら付加しない.
 
-    -lN    1�s�ɕ\�����镶����. 1�`94(�f�t�H���g 16)
-           ������ -c0 ���w�肳�ꂽ���ƂɂȂ�.
+    -lN    1行に表示する文字数. 1～94(デフォルト 16)
+           同時に -c0 が指定されたことになる.
 
-    -k     ��̕��ނ̕\��(�w���v)
-    -kN:M  �\�������͈̔͂��w��. 1�`94. �����w��\
-    -0     �L����p���J�i��.    -k1:8  �ɓ���
-    -1     ������ꐅ���̎w��. -k16:47 �ɓ���
-    -2     ������j�����̎w��. -k48:84 �ɓ���
+    -k     区の分類の表示(ヘルプ)
+    -kN:M  表示する区の範囲を指定. 1～94. 複数指定可能
+    -0     記号や英数カナ等.    -k1:8  に同じ
+    -1     漢字第一水準の指定. -k16:47 に同じ
+    -2     漢字第ニ水準の指定. -k48:84 に同じ
 
-    -cN    JIS�R�[�h���Z��??20,??7f��
-           0:�o�͂��Ȃ�
-           1:���p�󔒂Q��'  '(�f�t�H���g)
-           2:�S�p�󔒈��'�@'
-           ���p�L��:�������
-           �S�p����:��������
+    -cN    JISコード換算で??20,??7fを
+           0:出力しない
+           1:半角空白２つ'  '(デフォルト)
+           2:全角空白一つ'　'
+           半角記号:それを二つ
+           全角文字:それを一つ
 
-    -m     �ڐ����t��
-    -p     �悲�Ƃɋ�s(+�ڐ���)��}��
+    -m     目盛りを付加
+    -p     区ごとに空行(+目盛り)を挿入
 
-    -b     �e�L�X�g�łȂ��A�����R�[�h�݂̂̃o�C�i���o��
+    -b     テキストでなく、文字コードのみのバイナリ出力
 
-�� ??20, ??7F �̃V�t�gJIS�\���̒l�̓E�\�ɂȂ�܂�(���̕����̒l�ł�)
+※ ??20, ??7F のシフトJIS表示の値はウソになります(次の文字の値です)
 
-�� -k �̕\��
-  JIS����(JIS X 208)�̋�̕���
+※ -k の表示
+  JIS漢字(JIS X 208)の区の分類
 
-   1�` 2��  2121�`227e  8140�`81fc   �e��L��
-   3    ��  2321�`237e  8240�`829e   �Z�p�����A(���e��)�A���t�@�x�b�g
-   4    ��  2421�`247e  829f�`82fc   �Ђ炪��
-   5    ��  2521�`257e  8340�`839e   �J�^�J�i
-   6    ��  2621�`267e  839f�`83fc   �M���V�A����
-   7    ��  2721�`277e  8440�`849e   �L��������
-   8    ��  2821�`287e  849f�`84fc   �r���f��
-   9�`15��  2921�`2f7e  8540�`889e   JIS X 208 �Ŗ���`
-  16�`47��  3021�`4f7e  889f�`989e   ��ꐅ������
-  48�`84��  5021�`747e  989f�`eafc   ��񐅏�����
-  85�`94��  7521�`7e7e  eb40�`effc   JIS X 208 �Ŗ���`
+   1～ 2区  2121～227e  8140～81fc   各種記号
+   3    区  2321～237e  8240～829e   算用数字、(ラテン)アルファベット
+   4    区  2421～247e  829f～82fc   ひらがな
+   5    区  2521～257e  8340～839e   カタカナ
+   6    区  2621～267e  839f～83fc   ギリシア文字
+   7    区  2721～277e  8440～849e   キリル文字
+   8    区  2821～287e  849f～84fc   罫線素片
+   9～15区  2921～2f7e  8540～889e   JIS X 208 で未定義
+  16～47区  3021～4f7e  889f～989e   第一水準漢字
+  48～84区  5021～747e  989f～eafc   第二水準漢字
+  85～94区  7521～7e7e  eb40～effc   JIS X 208 で未定義
 
-  �I���͊e���0x7E(94)�����̏ꍇ�����邪�A�ꗥ ??7E�ɂ��Ă���
+  終わりは各区で0x7E(94)未満の場合もあるが、一律 ??7Eにしている
 
-  JIS X 208 �ł̖���`�G���A�ɂ͋@��ˑ�������
-  ���̌�̋K�i�Ŋg�����ꂽ�����������Ă���ꍇ������B
+  JIS X 208 での未定義エリアには機種依存文字や
+  その後の規格で拡張された文字が入っている場合がある。
 
 
 
-���g������
+■使い方例
 
-�Eknjt -tjs >kt.txt
-  JIS/�V�t�gJIS �R�[�h�t���̃e�[�u��
+・knjt -tjs >kt.txt
+  JIS/シフトJIS コード付きのテーブル
 
-�Eknjt -tj -0 -1 -2 >kt.txt
-  JIS�R�[�h�t���� ��G�c�� JIS X 208 �̕����݂̂̃e�[�u��
+・knjt -tj -0 -1 -2 >kt.txt
+  JISコード付きの 大雑把に JIS X 208 の文字のみのテーブル
 
-�Eknjt -l1 -0 -1 >kt.txt
-  �P�s�ꕶ���ŁA��G�c�ɂ�����񊿎��Ƒ�ꐅ�������݂̂̃e�[�u��
+・knjt -l1 -0 -1 >kt.txt
+  １行一文字で、大雑把にいわゆる非漢字と第一水準漢字のみのテーブル
 
-�Eknjt -l1 -tkjseuo >kt.txt
+・knjt -l1 -tkjseuo >kt.txt
   (knjt -l1 -t63 >kt.txt)
-  �P�s�ꕶ���ŁA�e�핶���R�[�h(��_,JIS,SJIS,EUC,UCS2,UTF8)�������e�[�u��
+  １行一文字で、各種文字コード(句点,JIS,SJIS,EUC,UCS2,UTF8)をつけたテーブル
 
-�Eknjt -m -l94 >kt.txt
-  ����P�s�ɂ����e�[�u���B�㍶�ɖڐ���t���B
+・knjt -m -l94 >kt.txt
+  区を１行にしたテーブル。上左に目盛り付き。
 
-�Eknjt -m -tk -l94 >kt.txt
-  ����P�s�ɂ����e�[�u���B�㍶�ɋ�_�R�[�h�ł̖ڐ���t���B
+・knjt -m -tk -l94 >kt.txt
+  区を１行にしたテーブル。上左に句点コードでの目盛り付き。
 
 
 
-�����̂�
+■そのた
 
-  �\�[�X�� ANSI-C �Ȃ̂œK���ɃR���p�C���ł���Ǝv���B
+  ソースは ANSI-C なので適当にコンパイルできると思う。
 
-  PDS �ł��B�����Ăɂǂ����B
-  ���R�A���ۏ؁A���ӔC�䂦�A���ȐӔC�ŁB
-  �o�O���Ȃ����ƋF�邪�A���񂺂�g�����܂�ĂȂ��̂Łc�c
+  PDS です。かってにどうぞ。
+  当然、無保証、無責任ゆえ、自己責任で。
+  バグがないこと祈るが、ぜんぜん使いこまれてないので……
 
 
 
