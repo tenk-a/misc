@@ -493,4 +493,3 @@
 
 
                                         Masashi KITAMURA (tenka@6809.net)
-                          https://github.com/tenk-a/misc/tree/master/acpp
