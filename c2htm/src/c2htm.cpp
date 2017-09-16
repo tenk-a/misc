@@ -281,7 +281,7 @@ const char *Conv::c_tag_[] = {
 
 /** デフォルトのコンフィグデータ */
 const char Conv::dfltCfgData_[] = {
-    #include "c2htm.cfg.cc"
+    #include "c2htm.cfg.hh"
 };
 
 
