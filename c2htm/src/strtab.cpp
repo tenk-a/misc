@@ -2,7 +2,7 @@
  *  @file   strtab.cpp
  *  @brief  •¶š—ñ’†‚Ì‹ó”’ƒ^ƒu•ÏŠ·‚ğs‚¤
  *
- *  @author –k‘º‰ëj<NBB00541@nifty.com>
+ *  @author Masahi KITAMURA (tenka@6809.net)
  *  @date   2001`2004-01
  */
 

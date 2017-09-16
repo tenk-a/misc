@@ -46,7 +46,7 @@ ERR	=>>$(ERRFILE)
 
 else
 ifeq ($(COMPILER), wcl)		# Watcom-C/C++
-# watcom は stl 関係が中途半端な状態なためコンパイル不可能
+# watcom は stl 関係が中途半端な状態なためコンパイル不能
 CFLAGS	=	-w3 -ox -xs -xr $(ADD_CFLAGS)
 C_OPT_O =	-fo
 CC	=	wcl386 -c
@@ -56,18 +56,18 @@ ERR	=>>$(ERRFILE)
 
 else
 ifeq ($(COMPILER), occ)		# orange c++
-# C++未対応なのでコンパイル不能
+# うまくいかず
 CFLAGS	=	$(ADD_CFLAGS)
 C_OPT_O =	/o
-CC	=	occpr /c 
-LINK	=	occpr
+CC	=	occ /c 
+LINK	=	occ
 LINK_OPT_O =	/o
 ERR	=>>$(ERRFILE)
 
 else				# Visual-C/C++
 #CFLAGS	=	-Yd -GX -Zi $(ADD_CFLAGS)
 #CFLAGS	=	-GX -Ox -Ot -W3 $(ADD_CFLAGS)
-CFLAGS	=	-EHsc -Ox -Ot -W3 -wd4996 $(ADD_CFLAGS)
+CFLAGS	=	-EHsc -Ox -Os -W3 -wd4996 $(ADD_CFLAGS)
 C_OPT_O =	-Fo
 CC	=	cl -c -TP
 LINK	=	cl
