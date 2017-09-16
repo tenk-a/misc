@@ -30,7 +30,7 @@
 /*
 #define JSPC2SPC (0x0040)
 */
-char *jstrcnv(char *,char *,unsigned);
-char *jstruplow(char *,unsigned);
+char *jstrcnv(char *, char const* ,unsigned);
+char *jstruplow(char *, unsigned);
 
 #endif

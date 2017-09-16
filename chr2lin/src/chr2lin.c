@@ -1,5 +1,5 @@
 /*
-    テキストファイルを読みこみ、MS全角 n個を１行として出力
+    テキストファイルを読みこみ、文字 n個を１行として出力
 
     0.50 で -aN を追加したバージョンと
     0.80 で -s  を追加したバージョンの
@@ -20,11 +20,11 @@ typedef unsigned char_t;
 void Usage(void)
 {
     printf(
-        "usage> chr2lin [-opts] textfile(s)  //v0.90  " __DATE__ "  " __TIME__ "  by tenk\n"
-        "テキストファイルを読みこみ、出現順にMS全角 1個を１行として出力\n"
-        "半角、および一度出現した文字は無視する\n"
+        "usage> chr2lin [-opts] textfile(s)  //v1.00  " __DATE__ "  " __TIME__ "\n"
+        "テキストファイルを読みこみ、出現順に１文字１行として出力\n"
+        "一度出現した文字は無視\n"
         " -oNAME 出力ファイル名指定\n"
-        " -nN    1個で１行なく N個で一行にして出力\n"
+        " -nN    1文字で１行なく N文字で一行にして出力\n"
         " -eN    N 行ごとに改行を入れる\n"
         " -yN    N 行ごとにファイルを分ける\n"
         "        出力ファイル名は, outfile.000 outfile.001 のような\n"
@@ -34,6 +34,7 @@ void Usage(void)
         " -cC    テキスト中の文字 C 以降改行までを無視する.\n"
         "        -c のみだと // コメントを無視する.\n"
         " -aN    出力の N行を空白にする\n"
+        " -b     半角を無視\n"
         " -l[S]  入出力の文字コード S:utf8,mbc,sjis,eucjp\n"
     );
     exit(1);
@@ -46,6 +47,7 @@ long    opt_len     = 0;
 int     opt_mltDivFlg = 0;
 int     opt_cmtChr  = 0;
 int     opt_sort    = 0;
+int     opt_noAscii = 0;
 char    *opt_oname  = NULL;
 int     addLinNum   = 0;
 static int    utf8_flag = 0;
@@ -75,7 +77,7 @@ int Opts(char *a)
         }
         break;
     case 'S':
-        opt_sort = (*p == '-') ? 0 : 1;
+        opt_sort = (*p != '-');
         break;
     case 'Y':
         opt_mltDivFlg = 1;
@@ -96,8 +98,11 @@ int Opts(char *a)
     case 'A':
         addLinNum = strtol(p,&p,0);
         break;
+    case 'B':
+        opt_noAscii = (*p != '-');
+        break;
     case 'Z':
-        debugflag = (*p == '-') ? 0 : 1;
+        debugflag = (*p != '-');
         break;
     case 'L':
         if (STRCASECMP(p, "utf8")==0 || STRCASECMP(p, "utf-8") == 0) {
@@ -165,6 +170,9 @@ void GetFile(SLIST *sl_first)
                 c = mbs_getc(&s);
                 if (c == 0)
                     break;
+                if (opt_noAscii && c < 0x80) {
+                    continue;
+                }
                 if (opt_cmtChr) {
                     if (c == opt_cmtChr)
                         break;
@@ -258,10 +266,6 @@ void MltFile(char *inputname, char *oname, int w, int h, int md)
         fprintf(fp,"\n");
     fclose(fp);
 }
-
-
-
-
 
 
 
@@ -389,4 +393,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

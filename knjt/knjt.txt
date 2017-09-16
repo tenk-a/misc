@@ -1,5 +1,4 @@
-knjt v2.00 ---- 全角文字一覧の出力
-                                      by tenk*   2000/10,2004/01
+knjt v2.00 ---- JIS 全角文字一覧の出力
 
 
 ■ 動作
@@ -113,7 +112,6 @@ usage>knjt [-opts] シフトJIS文字列
 ■そのた
 
   ソースは ANSI-C なので適当にコンパイルできると思う。
-同梱のEXE は bcc32 でコンパイルしてます。
 
   PDS です。かってにどうぞ。
   当然、無保証、無責任ゆえ、自己責任で。
@@ -121,6 +119,4 @@ usage>knjt [-opts] シフトJIS文字列
 
 
 
-tenk*
-NBB00541@nifty.ne.jp
-http://homepage2.nifty.com/tenk/
+                                          Masashi KITAMURA (tenka@6809.net)

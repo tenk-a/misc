@@ -1,10 +1,21 @@
+genfnttex
+
+UTF8テキストを読み込み、そこで使われている文字を文字コード
+でソートし、指定フォントの指定サイズでテクスチャ画像に
+敷き詰めtga画像ファイルで出力する
+
+
 usage>genfnttex [-opts] file(s)
-       https://github.com/tenk-a/misc/tree/master/genfnttex
- -ttf=[TTFNAME]  ttf font name
- -o=[OUTPUT]     output base name (no ext.)
- -ts[W:H]        texture size W*H (2^N)
- -cs[N]          put font size (pixel)
- -fs[N]          get font size (pixel)
- -mul[N]         get-font-size*N(/N)
- -addascii       generate 0x21..0x7E
- -fontlist       output font name list
+ -ttf=[TTFNAME]  ttf フォント名
+ -o=[OUTPUT]     出力ファイルの基本となる名前
+ -ts[W:H]        テクスチャサイズ W*H (2^N)
+ -cs[N]          テクスチャに敷き詰める文字の間隔/サイズ (pixel)
+ -fs[N]          Win-apiで取得する文字フォントのサイズ
+ -mul[N]         縦横N倍サイズの文字フォントで取得し1/N する.
+ -addascii       0x21..0x7E までのascii文字を入力した扱いにする
+ -fontlist       現在使えるフォントの一覧表示
+
+
+二条項BSDライセンス
+
+                               Masashi KITAMURA (tenka@6809.net)

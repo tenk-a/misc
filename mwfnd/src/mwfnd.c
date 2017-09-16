@@ -27,7 +27,7 @@ void usage(void)
          "  -q        参照の無い単語は出力しない\n"
          "  -n        参照は出力せず見つかった単語のみ出力\n"
          "  -lN       参照がN以下の数のときのみ出力\n"
-         "  -m        見つかった行の内容を保持(たくさんのメモリ必要)\n"
+         "  -m[-]     見つかった行の内容を保持(デフォルト)  -m- しない\n"
          "  -i        名前の大文字小文字を無視\n"
          "  -aCHARS   英数 _ 以外の文字を名前に使えるようにする\n"
          "  -xN       出力モード\n"
@@ -39,7 +39,6 @@ void usage(void)
 
 
 /*------------------------------------------------------------------------*/
-#define MLINE
 typedef unsigned char UCHAR;
 
 #ifdef UNIX                 /** utf8|euc-jpを想定. */
@@ -59,10 +58,12 @@ typedef unsigned char UCHAR;
 #define MAX_PATH        (264)
 #define LINE_SIZE       (1024)
 #define TOKENNAME_SIZE  (260)
+#define MLINE           0
 #else           // 32ビット環境の場合.
 #define MAX_PATH        (0x2000)
 #define LINE_SIZE       (0x8000)
-#define TOKENNAME_SIZE  (1024)
+#define TOKENNAME_SIZE  (0x1000)
+#define MLINE           1
 #endif
 
 
@@ -77,7 +78,7 @@ char    opt_outname[MAX_PATH];  /**< 出力ファイル名.                        */
 char*   opt_addnamechr  = "";   /**< 英数_以外の(記号)文字を名前に含める    */
 
 #ifdef MLINE
-int     opt_linmemFlg   = 0;    /**< 見つかった行の内容を保持.              */
+int     opt_linmemFlg   =MLINE; /**< 見つかった行の内容を保持.              */
 #endif
 
 

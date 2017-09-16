@@ -1,0 +1,33 @@
+chr2lin
+
+
+テキストファイルを読みこみ、出現順に１(or N)文字を１行として出力
+空白及び一度出現した文字は無視する
+
+
+■ 使い方
+
+usage> chr2lin [-opts] textfile
+
+オプション:
+ -oNAME 出力ファイル名指定
+ -nN    1文字で１行なく N文字で一行にして出力
+ -eN    N 行ごとに改行を入れる
+ -yN    N 行ごとにファイルを分ける
+        出力ファイル名は, outfile.000 outfile.001 のような
+        連番拡張子のファイルを生成
+ -ye    -yと同じだが、名前のつけ方が outfile000.mlt_ext のようになる
+ -cC    テキスト中の文字 C 以降改行までを無視する.
+        -c のみだと // コメントを無視する.
+ -aN    出力の N行を空白にする
+ -b     半角(0x7f以下)を無視
+
+
+■ ライセンス
+
+二条項BSDライセンス
+
+
+
+                                   Masashi KITAMURA (tenka@6809.net)
+                  https://github.com/tenk-a/misc/tree/master/chr2lin

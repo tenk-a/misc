@@ -489,6 +489,8 @@
 
 ■  配布条件等
 
-      2条項BSDライセンスです。
+      2条項BSDライセンス。
+
 
                                         Masashi KITAMURA (tenka@6809.net)
+                          https://github.com/tenk-a/misc/tree/master/acpp
