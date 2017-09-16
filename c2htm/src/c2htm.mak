@@ -37,7 +37,7 @@ ifeq ($(COMPILER), dmc)		# Digital Mars C/C++
 # dm-c v8.41 現在も -j0 でSJIS対応にすると マクロ関係がおかしくコンパイル不能.
 #  -j0 をとると SJIS が引っかかってコンパイル不能
 #CFLAGS	=	-w -o -Bj -j0 $(ADD_CFLAGS)
-CFLAGS	=	-w -o -Bj $(ADD_CFLAGS)
+CFLAGS	=	-w -o -Bj -Ae $(ADD_CFLAGS)
 C_OPT_O =	-o
 CC	=	dmc -c
 LINK	=	dmc
@@ -46,8 +46,7 @@ ERR	=>>$(ERRFILE)
 
 else
 ifeq ($(COMPILER), wcl)		# Watcom-C/C++
-# 標準ではstlがなく、また、現状の OpenWatcom(1.2,1.3) に stlportは未対応の
-# 模様なので、コンパイル不能
+# watcom は stl 関係が中途半端な状態なためコンパイル不可能
 CFLAGS	=	-w3 -ox -xs -xr $(ADD_CFLAGS)
 C_OPT_O =	-fo
 CC	=	wcl386 -c
@@ -56,18 +55,19 @@ LINK_OPT_O =	-fe
 ERR	=>>$(ERRFILE)
 
 else
-ifeq ($(COMPILER), lcc)		# LCC
+ifeq ($(COMPILER), occ)		# orange c++
 # C++未対応なのでコンパイル不能
 CFLAGS	=	$(ADD_CFLAGS)
-C_OPT_O =	-o 
-CC	=	lcc -O -c 
-LINK	=	lcclnk
-LINK_OPT_O =	-o 
-ERR	=2>>$(ERRFILE)
+C_OPT_O =	/o
+CC	=	occpr /c 
+LINK	=	occpr
+LINK_OPT_O =	/o
+ERR	=>>$(ERRFILE)
 
 else				# Visual-C/C++
 #CFLAGS	=	-Yd -GX -Zi $(ADD_CFLAGS)
-CFLAGS	=	-GX -Ox -Ot -W3 $(ADD_CFLAGS)
+#CFLAGS	=	-GX -Ox -Ot -W3 $(ADD_CFLAGS)
+CFLAGS	=	-EHsc -Ox -Ot -W3 -wd4996 $(ADD_CFLAGS)
 C_OPT_O =	-Fo
 CC	=	cl -c -TP
 LINK	=	cl
