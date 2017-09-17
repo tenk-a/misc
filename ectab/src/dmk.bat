@@ -1,5 +1,5 @@
 rem %WATCOM%\src\startup\wildargv.c
-dmc -o -w ectab.c strtab.c >err.txt
+dmc -w -DNDEBUG ectab.c strtab.c ExArgv.c >err.txt
 type err.txt
 del *.bak
 del *.obj

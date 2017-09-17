@@ -14,6 +14,9 @@
 #include <ctype.h>
 #include <assert.h>
 #include "cmisc.h"
+#ifndef NO_USE_EXARGV
+#include "ExArgv.h"
+#endif
 
 #undef	BOOL
 #define BOOL int
@@ -29,7 +32,8 @@
 /** 説明表示＆終了 */
 static void usage(void)
 {
-	printf("usage> ectab [-opts] file(s)    // v2.10 " __DATE__ "  writen by M.Kitamura\n"
+	printf("usage> ectab [-opts] file(s)    // v2.11 " __DATE__ "  writen by M.Kitamura\n"
+		   "            https://github.com/tenk-a/misc/tree/master/ectab\n"
 		   "  タブ変換,行末空白削除等を行う. デフォルトでは標準出力\n"
 		   "  改行として LF(\\n un*x) CR(\\r mac) CRLF(\\r\\n win/dos) を認識\n"
 		   "  -o        出力を元ファイル名にする。元々のファイルは.bakにする\n"
@@ -485,6 +489,10 @@ int main(int argc, char *argv[])
 
 	memset(o, 0, sizeof *o);
 	o->sjisSw = 1;
+
+ #ifndef NO_USE_EXARGV
+	ExArgv_conv(&argc, &argv);
+ #endif
 
 	if (argc < 2)
 		usage();
