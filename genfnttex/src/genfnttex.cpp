@@ -114,7 +114,7 @@ private:
 		   " -ts[W:H]        texture size W*H (2^N)\n"
 		   " -fs[N]          input-font size (pixel)\n"
 		   " -cs[N]          tex-cell(char)/font size (pixel)\n"
-		   " -mul[N]         get-font-size*N(/N)\n"
+		   " -mul[N]         input-font-size*N(/N)\n"
 		   " -bpp[N]         bit per pixel. N=1..8\n"
 		   " -addascii       generate 0x21..0x7E\n"
 		   " -fontlist       output font name list\n"

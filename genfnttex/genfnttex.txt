@@ -9,6 +9,7 @@ UTF8テキストを読み込み、そこで使われている文字を文字コ�
 usage>genfnttex [-opts] file(s)
  -ttf=[TTFNAME]  ttf フォント名
  -o=[OUTPUT]     出力ファイルの基本となる名前
+ -tblname=[NAME] cで出力するテーブル名
  -ts[W:H]        テクスチャサイズ W*H (2^N)
  -cs[N]          テクスチャに敷き詰める文字の間隔/サイズ (pixel)
  -fs[N]          Win-apiで取得する文字フォントのサイズ
