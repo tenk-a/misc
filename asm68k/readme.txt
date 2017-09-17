@@ -1,7 +1,9 @@
-ƒ‚ƒgƒ[ƒ‰ŽÐ‚Ì‚o‚c‚r‚Ì68KƒAƒZƒ“ƒuƒ‰‚ð‰ü‘¢‚µ‚½‚à‚Ì‚Å‚·B
-‚í‚½‚µ‚Ì“üŽèŒ³‚Í NIFTY fdevice.
+asm68k
 
-asm68k.exe	‰ü‘¢ƒAƒZƒ“ƒuƒ‰
-asm68k.txt	‚ß‚à‚ª‚«’ö“x‚Ìà–¾
-asm.doc		‰ü‘¢Œ³‚ÌƒhƒLƒ…ƒƒ“ƒg
+MC68000 ã‚¢ãƒ–ã‚½ãƒªãƒ¥ãƒ¼ãƒˆãƒ»ã‚¢ã‚»ãƒ³ãƒ–ãƒ©ã€‚
 
+ãƒ¢ãƒˆãƒ­ãƒ¼ãƒ©ç¤¾ã®PDSã‚’æ”¹é€ ã—ãŸã‚‚ã®( å…¥æ‰‹å…ƒã¯ NIFTY fdevice )
+
+ã‚†ãˆã«ãƒ©ã‚¤ã‚»ãƒ³ã‚¹ã¯ PDS.
+
+asm68k.txt ã‚’å‚ç…§ã®ã“ã¨ã€‚
