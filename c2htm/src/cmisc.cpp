@@ -23,22 +23,22 @@ using namespace std;
 namespace CMISC {
 #endif
 
-typedef unsigned char   Uint8;
-typedef unsigned int    Uint32;
+typedef unsigned char	Uint8;
+typedef unsigned int	Uint32;
 
 
 /** 簡易に内部バッファでsprintfをしてそのアドレスを返す */
 char *strTmpF(const char *fmt, ...)
 {
     static char buf[1024];
-    va_list     args;
+    va_list 	args;
 
     if (fmt) {
-        va_start(args, fmt);
-        vsprintf(buf, fmt, args);
-        va_end(args);
+    	va_start(args, fmt);
+    	vsprintf(buf, fmt, args);
+    	va_end(args);
     } else {
-        memset(buf, 0, sizeof(buf));
+    	memset(buf, 0, sizeof(buf));
     }
     return buf;
 }
@@ -77,7 +77,7 @@ char *strDelLf(char s[])
     //assert(s);
     p = s + strlen(s);
     if (p != s && p[-1] == '\n') {
-        p[-1] = 0;
+    	p[-1] = 0;
     }
     return s;
 }
@@ -91,14 +91,14 @@ long strtolKM(char *s, char **d, int r)
 
     l = strtol(s, &s, r);
     if (*s == 'k' || *s == 'K') {
-        s++;
-        l *= 1024;
+    	s++;
+    	l *= 1024;
     } else if (*s == 'm' || *s == 'M') {
-        s++;
-        l *= 1024*1024;
+    	s++;
+    	l *= 1024*1024;
     } else if (*s == 'g' || *s == 'G') {
-        s++;
-        l *= 1024*1024*1024;
+    	s++;
+    	l *= 1024*1024*1024;
     }
     *d = s;
     return l;
@@ -114,9 +114,9 @@ void *mallocMa(int sz, int minSz, int aln)
 
     /* アライメント用のマスクを生成 */
     if (aln <= 0)
-        a = 1;
+    	a = 1;
     else
-        a = (1<<aln);
+    	a = (1<<aln);
     a = a - 1;
 
     /* サイズを調整 */
@@ -125,22 +125,22 @@ void *mallocMa(int sz, int minSz, int aln)
 
     p = malloc(sz);
     if (p)
-        return p;
+    	return p;
 
     /* 最小サイズが確保できるかチェック */
     if (minSz <= 0)
-        return NULL;
+    	return NULL;
     p = malloc(minSz);
     if (p == NULL)
-        return NULL;
+    	return NULL;
     free(p);
 
     /* 確保できるサイズを探す*/
     do {
-        sz = (sz/2 + a) & ~a;
-        if (sz < minSz)
-            sz = minSz;
-        p = malloc(sz);
+    	sz = (sz/2 + a) & ~a;
+    	if (sz < minSz)
+    	    sz = minSz;
+    	p = malloc(sz);
     } while (p == NULL && sz > minSz);
 
     return p;
@@ -163,13 +163,13 @@ char *fname_getBase(const char *adr)
 
     p = adr;
     while (*p != '\0') {
-        if (*p == ':' || *p == '/' || *p == '\\')
-            adr = p + 1;
+    	if (*p == ':' || *p == '/' || *p == '\\')
+    	    adr = p + 1;
       #ifdef USE_FNAME_SJIS
-        if (ISKANJI((*(unsigned char *) p)) && *(p + 1))
-            p++;
+    	if (ISKANJI((*(unsigned char *) p)) && *(p + 1))
+    	    p++;
       #endif
-        p++;
+    	p++;
     }
     return (char*)adr;
 }
@@ -183,7 +183,7 @@ char *fname_getExt(const char *name)
     name = fname_getBase(name);
     p = strrchr((char*)name, '.');
     if (p) {
-        return p+1;
+    	return p+1;
     }
     return (char *)(name+strlen(name));
 }
@@ -198,16 +198,16 @@ std::string& fname_chgExt(string &fname, const char *ext)
     p = fname_getBase(fname.c_str());
     p = strrchr(p, '.');
     if (p == NULL) {
-        if (ext) {
-            fname += ".";
-            fname += ext;
-        }
+    	if (ext) {
+    	    fname += ".";
+    	    fname += ext;
+    	}
     } else {
-        int n = p - fname.c_str();
-        if (ext == NULL)
-            fname.replace(n, string::npos, "");
-        else
-            fname.replace(n+1, string::npos, ext);
+    	int n = p - fname.c_str();
+    	if (ext == NULL)
+    	    fname.replace(n, string::npos, "");
+    	else
+    	    fname.replace(n+1, string::npos, ext);
     }
     return fname;
 }
@@ -224,15 +224,15 @@ char *fname_chgExt(char filename[], const char *ext)
     p = (char *) fname_getBase(filename);
     p = strrchr(p, '.');
     if (p == NULL) {
-        if (ext) {
-            strcat(filename, ".");
-            strcat(filename, ext);
-        }
+    	if (ext) {
+    	    strcat(filename, ".");
+    	    strcat(filename, ext);
+    	}
     } else {
-        if (ext == NULL)
-            *p = 0;
-        else
-            strcpy(p + 1, ext);
+    	if (ext == NULL)
+    	    *p = 0;
+    	else
+    	    strcpy(p + 1, ext);
     }
     return filename;
 }
@@ -243,8 +243,8 @@ char *fname_chgExt(char filename[], const char *ext)
 char *fname_addExt(char filename[], const char *ext)
 {
     if (strrchr(fname_getBase(filename), '.') == NULL) {
-        strcat(filename, ".");
-        strcat(filename, ext);
+    	strcat(filename, ".");
+    	strcat(filename, ext);
     }
     return filename;
 }
@@ -260,36 +260,36 @@ char *fname_delDotDotDir(char *path)
     Uint8 *dir = NULL;
     int c;
 
-    if (*p && p[1] == ':') {        // とりあえず、手抜きで１文字だけ。ネットワークとかは考えない
-        p += 2;
+    if (*p && p[1] == ':') {	    // とりあえず、手抜きで１文字だけ。ネットワークとかは考えない
+    	p += 2;
     }
     if (memcmp(p, "//", 2) == 0 || memcmp(p, "\\\\", 2) == 0) {     // ネットワークコンピュータ？
-        p += 2;
-        dir = p;
+    	p += 2;
+    	dir = p;
     }
     d = p;
     while (*p) {
-        c = *p++;
-        if (c == '/' || c == '\\') {
-            c = '\\';
-            *d++ = c;
-            if (p[0] == '.') {
-                if (p[1] == '/' || p[1] == '\\') {
-                    p += 2;
-                } else if (dir && p[1] == '.' && (p[2] == '/' || p[2] == '\\')) {
-                    p += 3;
-                    d = dir;
-                }
-            }
-            dir = d;
+    	c = *p++;
+    	if (c == '/' || c == '\\') {
+    	    c = '\\';
+    	    *d++ = c;
+    	    if (p[0] == '.') {
+    	    	if (p[1] == '/' || p[1] == '\\') {
+    	    	    p += 2;
+    	    	} else if (dir && p[1] == '.' && (p[2] == '/' || p[2] == '\\')) {
+    	    	    p += 3;
+    	    	    d = dir;
+    	    	}
+    	    }
+    	    dir = d;
       #ifdef USE_FNAME_SJIS
-        } else if (ISKANJI(c) && *p) {
-            *d++ = c;
-            *d++ = *p++;
+    	} else if (ISKANJI(c) && *p) {
+    	    *d++ = c;
+    	    *d++ = *p++;
       #endif
-        } else {
-            *d++ = c;
-        }
+    	} else {
+    	    *d++ = c;
+    	}
     }
     *d = 0;
     return path;
@@ -304,32 +304,32 @@ char *fname_delLastDirSep(char *dir)
     char *p, *s;
 
     if (dir) {
-        s = fname_getBase(dir);
-        if (strlen(s) > 1) {
-            p = s + strlen(s);
-            if (p[-1] == '/') {
-                p[-1] = 0;
-            } else if (p[-1] == '\\') {
-                //if (FIL_sjisFlag == 0) {
-                    //p[-1] = 0;
-                //} else
-                {
-                    int f = 0;
-                    while (*s) {
-                        f = 0;
-                      #ifdef USE_FNAME_SJIS
-                        if (ISKANJI(*s) && s[1]) {
-                            s++;
-                            f = 1;
-                        }
-                      #endif
-                        s++;
-                    }
-                    if (f == 0)
-                        p[-1] = 0;
-                }
-            }
-        }
+    	s = fname_getBase(dir);
+    	if (strlen(s) > 1) {
+    	    p = s + strlen(s);
+    	    if (p[-1] == '/') {
+    	    	p[-1] = 0;
+    	    } else if (p[-1] == '\\') {
+    	    	//if (FIL_sjisFlag == 0) {
+    	    	    //p[-1] = 0;
+    	    	//} else
+    	    	{
+    	    	    int f = 0;
+    	    	    while (*s) {
+    	    	    	f = 0;
+    	    	      #ifdef USE_FNAME_SJIS
+    	    	    	if (ISKANJI(*s) && s[1]) {
+    	    	    	    s++;
+    	    	    	    f = 1;
+    	    	    	}
+    	    	      #endif
+    	    	    	s++;
+    	    	    }
+    	    	    if (f == 0)
+    	    	    	p[-1] = 0;
+    	    	}
+    	    }
+    	}
     }
     return dir;
 }
@@ -341,7 +341,7 @@ char *fname_delLastDirSep(char *dir)
 //----------------------------------------------------------
 
 /// CRC テーブル
-Uint32      memCrc32table[256] = {
+Uint32	    memCrc32table[256] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
     0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91,
     0x1db71064, 0x6ab020f2, 0xf3b97148, 0x84be41de, 0x1adad47d, 0x6ddde4eb, 0xf4d4b551, 0x83d385c7,
@@ -387,14 +387,14 @@ int memCrc32(void *dat, int siz)
 
     r = 0xFFFFFFFFUL;
     while (--siz >= 0)
-        r = (r >> 8) ^ memCrc32table[((Uint8) r) ^ *s++];
+    	r = (r >> 8) ^ memCrc32table[((Uint8) r) ^ *s++];
     return (int) (r ^ 0xFFFFFFFFUL);
 }
 
 
 
 #if __cplusplus
-};      // CMISC
+};  	// CMISC
 #endif
 //----------------------------------------------------------------------------
 

@@ -10,20 +10,20 @@
 #define CMISC_H
 
 
-#define STDERR          stdout
-//#define STDERR        stderr
-#define CERR            cout
-//#define CERR          cerr
+#define STDERR	    	stdout
+//#define STDERR    	stderr
+#define CERR	    	cout
+//#define CERR	    	cerr
 
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__BORLANDC__)
 #  include <mbstring.h>
-#else       // シフトJIS専用
+#else	    // シフトJIS専用
 #  define _ismbblead(c)     ((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
 #  define _ismbbtrail(c)    ((unsigned char)(c) >= 0x40 && (unsigned char)(c) <= 0xfc && (c) != 0x7f)
 #endif
-#define ISKANJI(c)      _ismbblead(c)
-#define ISKANJI2(c)     _ismbbtrail(c)
+#define ISKANJI(c)  	_ismbblead(c)
+#define ISKANJI2(c) 	_ismbbtrail(c)
 
 #ifdef __cplusplus
 #include <string>
@@ -106,7 +106,7 @@ std::string& fname_chgExt(std::string &fname, const char *ext);
 #endif
 
 #if __cplusplus
-};      // CMISC
+};  	// CMISC
 #endif
 
 
@@ -114,4 +114,4 @@ std::string& fname_chgExt(std::string &fname, const char *ext);
 
 
 
-#endif  // CMISC_H
+#endif	// CMISC_H

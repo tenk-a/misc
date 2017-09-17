@@ -15,11 +15,11 @@
 struct Font {
     Font(uint32_t c=0) : ch(c),x(0),y(0),w(0),h(0) {}
 
-    uint32_t                ch;
-    uint32_t                x;
-    uint32_t                y;
-    uint32_t                w;
-    uint32_t                h;
+    uint32_t	    	    ch;
+    uint32_t	    	    x;
+    uint32_t	    	    y;
+    uint32_t	    	    w;
+    uint32_t	    	    h;
     std::vector<uint8_t>    data;
 };
 
@@ -39,12 +39,12 @@ private:
     bool adjustFontSize(Font& rFont);
 
 private:
-    char*                   ttfname_;
-    unsigned                fontW_;
-    unsigned                cellW_;
-    unsigned                mul_;
-    unsigned                bpp_;
-    unsigned                tone_;
+    char*   	    	    ttfname_;
+    unsigned	    	    fontW_;
+    unsigned	    	    cellW_;
+    unsigned	    	    mul_;
+    unsigned	    	    bpp_;
+    unsigned	    	    tone_;
     std::vector<uint8_t>    wkBuf_;
 };
 

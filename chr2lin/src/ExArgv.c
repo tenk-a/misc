@@ -4,30 +4,30 @@
  *  @author Masashi KITAMURA
  *  @date   2006-2010
  *  @note
- *  -   main(int argc,char* argv[]) ‚Ìargc,argv‚É‘Î‚µA
- *      ƒƒCƒ‹ƒhƒJ[ƒhw’è‚âƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹w’è“™‚ğ“WŠJ‚µ‚½argc,argv‚É•ÏŠ·.
- *      main()‚Ì‰‚Á’[‚®‚ç‚¢‚Å ExArgv_conv(&argc, &argv); ‚Ì‚æ‚¤‚ÉŒÄ‚Ño‚·.
- *      ‚ ‚é‚¢‚Í WinMain() ‚Å‚Í, ExArgv_forWinMain(cmdl, &argc, &argv);
+ *  -	main(int argc,char* argv[]) ‚Ìargc,argv‚É‘Î‚µA
+ *  	ƒƒCƒ‹ƒhƒJ[ƒhw’è‚âƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹w’è“™‚ğ“WŠJ‚µ‚½argc,argv‚É•ÏŠ·.
+ *  	main()‚Ì‰‚Á’[‚®‚ç‚¢‚Å ExArgv_conv(&argc, &argv); ‚Ì‚æ‚¤‚ÉŒÄ‚Ño‚·.
+ *  	‚ ‚é‚¢‚Í WinMain() ‚Å‚Í, ExArgv_forWinMain(cmdl, &argc, &argv);
  *
- *  -   ƒƒCƒ“‚Ídos/winŒn(‚ÌƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒc[ƒ‹)‚ğ‘z’è.
- *      ˆê‰ linux gcc‚Å‚ÌƒRƒ“ƒpƒCƒ‹‰Â.
- *      (unixŒn‚¾‚ÆƒƒCƒ‹ƒhƒJ[ƒh‚ÍƒVƒFƒ‹”C‚¹‚¾‚ë‚¤‚ÅAƒƒŠƒbƒg­‚È‚­)
+ *  -	ƒƒCƒ“‚Ídos/winŒn(‚ÌƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒc[ƒ‹)‚ğ‘z’è.
+ *  	ˆê‰ linux gcc‚Å‚ÌƒRƒ“ƒpƒCƒ‹‰Â.
+ *  	(unixŒn‚¾‚ÆƒƒCƒ‹ƒhƒJ[ƒh‚ÍƒVƒFƒ‹”C‚¹‚¾‚ë‚¤‚ÅAƒƒŠƒbƒg­‚È‚­)
  *
- *  -   ExArgv.h‚ÍAˆê‰ƒwƒbƒ_‚¾‚ªAExArgv.c ‚Ìİ’èƒtƒ@ƒCƒ‹‚Å‚à‚ ‚é.
- *      ƒAƒvƒŠ‚²‚Æ‚É ExArgv.h ExArgv.c ‚ğƒRƒs[‚µ‚ÄAExArgv.h‚ğ
- *      ƒJƒXƒ^ƒ€‚µ‚Äg‚¤‚Ì‚ğ‘z’è.
- *  -   İ’è‚Å‚«‚é—v‘f‚ÍA
- *          - ƒƒCƒ‹ƒhƒJ[ƒh (on/off)
- *          - ƒƒCƒ‹ƒhƒJ[ƒh‚ÌÄ‹Aw’è(**)‚Ì—L–³ (on/off)
- *          - @ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹ (on/off)
- *          - .exe˜A“® .cfg ƒtƒ@ƒCƒ‹ “Ç (on/off)
- *          - ƒIƒvƒVƒ‡ƒ“ŠÂ‹«•Ï”–¼‚Ì—˜—p
- *          “™
+ *  -	ExArgv.h‚ÍAˆê‰ƒwƒbƒ_‚¾‚ªAExArgv.c ‚Ìİ’èƒtƒ@ƒCƒ‹‚Å‚à‚ ‚é.
+ *  	ƒAƒvƒŠ‚²‚Æ‚É ExArgv.h ExArgv.c ‚ğƒRƒs[‚µ‚ÄAExArgv.h‚ğ
+ *  	ƒJƒXƒ^ƒ€‚µ‚Äg‚¤‚Ì‚ğ‘z’è.
+ *  -	İ’è‚Å‚«‚é—v‘f‚ÍA
+ *  	    - ƒƒCƒ‹ƒhƒJ[ƒh (on/off)
+ *  	    - ƒƒCƒ‹ƒhƒJ[ƒh‚ÌÄ‹Aw’è(**)‚Ì—L–³ (on/off)
+ *  	    - @ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹ (on/off)
+ *  	    - .exe˜A“® .cfg ƒtƒ@ƒCƒ‹ “Ç (on/off)
+ *  	    - ƒIƒvƒVƒ‡ƒ“ŠÂ‹«•Ï”–¼‚Ì—˜—p
+ *  	    “™
  *
- *  -   ˆø”•¶š—ñ‚Ìæ“ª‚ª'-'‚È‚ç‚ÎƒIƒvƒVƒ‡ƒ“‚¾‚ë‚¤‚ÅA‚»‚Ì•¶š—ñ’†‚É
- *      ƒƒCƒ‹ƒhƒJ[ƒh•¶š‚ª‚ ‚Á‚Ä‚à“WŠJ‚µ‚È‚¢.
- *  -   ƒ}ƒNƒ UNICODE ‚ª’è‹`‚³‚ê‚Ä‚¢‚ê‚ÎAwchar_t—pA‚Å‚È‚¯‚ê‚Îchar—p.
- *  -   _WIN32 ‚ª’è‹`‚³‚ê‚Ä‚¢‚ê‚Î win—pA‚Å‚È‚¯‚ê‚Î unixŒn‚ğ‘z’è.
+ *  -	ˆø”•¶š—ñ‚Ìæ“ª‚ª'-'‚È‚ç‚ÎƒIƒvƒVƒ‡ƒ“‚¾‚ë‚¤‚ÅA‚»‚Ì•¶š—ñ’†‚É
+ *  	ƒƒCƒ‹ƒhƒJ[ƒh•¶š‚ª‚ ‚Á‚Ä‚à“WŠJ‚µ‚È‚¢.
+ *  -	ƒ}ƒNƒ UNICODE ‚ª’è‹`‚³‚ê‚Ä‚¢‚ê‚ÎAwchar_t—pA‚Å‚È‚¯‚ê‚Îchar—p.
+ *  -	_WIN32 ‚ª’è‹`‚³‚ê‚Ä‚¢‚ê‚Î win—pA‚Å‚È‚¯‚ê‚Î unixŒn‚ğ‘z’è.
  */
  // 2009 Ä‹Aw’è‚ğ**‚É‚·‚é‚±‚Æ‚ÅAd—l‚ğ’Pƒ‰».
 
@@ -48,41 +48,41 @@
 #endif
 
 #ifdef _MSC_VER
-#pragma warning(disable:4996)                   // MS‚Ì‚¨”n­‚ÈƒZƒLƒ…ƒŠƒeƒBŠÖ”g‚¦‚ğ–³‹.
+#pragma warning(disable:4996)	    	    	// MS‚Ì‚¨”n­‚ÈƒZƒLƒ…ƒŠƒeƒBŠÖ”g‚¦‚ğ–³‹.
 #endif
 
 /// ’è‹`‚·‚é‚Æ‚±‚Ì–¼‘O‚ÌŠÂ‹«•Ï”‚Ì’†g‚ğƒRƒ}ƒ“ƒhƒ‰ƒCƒ“•¶š—ñ‚Æ‚µ‚Äg‚¦‚é‚æ‚¤‚É‚·‚é.
 //#define EXARGV_ENVNAME    "your_app_env_name"
 
 #ifndef EXARGV_USE_WC
-#define EXARGV_USE_WC       1                   ///< ƒƒCƒ‹ƒhƒJ[ƒhw’è‚ª‚ ‚ê‚Îƒtƒ@ƒCƒ‹–¼‚É“WŠJ‚·‚é.
+#define EXARGV_USE_WC	    1	    	    	///< ƒƒCƒ‹ƒhƒJ[ƒhw’è‚ª‚ ‚ê‚Îƒtƒ@ƒCƒ‹–¼‚É“WŠJ‚·‚é.
 #endif
 
 #ifndef EXARGV_USE_WC_REC
-#define EXARGV_USE_WC_REC   1                   ///< EXARGV_USE_WC‚ÉA**‚ª‚ ‚ê‚ÎÄ‹AƒƒCƒ‹ƒhƒJ[ƒh‚É‚·‚é.
+#define EXARGV_USE_WC_REC   1	    	    	///< EXARGV_USE_WC‚ÉA**‚ª‚ ‚ê‚ÎÄ‹AƒƒCƒ‹ƒhƒJ[ƒh‚É‚·‚é.
 #endif
 
 #ifndef EXARGV_USE_RESFILE
-#define EXARGV_USE_RESFILE  1                   ///< @ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹‚ğ—LŒø‚É‚·‚é.
+#define EXARGV_USE_RESFILE  1	    	    	///< @ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹‚ğ—LŒø‚É‚·‚é.
 #endif
 
 #ifndef EXARGV_USE_CONFIG
-#define EXARGV_USE_CONFIG   0                   ///< .exe‚ğ.cfg‚É’uŠ·‚µ‚½ƒpƒX–¼‚©‚ç“Ç.
+#define EXARGV_USE_CONFIG   0	    	    	///< .exe‚ğ.cfg‚É’uŠ·‚µ‚½ƒpƒX–¼‚©‚ç“Ç.
 #endif
 
 #ifndef EXARGV_CONFIG_EXT
-#define EXARGV_CONFIG_EXT   ".cfg"              ///< ƒRƒ“ƒtƒBƒOƒtƒ@ƒCƒ‹“ü—Í—L‚Ì‚ÌŠg’£q. Šg’£q‚Í4•¶šˆÈ“à‚Ì‚±‚Æ.
+#define EXARGV_CONFIG_EXT   ".cfg"  	    	///< ƒRƒ“ƒtƒBƒOƒtƒ@ƒCƒ‹“ü—Í—L‚Ì‚ÌŠg’£q. Šg’£q‚Í4•¶šˆÈ“à‚Ì‚±‚Æ.
 #endif
 
 #if 0 //ndef EXARGV_USE_FULLPATH_ARGV0
-#define EXARGV_USE_FULLPATH_ARGV0   1           ///< argv[0] ‚ÌÀsƒtƒ@ƒCƒ‹–¼‚ğƒtƒ‹ƒpƒX‚É‚·‚é/‚µ‚È‚¢. winŠÂ‹«‚Ì‚İ.
+#define EXARGV_USE_FULLPATH_ARGV0   1	    	///< argv[0] ‚ÌÀsƒtƒ@ƒCƒ‹–¼‚ğƒtƒ‹ƒpƒX‚É‚·‚é/‚µ‚È‚¢. winŠÂ‹«‚Ì‚İ.
 #endif
 
 
-//#define EXARGV_TOSLASH                        ///< ’è‹`‚·‚ê‚ÎAfilePath’†‚Ì \ ‚ğ / ‚É’uŠ·.
-//#define EXARGV_TOBACKSLASH                    ///< ’è‹`‚·‚ê‚ÎAfilePath’†‚Ì / ‚ğ \ ‚É’uŠ·.
-//#define EXARGV_USE_SLASH_OPT                  ///< ’è‹`‚·‚ê‚ÎA/ ‚àƒIƒvƒVƒ‡ƒ“ŠJn•¶š‚Æ‚İ‚È‚·.
-//#define EXARGV_USE_SETARGV                    ///< ÀŒ±. ’è‹`‚·‚é‚ÆAsetargv‚Ì‘ã—p•i‚Æ‚µ‚ÄƒRƒ“ƒpƒCƒ‹(ExArgv_get“™–³‚µ)
+//#define EXARGV_TOSLASH    	    	    	///< ’è‹`‚·‚ê‚ÎAfilePath’†‚Ì \ ‚ğ / ‚É’uŠ·.
+//#define EXARGV_TOBACKSLASH	    	    	///< ’è‹`‚·‚ê‚ÎAfilePath’†‚Ì / ‚ğ \ ‚É’uŠ·.
+//#define EXARGV_USE_SLASH_OPT	    	    	///< ’è‹`‚·‚ê‚ÎA/ ‚àƒIƒvƒVƒ‡ƒ“ŠJn•¶š‚Æ‚İ‚È‚·.
+//#define EXARGV_USE_SETARGV	    	    	///< ÀŒ±. ’è‹`‚·‚é‚ÆAsetargv‚Ì‘ã—p•i‚Æ‚µ‚ÄƒRƒ“ƒpƒCƒ‹(ExArgv_get“™–³‚µ)
 
 
 
@@ -92,26 +92,26 @@
 /*
 #if defined _MSDOS || defined __DOS__
  #ifndef MSODS
-  #define MSDOS     1                           // DOSŒn’è‹`. ¦‚Æ‚¢‚Á‚Ä‚à16ƒrƒbƒgDOS‚É‚Í–¢‘Î‰.
+  #define MSDOS     1	    	    	    	// DOSŒn’è‹`. ¦‚Æ‚¢‚Á‚Ä‚à16ƒrƒbƒgDOS‚É‚Í–¢‘Î‰.
  #endif
 #endif
 */
 
 #if defined _WIN32 || defined MSODS
- #define DOSWIN32   1                           // DOS/WINŒn‚È‚ç’è‹`.
+ #define DOSWIN32   1	    	    	    	// DOS/WINŒn‚È‚ç’è‹`.
 #endif
 
 
 #if defined _WIN32
  #include <windows.h>
- #if defined _MSC_VER   // CharNext()‚Å•K—v.
+ #if defined _MSC_VER	// CharNext()‚Å•K—v.
   #pragma comment(lib, "User32.lib")
  #endif
 #elif defined MSDOS
  #include <mbctype.h>
  #include <dirent.h>
  #include <sys/stat.h>
-#else   // linux
+#else	// linux
  #include <dirent.h>
  #include <sys/stat.h>
  #include <fnmatch.h>
@@ -120,25 +120,25 @@
 
 #undef BOOL
 #if defined __cplusplus
- #define BOOL           bool
- #define EXTERN_C       extern "C"
+ #define BOOL	    	bool
+ #define EXTERN_C   	extern "C"
 #else
- #define BOOL           int
- #define EXTERN_C       extern
+ #define BOOL	    	int
+ #define EXTERN_C   	extern
  #if defined DOSWIN32
-  #define inline        __inline
+  #define inline    	__inline
  #endif
 #endif
 
 
 #ifndef MAX_PATH
  #ifdef _MAX_PATH
-  #define MAX_PATH      _MAX_PATH
+  #define MAX_PATH  	_MAX_PATH
  #else
   #if defined DOSWIN32
-   #define MAX_PATH     260
+   #define MAX_PATH 	260
   #else
-   #define MAX_PATH     1024
+   #define MAX_PATH 	1024
   #endif
  #endif
 #endif
@@ -149,63 +149,63 @@
 // char,wchar_t Ø‚è‘Ö‚¦‚Ì’Òåë‡‚í‚¹ŠÖŒW.
 
 #ifdef UNICODE
-#define _pgmptr         _wpgmptr
-#define T(x)            L##x
-typedef wchar_t         char_t;
-typedef wchar_t         uchar_t;
-#define STR_LEN(a)      wcslen(a)
-#define STR_CMP(a,b)    wcscmp(a,b)
-#define STR_R_CHR(a,b)  wcsrchr(a,b)
-#define GET_ENV(s)      _wgetenv(s)
-typedef FILE*           FILEPTR;
+#define _pgmptr     	_wpgmptr
+#define T(x)	    	L##x
+typedef wchar_t     	char_t;
+typedef wchar_t     	uchar_t;
+#define STR_LEN(a)  	wcslen(a)
+#define STR_CMP(a,b)	wcscmp(a,b)
+#define STR_R_CHR(a,b)	wcsrchr(a,b)
+#define GET_ENV(s)  	_wgetenv(s)
+typedef FILE*	    	FILEPTR;
 #define FILEPTR_IS_OK(a) (a)
-#define FOPEN_RB(fnm)   _wfopen(fnm, T("rb"))
-#define FOPEN_RT(fnm)   _wfopen(fnm, T("rt"))
-#define FCLOSE(fp)      fclose(fp)
-#define STDERR          stderr
-#define FPRINTF         fwprintf
-#define FERROR(fp)      ferror(fp)
-#define FGETS(b,l,h)    fgetws(b,l,h)
+#define FOPEN_RB(fnm)	_wfopen(fnm, T("rb"))
+#define FOPEN_RT(fnm)	_wfopen(fnm, T("rt"))
+#define FCLOSE(fp)  	fclose(fp)
+#define STDERR	    	stderr
+#define FPRINTF     	fwprintf
+#define FERROR(fp)  	ferror(fp)
+#define FGETS(b,l,h)	fgetws(b,l,h)
 #else
-#define T(x)            x
-typedef char            char_t;
-typedef unsigned char   uchar_t;
-#define STR_LEN(a)      strlen(a)
-#define STR_CMP(a,b)    strcmp(a,b)
-#define STR_R_CHR(a,b)  strrchr(a,b)
-#define GET_ENV(s)      getenv(s)
-typedef FILE*           FILEPTR;
+#define T(x)	    	x
+typedef char	    	char_t;
+typedef unsigned char	uchar_t;
+#define STR_LEN(a)  	strlen(a)
+#define STR_CMP(a,b)	strcmp(a,b)
+#define STR_R_CHR(a,b)	strrchr(a,b)
+#define GET_ENV(s)  	getenv(s)
+typedef FILE*	    	FILEPTR;
 #define FILEPTR_IS_OK(a) (a)
-#define FOPEN_RB(fnm)   fopen(fnm, T("rb"))
-#define FOPEN_RT(fnm)   fopen(fnm, T("rt"))
-#define FCLOSE(fp)      fclose(fp)
-#define STDERR          stderr
-#define FPRINTF         fprintf
-#define FERROR(fp)      ferror(fp)
-#define FGETS(b,l,h)    fgets(b,l,h)
+#define FOPEN_RB(fnm)	fopen(fnm, T("rb"))
+#define FOPEN_RT(fnm)	fopen(fnm, T("rt"))
+#define FCLOSE(fp)  	fclose(fp)
+#define STDERR	    	stderr
+#define FPRINTF     	fprintf
+#define FERROR(fp)  	ferror(fp)
+#define FGETS(b,l,h)	fgets(b,l,h)
 #endif
 
 
 
 // ===========================================================================
 
-enum { FILEPATH_SZ              = (MAX_PATH*2 > 8192) ? MAX_PATH*2 : 8192 };
-enum { EXARGV_VECTOR_CAPA_BASE  = 4096 };
+enum { FILEPATH_SZ  	    	= (MAX_PATH*2 > 8192) ? MAX_PATH*2 : 8192 };
+enum { EXARGV_VECTOR_CAPA_BASE	= 4096 };
 
 
 #ifdef EXARGV_TOBACKSLASH
-#define DIRSEP_STR          T("\\")
+#define DIRSEP_STR  	    T("\\")
 #else
-#define DIRSEP_STR          T("/")
+#define DIRSEP_STR  	    T("/")
 #endif
 
 
 #if EXARGV_USE_WC
-static unsigned char        s_wildMode;         ///< ƒƒCƒ‹ƒhƒJ[ƒh•¶š—ñ‚ªİ’è‚³‚ê‚Ä‚¢‚½‚çon.
+static unsigned char	    s_wildMode;     	///< ƒƒCƒ‹ƒhƒJ[ƒh•¶š—ñ‚ªİ’è‚³‚ê‚Ä‚¢‚½‚çon.
 #endif
 
 #if (EXARGV_USE_WC || EXARGV_USE_RESFILE) && !EXARGV_USE_CONFIG && !defined(EXARGV_ENVNAME) \
-        && !defined(_WINDOWS) && !defined(EXARGV_USE_SETARGV) && !defined EXARGV_TOSLASH && !defined EXARGV_TOBACKSLASH
+    	&& !defined(_WINDOWS) && !defined(EXARGV_USE_SETARGV) && !defined EXARGV_TOSLASH && !defined EXARGV_TOBACKSLASH
     #define EXARGV_USE_CHK_CHR
 #endif
 
@@ -213,56 +213,56 @@ static unsigned char        s_wildMode;         ///< ƒƒCƒ‹ƒhƒJ[ƒh•¶š—ñ‚ªİ’è‚
 // ===========================================================================
 
 typedef struct ExArgv_Vector {
-    char_t**        buf;
-    unsigned        size;
-    unsigned        capa;
+    char_t**	    buf;
+    unsigned	    size;
+    unsigned	    capa;
 } ExArgv_Vector;
 
 static ExArgv_Vector *ExArgv_Vector_create(unsigned size);
-static void         ExArgv_Vector_push(ExArgv_Vector* pVec, const char_t* pStr);
-static void         ExArgv_VectorToArgv(ExArgv_Vector** pVec, int* pArgc, char_t*** pppArgv);
-static void*        ExArgv_alloc(unsigned size);
-static char_t*      ExArgv_strdup(const char_t* s);
-static void         ExArgv_free(void* s);
+static void 	    ExArgv_Vector_push(ExArgv_Vector* pVec, const char_t* pStr);
+static void 	    ExArgv_VectorToArgv(ExArgv_Vector** pVec, int* pArgc, char_t*** pppArgv);
+static void*	    ExArgv_alloc(unsigned size);
+static char_t*	    ExArgv_strdup(const char_t* s);
+static void 	    ExArgv_free(void* s);
 
 #if EXARGV_USE_WC
-static int          ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* pPathName, int recFlag);
-static void         ExArgv_wildCard(ExArgv_Vector* pVec);
+static int  	    ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* pPathName, int recFlag);
+static void 	    ExArgv_wildCard(ExArgv_Vector* pVec);
 #endif
 #if defined _WINDOWS || defined EXARGV_USE_SETARGV
-static int          ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppArgv);
+static int  	    ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppArgv);
 #endif
 #if defined EXARGV_USE_CHK_CHR
 static unsigned     ExArgv_checkWcResfile(int argc, char_t** argv);
 #endif
 #ifdef EXARGV_ENVNAME
-static void         ExArgv_getEnv(const char_t* envName, ExArgv_Vector* pVec);
+static void 	    ExArgv_getEnv(const char_t* envName, ExArgv_Vector* pVec);
 #endif
 #if EXARGV_USE_CONFIG
-static void         ExArgv_getCfgFile(const char_t* exeName, ExArgv_Vector* pVec);
+static void 	    ExArgv_getCfgFile(const char_t* exeName, ExArgv_Vector* pVec);
 #endif
 #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG
-static void         ExArgv_getResFile(const char_t* fname, ExArgv_Vector* pVec, BOOL notFoundOk);
+static void 	    ExArgv_getResFile(const char_t* fname, ExArgv_Vector* pVec, BOOL notFoundOk);
 #endif
 
 #if (defined EXARGV_TOSLASH) || (defined EXARGV_TOBACKSLASH)
-static void         ExArgv_convBackSlash(ExArgv_Vector* pVec);
+static void 	    ExArgv_convBackSlash(ExArgv_Vector* pVec);
 #endif
 #if (defined EXARGV_TOBACKSLASH)
-static char_t*      ExArgv_fname_slashToBackslash(char_t filePath[]);
+static char_t*	    ExArgv_fname_slashToBackslash(char_t filePath[]);
 #endif
 #if (defined EXARGV_TOSLASH)
-static char_t*      ExArgv_fname_backslashToSlash(char_t filePath[]);
+static char_t*	    ExArgv_fname_backslashToSlash(char_t filePath[]);
 #endif
 
 #if EXARGV_USE_WC || (EXARGV_USE_CONFIG && defined DOSWIN32 == 0)
-static char_t*      ExArgv_fname_baseName(const char_t* adr);
+static char_t*	    ExArgv_fname_baseName(const char_t* adr);
 #endif
 #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG || defined EXARGV_ENVNAME || defined _WINDOWS || defined EXARGV_USE_SETARGV
-static char_t*      ExArgv_fname_scanArgStr(const char_t* str, char_t arg[], int argSz);
+static char_t*	    ExArgv_fname_scanArgStr(const char_t* str, char_t arg[], int argSz);
 #endif
 #if EXARGV_USE_WC
-static int          ExArgv_fname_isWildCard(const char_t* s);
+static int  	    ExArgv_fname_isWildCard(const char_t* s);
 #endif
 
 
@@ -313,30 +313,30 @@ void ExArgv_forWinMain(const char_t* pCmdLine, int* pArgc, char_t*** pppArgv)
 static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppArgv)
 {
     ExArgv_Vector*  pVec;
-    char_t          arg[ FILEPATH_SZ + 4 ];
+    char_t  	    arg[ FILEPATH_SZ + 4 ];
     const char_t*   s;
-    int             n;
+    int     	    n;
 
     assert(pArgc != 0 && pppArgv != 0);
     if (pArgc == 0 || pppArgv == 0)
-        return -1;
+    	return -1;
 
-    pVec = ExArgv_Vector_create(1);                 // ì‹Æ—p‚ÌƒŠƒXƒg‚ğ—pˆÓ.
+    pVec = ExArgv_Vector_create(1); 	    	    // ì‹Æ—p‚ÌƒŠƒXƒg‚ğ—pˆÓ.
     if (pVec == 0)
-        return -1;
+    	return -1;
 
     // Àsƒtƒ@ƒCƒ‹–¼‚ğ“¾‚ÄA‚»‚ê‚ğ‰‚Á’[‚É“o˜^.
     n = GetModuleFileName(NULL, arg, FILEPATH_SZ);
     if (n > 0) {
-        ExArgv_Vector_push(pVec, arg);
+    	ExArgv_Vector_push(pVec, arg);
     } else {
-        // error.
+    	// error.
       #if defined _MSC_VER
-        ExArgv_Vector_push(pVec, _pgmptr);
+    	ExArgv_Vector_push(pVec, _pgmptr);
       #endif
     }
     if (pVec->size == 0)
-        return -1;
+    	return -1;
 
     // ŠÂ‹«•Ï”‚Ìæ“¾.
   #ifdef EXARGV_ENVNAME
@@ -350,32 +350,32 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
   #endif
 
   #if EXARGV_USE_WC
-    s_wildMode  = 0;
+    s_wildMode	= 0;
   #endif
 
     // 1s‚Å“n‚³‚ê‚éƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ğ•ªŠ„.
     s = pCmdLine;
     while ( (s = ExArgv_fname_scanArgStr(s, arg, FILEPATH_SZ)) != NULL ) {
-        const char_t* p = arg;
+    	const char_t* p = arg;
       #if EXARGV_USE_RESFILE
-        if (*p == T('@')) {
-            ExArgv_getResFile(p+1, pVec, 0);
-        } else
+    	if (*p == T('@')) {
+    	    ExArgv_getResFile(p+1, pVec, 0);
+    	} else
       #endif
-        {
-          #if EXARGV_USE_WC
-            s_wildMode |= ExArgv_fname_isWildCard(p);
-          #endif
-            ExArgv_Vector_push( pVec, p );
-        }
+    	{
+    	  #if EXARGV_USE_WC
+    	    s_wildMode |= ExArgv_fname_isWildCard(p);
+    	  #endif
+    	    ExArgv_Vector_push( pVec, p );
+    	}
     }
 
   #if EXARGV_USE_WC
     if (s_wildMode)
-        ExArgv_wildCard(pVec);                      // ƒƒCƒ‹ƒhƒJ[ƒh‚âƒfƒBƒŒƒNƒgƒŠÄ‹A‚µ‚ÄƒpƒX‚ğæ“¾.
+    	ExArgv_wildCard(pVec);	    	    	    // ƒƒCƒ‹ƒhƒJ[ƒh‚âƒfƒBƒŒƒNƒgƒŠÄ‹A‚µ‚ÄƒpƒX‚ğæ“¾.
   #endif
   #if (defined EXARGV_TOSLASH) || (defined EXARGV_TOBACKSLASH)
-    ExArgv_convBackSlash(pVec);                     // defineİ’è‚É]‚Á‚ÄA\ ‚Æ / ‚Ì•ÏŠ·. (Šî–{“I‚É‚Í‰½‚à‚µ‚È‚¢)
+    ExArgv_convBackSlash(pVec);     	    	    // defineİ’è‚É]‚Á‚ÄA\ ‚Æ / ‚Ì•ÏŠ·. (Šî–{“I‚É‚Í‰½‚à‚µ‚È‚¢)
   #endif
 
     ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // ì‹ÆƒŠƒXƒg‚ğ argc,argv ‚É•ÏŠ·‚µAì‹ÆƒŠƒXƒg©‘Ì‚ÍŠJ•ú.
@@ -391,58 +391,58 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
 #if (defined _WINDOWS) == 0 && (defined EXARGV_USE_SETARGV) == 0
 
 /** argc,argv ‚ğƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹‚âƒƒCƒ‹ƒhƒJ[ƒh“WŠJ‚µ‚ÄAargc, argv‚ğXV‚µ‚Ä•Ô‚·.
- *  @param  pArgc       argc‚ÌƒAƒhƒŒƒX.(argv‚Ì”)
- *  @param  pppArgv     argv‚ÌƒAƒhƒŒƒX.
+ *  @param  pArgc   	argc‚ÌƒAƒhƒŒƒX.(argv‚Ì”)
+ *  @param  pppArgv 	argv‚ÌƒAƒhƒŒƒX.
  */
 void ExArgv_conv(int* pArgc, char_t*** pppArgv)
 {
-    int             argc;
-    char_t**        ppArgv;
+    int     	    argc;
+    char_t**	    ppArgv;
     ExArgv_Vector*  pVec;
-    int             i;
+    int     	    i;
 
     assert( pArgc != 0 && pppArgv != 0 );
     if (pArgc == 0 || pppArgv == 0)
-        return;
+    	return;
 
     ppArgv = *pppArgv;
     argc   = *pArgc;
     assert(argc > 0 && ppArgv != 0);
     if (argc == 0 || ppArgv == 0)
-        return;
+    	return;
 
-  #if defined EXARGV_USE_FULLPATH_ARGV0 && defined _WIN32       // ŒÃ‚¢ƒ\[ƒX—p‚ÉAexe‚Ìƒtƒ‹ƒpƒX‚ğİ’è.
+  #if defined EXARGV_USE_FULLPATH_ARGV0 && defined _WIN32   	// ŒÃ‚¢ƒ\[ƒX—p‚ÉAexe‚Ìƒtƒ‹ƒpƒX‚ğİ’è.
    #if defined _MSC_VER     // vc‚È‚ç‚·‚Å‚É‚ ‚é‚Ì‚Å‚»‚ê‚ğ—¬—p.
     ppArgv[0] = _pgmptr;
    #elif defined __GNUC__   // ‚í‚©‚ç‚È‚¢‚Ì‚Åƒ‚ƒWƒ…[ƒ‹–¼æ“¾.
     {
-        static char_t nm[MAX_PATH];
-        if (GetModuleFileName(NULL, nm, MAX_PATH) > 0)
-            ppArgv[0] = nm;
+    	static char_t nm[MAX_PATH];
+    	if (GetModuleFileName(NULL, nm, MAX_PATH) > 0)
+    	    ppArgv[0] = nm;
     }
    #endif
   #endif
 
     if (argc < 2)
-        return;
+    	return;
 
   #if !EXARGV_USE_CONFIG && !defined(EXARGV_ENVNAME) && !defined(EXARGV_TOSLASH) && !defined(EXARGV_TOBACKSLASH)
    #if !EXARGV_USE_WC && !EXARGV_USE_RESFILE
-    return;     // ‚Ù‚Ú•ÏŠ·–³‚µ...
+    return; 	// ‚Ù‚Ú•ÏŠ·–³‚µ...
    #else
     if (ExArgv_checkWcResfile(argc, ppArgv) == 0)   // Œ»ó‚Ìargc,argv‚ğ˜M‚é•K—v‚ª‚ ‚é‚©?
-        return;
+    	return;
    #endif
   #endif
 
-    pVec = ExArgv_Vector_create(argc+1);            // argv‚ª‘Œ¸‚·‚é‚Ì‚ÅAì‹Æ—p‚ÌƒŠƒXƒg‚ğ—pˆÓ.
+    pVec = ExArgv_Vector_create(argc+1);    	    // argv‚ª‘Œ¸‚·‚é‚Ì‚ÅAì‹Æ—p‚ÌƒŠƒXƒg‚ğ—pˆÓ.
 
     //x printf("@4 %d %p(%p)\n", argc, ppArgv, *ppArgv);
     //x printf("   %p: %p %d %d\n", pVec, pVec->buf, pVec->capa, pVec->size);
 
     // Àsƒtƒ@ƒCƒ‹–¼‚Ìæ“¾.
     if (argc > 0)
-        ExArgv_Vector_push( pVec, ppArgv[0] );      // Vec‚É“o˜^.
+    	ExArgv_Vector_push( pVec, ppArgv[0] );	    // Vec‚É“o˜^.
 
     // ŠÂ‹«•Ï”‚Ìæ“¾.
   #ifdef EXARGV_ENVNAME
@@ -458,31 +458,31 @@ void ExArgv_conv(int* pArgc, char_t*** pppArgv)
     //x printf("%p %x %#x %p\n",pVec, pVec->capa, pVec->size, pVec->buf);
 
   #if EXARGV_USE_WC
-    s_wildMode  = 0;
+    s_wildMode	= 0;
   #endif
 
     // ˆø”‚Ìˆ—.
     for (i = 1; i < argc; ++i) {
-        const char_t* p = ppArgv[i];
+    	const char_t* p = ppArgv[i];
       #if EXARGV_USE_RESFILE
-        if (i > 0 && *p == T('@')) {
-            ExArgv_getResFile(p+1, pVec, 0);        // ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹“Ç.
-        } else
+    	if (i > 0 && *p == T('@')) {
+    	    ExArgv_getResFile(p+1, pVec, 0);	    // ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹“Ç.
+    	} else
       #endif
-        {
-          #if EXARGV_USE_WC
-            s_wildMode |= ExArgv_fname_isWildCard(p);
-          #endif
-            ExArgv_Vector_push( pVec, p );          // Vec‚É“o˜^.
-        }
+    	{
+    	  #if EXARGV_USE_WC
+    	    s_wildMode |= ExArgv_fname_isWildCard(p);
+    	  #endif
+    	    ExArgv_Vector_push( pVec, p );  	    // Vec‚É“o˜^.
+    	}
     }
 
   #if EXARGV_USE_WC
     if (s_wildMode)
-        ExArgv_wildCard(pVec);                      // ƒƒCƒ‹ƒhƒJ[ƒh‚âƒfƒBƒŒƒNƒgƒŠÄ‹A‚µ‚ÄƒpƒX‚ğæ“¾.
+    	ExArgv_wildCard(pVec);	    	    	    // ƒƒCƒ‹ƒhƒJ[ƒh‚âƒfƒBƒŒƒNƒgƒŠÄ‹A‚µ‚ÄƒpƒX‚ğæ“¾.
   #endif
   #if (defined EXARGV_TOSLASH) || (defined EXARGV_TOBACKSLASH)
-    ExArgv_convBackSlash(pVec);                     // defineİ’è‚É]‚Á‚ÄA\ ‚Æ / ‚Ì•ÏŠ·. (Šî–{“I‚É‚Í‰½‚à‚µ‚È‚¢)
+    ExArgv_convBackSlash(pVec);     	    	    // defineİ’è‚É]‚Á‚ÄA\ ‚Æ / ‚Ì•ÏŠ·. (Šî–{“I‚É‚Í‰½‚à‚µ‚È‚¢)
   #endif
 
     ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // ì‹ÆƒŠƒXƒg‚ğ argc,argv ‚É•ÏŠ·‚µAì‹ÆƒŠƒXƒg©‘Ì‚ÍŠJ•ú.
@@ -520,7 +520,7 @@ static inline void str_l_cpy(char_t* d, const char_t* s, unsigned l)
 {
     const char_t*   e = d + l - 1;
     while (d < e && *s) {
-        *d++ = *s++;
+    	*d++ = *s++;
     }
     *d = T('\0');
 }
@@ -531,10 +531,10 @@ static inline void str_l_cat(char_t* d, const char_t* s, unsigned l)
 {
     const char_t*   e = d + l - 1;
     while (d < e && *d) {
-        ++d;
+    	++d;
     }
     while (d < e && *s) {
-        *d++ = *s++;
+    	*d++ = *s++;
     }
     *d = T('\0');
 }
@@ -546,47 +546,47 @@ static inline void str_l_cat(char_t* d, const char_t* s, unsigned l)
 /// ƒƒCƒ‹ƒhƒJ[ƒh•¶š‚ª¬‚¶‚Á‚Ä‚¢‚é‚©?
 static int  ExArgv_fname_isWildCard(const char_t* s) {
   #if defined DOSWIN32
-    unsigned    rc = 0;
-    unsigned    c;
+    unsigned	rc = 0;
+    unsigned	c;
     while ((c = *s++) != 0) {
-        if (c == T('*')) {
-            if (*s == T('*')) {
-                return 2;
-            }
-            rc = 1;
-        } else if (c == T('?')) {
-            rc = 1;
-        }
+    	if (c == T('*')) {
+    	    if (*s == T('*')) {
+    	    	return 2;
+    	    }
+    	    rc = 1;
+    	} else if (c == T('?')) {
+    	    rc = 1;
+    	}
     }
     return rc;
   #else // linux(fnmatch)
     //return strpbrk(s, "*?[]\\") != 0;
-    unsigned    rc = 0;
-    unsigned    bc = 0;
-    unsigned    c;
+    unsigned	rc = 0;
+    unsigned	bc = 0;
+    unsigned	c;
     while ((c = *s++) != 0) {
-        if (bc == 0) {
-            if (c == T('*')) {
-                if (*s == T('*')) {
-                    return 2;
-                }
-                rc = 1;
-            } else if (c == T('?')) {
-                rc = 1;
-            } else if (c == T('[')) {
-                rc = 1;
-                bc = 1;
-                if (*s == T(']'))
-                    ++s;
-            }
-          #if 0
-            else if (c == T('\\') && *s) {
-                ++s;
-            }
-          #endif
-        } else if (c == T(']')) {
-            bc = 0;
-        }
+    	if (bc == 0) {
+    	    if (c == T('*')) {
+    	    	if (*s == T('*')) {
+    	    	    return 2;
+    	    	}
+    	    	rc = 1;
+    	    } else if (c == T('?')) {
+    	    	rc = 1;
+    	    } else if (c == T('[')) {
+    	    	rc = 1;
+    	    	bc = 1;
+    	    	if (*s == T(']'))
+    	    	    ++s;
+    	    }
+    	  #if 0
+    	    else if (c == T('\\') && *s) {
+    	    	++s;
+    	    }
+    	  #endif
+    	} else if (c == T(']')) {
+    	    bc = 0;
+    	}
     }
     return rc;
   #endif
@@ -599,15 +599,15 @@ static inline void  ExArgv_fname_removeRecChr(char_t* d, const char_t* s)
 {
     char_t  c;
     while ((c = *s++) != 0) {
-        if (c == T('*') && *s == T('*')) {
-            ++s;
-        }
-        *d++ = c;
+    	if (c == T('*') && *s == T('*')) {
+    	    ++s;
+    	}
+    	*d++ = c;
     }
     *d = 0;
 }
 
-#endif  // EXARGV_USE_WC
+#endif	// EXARGV_USE_WC
 
 
 
@@ -615,29 +615,29 @@ static inline void  ExArgv_fname_removeRecChr(char_t* d, const char_t* s)
 /// ˆø”•¶š—ñ”z—ñ‚ÉAƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹w’èAƒƒCƒ‹ƒhƒJ[ƒhw’èAƒŠƒJ[ƒVƒuw’è‚ª‚ ‚é‚©ƒ`ƒFƒbƒN.
 static unsigned ExArgv_checkWcResfile(int argc, char_t** argv)
 {
-    int         i;
-    unsigned    rc    = 0;
+    int     	i;
+    unsigned	rc    = 0;
 
     for (i = 1; i < argc; ++i) {
-        const char_t* p = argv[i];
+    	const char_t* p = argv[i];
       #if EXARGV_USE_RESFILE
-        if (*p == T('@')) {
-            rc |= 4;    // ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹w’è.
-        } else
+    	if (*p == T('@')) {
+    	    rc |= 4;	// ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹w’è.
+    	} else
       #endif
-        {
-          #if EXARGV_USE_WC
-            if (ExArgv_isOpt(*p) == 0) {
-                int mode = ExArgv_fname_isWildCard(p);
-                s_wildMode |= mode;
-                if (mode > 0) {
-                    rc |= 1;    // ƒƒCƒ‹ƒhƒJ[ƒhw’è.
-                    if (mode == 2)
-                        rc |= 2;
-                }
-            }
-          #endif
-        }
+    	{
+    	  #if EXARGV_USE_WC
+    	    if (ExArgv_isOpt(*p) == 0) {
+    	    	int mode = ExArgv_fname_isWildCard(p);
+    	    	s_wildMode |= mode;
+    	    	if (mode > 0) {
+    	    	    rc |= 1;	// ƒƒCƒ‹ƒhƒJ[ƒhw’è.
+    	    	    if (mode == 2)
+    	    	    	rc |= 2;
+    	    	}
+    	    }
+    	  #endif
+    	}
     }
     return rc;
 }
@@ -651,17 +651,17 @@ static void ExArgv_getEnv(const char_t* envName, ExArgv_Vector* pVec)
 {
     const char_t* env;
     if (envName == 0 || envName[0] == 0)
-        return;
+    	return;
     env = GET_ENV(envName);
     if (env && env[0]) {
-        char_t          arg[ FILEPATH_SZ + 4 ];
-        while ( (env = ExArgv_fname_scanArgStr(env, arg, FILEPATH_SZ)) != NULL ) {
-            const char_t* p = arg;
-          #if EXARGV_USE_WC
-            s_wildMode |= ExArgv_fname_isWildCard(p);
-          #endif
-            ExArgv_Vector_push( pVec, p );
-        }
+    	char_t	    	arg[ FILEPATH_SZ + 4 ];
+    	while ( (env = ExArgv_fname_scanArgStr(env, arg, FILEPATH_SZ)) != NULL ) {
+    	    const char_t* p = arg;
+    	  #if EXARGV_USE_WC
+    	    s_wildMode |= ExArgv_fname_isWildCard(p);
+    	  #endif
+    	    ExArgv_Vector_push( pVec, p );
+    	}
     }
 }
 #endif
@@ -685,9 +685,9 @@ static void ExArgv_getCfgFile(const char_t* exeName, ExArgv_Vector* pVec)
 
     p = STR_R_CHR(p, T('.'));
     if (p)
-        str_l_cpy(p, T(EXARGV_CONFIG_EXT), 10);
+    	str_l_cpy(p, T(EXARGV_CONFIG_EXT), 10);
     else
-        str_l_cpy(name+STR_LEN(name), T(EXARGV_CONFIG_EXT), 10);
+    	str_l_cpy(name+STR_LEN(name), T(EXARGV_CONFIG_EXT), 10);
     ExArgv_getResFile(name, pVec, 1);
 }
 #endif
@@ -700,35 +700,35 @@ static void ExArgv_getCfgFile(const char_t* exeName, ExArgv_Vector* pVec)
  */
 static void ExArgv_getResFile(const char_t* fname, ExArgv_Vector* pVec, BOOL notFoundOk)
 {
-    unsigned    n = 0;
-    enum {      BUF_SZ = 16 * 1024 };
-    char_t      buf[BUF_SZ];
-    FILEPTR     fp;
+    unsigned	n = 0;
+    enum {  	BUF_SZ = 16 * 1024 };
+    char_t  	buf[BUF_SZ];
+    FILEPTR 	fp;
     fp = FOPEN_RT(fname);
     if (FILEPTR_IS_OK(fp) == 0) {
-        if (notFoundOk)
-            return;
-        FPRINTF(STDERR, T("Response-file '%s' is not opened.\n"), fname);
-        exit(1);    // return;
+    	if (notFoundOk)
+    	    return;
+    	FPRINTF(STDERR, T("Response-file '%s' is not opened.\n"), fname);
+    	exit(1);    // return;
     }
     while (FGETS(buf, BUF_SZ, fp)) {
-        char_t  arg[FILEPATH_SZ + 4];
-        char_t* s = buf;
-        while ( (s = ExArgv_fname_scanArgStr(s, arg, FILEPATH_SZ)) != NULL ) {
-            int c = ((uchar_t*)arg)[0];
-            if (c == T(';') || c == T('#') || c == T('\0')) {   // ‹ós‚âƒRƒƒ“ƒg‚Ì.
-                break;
-            }
-            // Ä‹AŒŸõw’è,ƒƒCƒ‹ƒhƒJ[ƒh‚Ì—L–³‚ğƒ`ƒFƒbƒN.
-          #if EXARGV_USE_WC
-            s_wildMode |= ExArgv_fname_isWildCard(arg);
-          #endif
-            ExArgv_Vector_push(pVec, arg );
-        }
+    	char_t	arg[FILEPATH_SZ + 4];
+    	char_t* s = buf;
+    	while ( (s = ExArgv_fname_scanArgStr(s, arg, FILEPATH_SZ)) != NULL ) {
+    	    int c = ((uchar_t*)arg)[0];
+    	    if (c == T(';') || c == T('#') || c == T('\0')) {	// ‹ós‚âƒRƒƒ“ƒg‚Ì.
+    	    	break;
+    	    }
+    	    // Ä‹AŒŸõw’è,ƒƒCƒ‹ƒhƒJ[ƒh‚Ì—L–³‚ğƒ`ƒFƒbƒN.
+    	  #if EXARGV_USE_WC
+    	    s_wildMode |= ExArgv_fname_isWildCard(arg);
+    	  #endif
+    	    ExArgv_Vector_push(pVec, arg );
+    	}
     }
     if (FERROR(fp)) {
-        FPRINTF(STDERR, T("%s (%d) : file read error.\n"), fname, n);
-        exit(1);
+    	FPRINTF(STDERR, T("%s (%d) : file read error.\n"), fname, n);
+    	exit(1);
     }
     FCLOSE(fp);
 }
@@ -741,48 +741,48 @@ static void ExArgv_getResFile(const char_t* fname, ExArgv_Vector* pVec, BOOL not
  */
 static void ExArgv_wildCard(ExArgv_Vector* pVec)
 {
-    char_t**        pp;
-    char_t**        ee;
+    char_t**	    pp;
+    char_t**	    ee;
     ExArgv_Vector*  wk;
-    int             mode;
+    int     	    mode;
 
     // Ä\’z.
     wk = ExArgv_Vector_create( pVec->size+1 );
     ee = pVec->buf + pVec->size;
     for (pp = pVec->buf; pp != ee; ++pp) {
-        const char_t* s = *pp;
+    	const char_t* s = *pp;
       #if EXARGV_USE_WC
-        if (   ExArgv_isOpt(*s) == 0                    // ƒIƒvƒVƒ‡ƒ“ˆÈŠO‚Ì•¶š—ñ‚Å,
-            && (pp != pVec->buf)                        // ‰‚Á’[ˆÈŠO([0]‚ÍÀsƒtƒ@ƒCƒ‹–¼‚È‚Ì‚ÅŒŸõ‚³‚¹‚È‚¢)‚Ì‚Æ‚«‚Å,
-            && ((mode = ExArgv_fname_isWildCard( s )) != 0) // ƒƒCƒ‹ƒhƒJ[ƒhw’è‚Ì‚ ‚è‚Ì‚Æ‚«.
-         ){
-            char_t  name[FILEPATH_SZ+4];
-            int recFlag = (mode >> 1) & 1;
-          #if EXARGV_USE_WC_REC
-            if (s[0] == T('*') && s[1] == T('*') && ExArgv_isDirSep(s[2])) {
-                recFlag = 1;
-                s += 3;
-            } else
-          #endif
-            if (recFlag) {
-                ExArgv_fname_removeRecChr(name, s);
-                s = name;
-            }
-            ExArgv_Vector_findFname(wk, s, recFlag);
+    	if (   ExArgv_isOpt(*s) == 0	    	    	// ƒIƒvƒVƒ‡ƒ“ˆÈŠO‚Ì•¶š—ñ‚Å,
+    	    && (pp != pVec->buf)    	    	    	// ‰‚Á’[ˆÈŠO([0]‚ÍÀsƒtƒ@ƒCƒ‹–¼‚È‚Ì‚ÅŒŸõ‚³‚¹‚È‚¢)‚Ì‚Æ‚«‚Å,
+    	    && ((mode = ExArgv_fname_isWildCard( s )) != 0) // ƒƒCƒ‹ƒhƒJ[ƒhw’è‚Ì‚ ‚è‚Ì‚Æ‚«.
+    	 ){
+    	    char_t  name[FILEPATH_SZ+4];
+    	    int recFlag = (mode >> 1) & 1;
+    	  #if EXARGV_USE_WC_REC
+    	    if (s[0] == T('*') && s[1] == T('*') && ExArgv_isDirSep(s[2])) {
+    	    	recFlag = 1;
+    	    	s += 3;
+    	    } else
+    	  #endif
+    	    if (recFlag) {
+    	    	ExArgv_fname_removeRecChr(name, s);
+    	    	s = name;
+    	    }
+    	    ExArgv_Vector_findFname(wk, s, recFlag);
 
-        } else  {
-            ExArgv_Vector_push( wk, s );
-        }
+    	} else	{
+    	    ExArgv_Vector_push( wk, s );
+    	}
       #else
-        ExArgv_Vector_push( wk, s );
+    	ExArgv_Vector_push( wk, s );
       #endif
     }
 
     // Œ³‚ÌƒŠƒXƒg‚ğŠJ•ú.
     for (pp = pVec->buf; pp != ee; ++pp) {
-        char_t* p = *pp;
-        if (p)
-            ExArgv_free(p);
+    	char_t* p = *pp;
+    	if (p)
+    	    ExArgv_free(p);
     }
     ExArgv_free(pVec->buf);
 
@@ -805,20 +805,20 @@ static void ExArgv_wildCard(ExArgv_Vector* pVec)
  */
 static void ExArgv_convBackSlash(ExArgv_Vector* pVec)
 {
-    char_t**    pp;
-    char_t**    ee = pVec->buf + pVec->size;
+    char_t**	pp;
+    char_t**	ee = pVec->buf + pVec->size;
 
     for (pp = pVec->buf; pp != ee; ++pp) {
-        char_t* s = *pp;
-        if (ExArgv_isOpt(*s) == 0) {        // ƒIƒvƒVƒ‡ƒ“ˆÈŠO‚Ì•¶š—ñ‚ÅA
-          #if (defined EXARGV_TOSLASH)
-            ExArgv_fname_backslashToSlash(s);       // \ ‚ğ / ‚É’uŠ·.
-          #else
-            ExArgv_fname_slashToBackslash(s);       // / ‚ğ \ ‚É’uŠ·.
-          #endif
-        } else {                            // ƒIƒvƒVƒ‡ƒ“‚È‚çA‰ºè‚É•ÏŠ·‚µ‚È‚¢‚Å‚¨‚­.
-            ;
-        }
+    	char_t* s = *pp;
+    	if (ExArgv_isOpt(*s) == 0) {	    // ƒIƒvƒVƒ‡ƒ“ˆÈŠO‚Ì•¶š—ñ‚ÅA
+    	  #if (defined EXARGV_TOSLASH)
+    	    ExArgv_fname_backslashToSlash(s);	    // \ ‚ğ / ‚É’uŠ·.
+    	  #else
+    	    ExArgv_fname_slashToBackslash(s);	    // / ‚ğ \ ‚É’uŠ·.
+    	  #endif
+    	} else {    	    	    	    // ƒIƒvƒVƒ‡ƒ“‚È‚çA‰ºè‚É•ÏŠ·‚µ‚È‚¢‚Å‚¨‚­.
+    	    ;
+    	}
     }
 }
 #endif
@@ -830,8 +830,8 @@ static void ExArgv_convBackSlash(ExArgv_Vector* pVec)
 static void ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** pppArgv)
 {
     ExArgv_Vector*  pVec;
-    char_t**        av;
-    int             ac;
+    char_t**	    av;
+    int     	    ac;
 
     assert( pppArgv != 0 && pArgc != 0 && ppVec != 0 );
 
@@ -840,15 +840,15 @@ static void ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** ppp
 
     pVec     = *ppVec;
     if (pVec == NULL)
-        return;
+    	return;
 
-    ac       = (int)pVec->size;
+    ac	     = (int)pVec->size;
     if (ac == 0)
-        return;
+    	return;
 
     // char_t*”z—ñ‚Ì‚½‚ß‚Ìƒƒ‚ƒŠ‚ğæ“¾.
     *pArgc   = ac;
-    av       = (char_t**) ExArgv_alloc(sizeof(char_t*) * (ac + 2));
+    av	     = (char_t**) ExArgv_alloc(sizeof(char_t*) * (ac + 2));
     *pppArgv = av;
 
     memcpy(av, pVec->buf, sizeof(char_t*) * ac);
@@ -868,26 +868,26 @@ static void ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** ppp
 
 #if defined DOSWIN32 == 0 && defined UNICODE == 0   // ŠÂ‹«•Ï” LANG=ja_JP.SJIS ‚Ì‚æ‚¤‚Èó‘Ô‚ğ‘O’ñ.
 
-static unsigned char        s_shift_char_type = 0;
+static unsigned char	    s_shift_char_type = 0;
 
 static void  ExArgv_fname_check_locale()
 {
-    const char*         lang = getenv("LANG");
+    const char*     	lang = getenv("LANG");
     s_shift_char_type  = 1;
     if (lang) {
-        // ja_JP.SJIS ‚Ì‚æ‚¤‚ÈŒ`®‚Å‚ ‚é‚±‚Æ‚ğ‘O’ñ‚ÉSJIS,big5,gbk‚©‚ğƒ`ƒFƒbƒN.
-        const char*     p    = strrchr(lang, '.');
-        if (p) {
-            ++p;
-            // 0x5c‘Îô‚ª•K—v‚Èencoding‚©‚ğƒ`ƒFƒbƒN. (sjisˆÈŠO‚Í–¢ƒ`ƒFƒbƒN)
-            if (strncasecmp(p, "sjis", 4) == 0) {
-                s_shift_char_type   = 2;
-            } else if (strncasecmp(p, "big5", 4) == 0) {
-                s_shift_char_type   = 3;
-            } else if (strncasecmp(p, "gbk", 3) == 0 || strncasecmp(p, "gb18030", 7) == 0) {
-                s_shift_char_type   = 4;
-            }
-        }
+    	// ja_JP.SJIS ‚Ì‚æ‚¤‚ÈŒ`®‚Å‚ ‚é‚±‚Æ‚ğ‘O’ñ‚ÉSJIS,big5,gbk‚©‚ğƒ`ƒFƒbƒN.
+    	const char* 	p    = strrchr(lang, '.');
+    	if (p) {
+    	    ++p;
+    	    // 0x5c‘Îô‚ª•K—v‚Èencoding‚©‚ğƒ`ƒFƒbƒN. (sjisˆÈŠO‚Í–¢ƒ`ƒFƒbƒN)
+    	    if (strncasecmp(p, "sjis", 4) == 0) {
+    	    	s_shift_char_type   = 2;
+    	    } else if (strncasecmp(p, "big5", 4) == 0) {
+    	    	s_shift_char_type   = 3;
+    	    } else if (strncasecmp(p, "gbk", 3) == 0 || strncasecmp(p, "gb18030", 7) == 0) {
+    	    	s_shift_char_type   = 4;
+    	    }
+    	}
     }
 }
 
@@ -899,7 +899,7 @@ static int ExArgv_fname_is_mbblead(unsigned c) {
     case 2 /* SJIS */: return ((c >= 0x81 && c <= 0x9F) || (c >= 0xE0 && c <= 0xFC));
     case 3 /* BIG5 */: return ((c >= 0xA1 && c <= 0xC6) || (c >= 0xC9 && c <= 0xF9));
     case 4 /* GBK  */: return (c >= 0x81 && c <= 0xFE);
-    default:           return 0;
+    default:	       return 0;
     }
 }
 #endif
@@ -907,23 +907,23 @@ static int ExArgv_fname_is_mbblead(unsigned c) {
 
 /// •¶š C ‚ª MS‘SŠp‚Ì‚PƒoƒCƒg–Ú‚©”Û‚©. (utf8‚âeuc‚Í \ –â‘è‚Í–³‚¢‚Ì‚Å 0‚ª‹A‚ê‚Îok)
 #if defined _WIN32
- #define ExArgv_FNAME_ISMBBLEAD(c)      IsDBCSLeadByte(c)
+ #define ExArgv_FNAME_ISMBBLEAD(c)  	IsDBCSLeadByte(c)
 #elif defined UNICODE
- //#define ExArgv_FNAME_ISMBBLEAD(c)    (0)
+ //#define ExArgv_FNAME_ISMBBLEAD(c)	(0)
 #elif defined HAVE_MBCTYPE_H
- #define ExArgv_FNAME_ISMBBLEAD(c)      _ismbblead(c)
+ #define ExArgv_FNAME_ISMBBLEAD(c)  	_ismbblead(c)
 #else
- #define ExArgv_FNAME_ISMBBLEAD(c)      ((c) >= 0x80 && ExArgv_fname_is_mbblead(c))
+ #define ExArgv_FNAME_ISMBBLEAD(c)  	((c) >= 0x80 && ExArgv_fname_is_mbblead(c))
 #endif
 
 
 /// Ÿ‚Ì•¶š‚Öƒ|ƒCƒ“ƒ^‚ği‚ß‚é. ¦CharNext()‚ªƒTƒƒQ[ƒgƒyƒA‚âutf8‘Î‰‚µ‚Ä‚­‚ê‚Ä‚½‚ç‚¢‚¢‚È‚ÆŠú‘Ò(‘Ê–Ú‚©‚à‚¾‚¯‚Ç)
 #if  defined _WIN32
-#define ExArgv_FNAME_CHARNEXT(p)        (TCHAR*)CharNext((TCHAR*)(p))
+#define ExArgv_FNAME_CHARNEXT(p)    	(TCHAR*)CharNext((TCHAR*)(p))
 #elif defined UNICODE
-#define ExArgv_FNAME_CHARNEXT(p)        ((p) + 1)
+#define ExArgv_FNAME_CHARNEXT(p)    	((p) + 1)
 #else
-#define ExArgv_FNAME_CHARNEXT(p)        ((p) + 1 + (ExArgv_FNAME_ISMBBLEAD(*(unsigned char*)(p)) && (p)[1]))
+#define ExArgv_FNAME_CHARNEXT(p)    	((p) + 1 + (ExArgv_FNAME_ISMBBLEAD(*(unsigned char*)(p)) && (p)[1]))
 #endif
 
 
@@ -931,14 +931,14 @@ static int ExArgv_fname_is_mbblead(unsigned c) {
 #if defined EXARGV_TOSLASH
 /** filePath’†‚Ì \ ‚ğ / ‚É’uŠ·.
  */
-static char_t   *ExArgv_fname_backslashToSlash(char_t filePath[])
+static char_t	*ExArgv_fname_backslashToSlash(char_t filePath[])
 {
     char_t *p = filePath;
     while (*p != T('\0')) {
-        if (*p == T('\\')) {
-            *p = T('/');
-        }
-        p = ExArgv_FNAME_CHARNEXT(p);
+    	if (*p == T('\\')) {
+    	    *p = T('/');
+    	}
+    	p = ExArgv_FNAME_CHARNEXT(p);
     }
     return filePath;
 }
@@ -949,13 +949,13 @@ static char_t   *ExArgv_fname_backslashToSlash(char_t filePath[])
 #if defined EXARGV_TOBACKSLASH
 /** filePath’†‚Ì / ‚ğ \ ‚É’uŠ·.
  */
-static char_t   *ExArgv_fname_slashToBackslash(char_t filePath[])
+static char_t	*ExArgv_fname_slashToBackslash(char_t filePath[])
 {
     char_t *p;
     for (p = filePath; *p != T('\0'); ++p) {
-        if (*p == T('/')) {
-            *p = T('\\');
-        }
+    	if (*p == T('/')) {
+    	    *p = T('\\');
+    	}
     }
     return filePath;
 }
@@ -971,39 +971,39 @@ static char_t   *ExArgv_fname_slashToBackslash(char_t filePath[])
 static char_t *ExArgv_fname_scanArgStr(const char_t *str, char_t arg[], int argSz)
 {
     const uchar_t*  s = (const uchar_t *)str;
-    char_t*         d = arg;
-    char_t*         e = d + argSz;
-    unsigned        f = 0;
-    int             c;
+    char_t* 	    d = arg;
+    char_t* 	    e = d + argSz;
+    unsigned	    f = 0;
+    int     	    c;
 
     if (s == 0)
-        return NULL;
+    	return NULL;
 
     assert( str != 0 && arg != 0 && argSz > 1 );
 
     // ‹ó”’‚ğƒXƒLƒbƒv.
     // while ( *s < 0x7f && isspace(*s) )
     while ((0 < *s && *s <= 0x20) || *s == 0x7f)    // ascii,sjis,utf8,utf16 ‚È‚ç‚±‚ê‚Å‚¢‚¢...
-        ++s;
+    	++s;
 
-    if (*s == T('\0'))  // EOS‚¾‚Á‚½‚çAŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚Æ‚µ‚ÄNULL‚ğ•Ô‚·.
-        return NULL;
+    if (*s == T('\0'))	// EOS‚¾‚Á‚½‚çAŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚Æ‚µ‚ÄNULL‚ğ•Ô‚·.
+    	return NULL;
 
     do {
-        c = *s++;
-        if (c == T('"')) {
-            f ^= 1;                     // "‚Ì‘Î‚ÌŠÔ‚Í‹ó”’‚ğƒtƒ@ƒCƒ‹–¼‚É‹–‚·.‚½‚ß‚Ìƒtƒ‰ƒO.
+    	c = *s++;
+    	if (c == T('"')) {
+    	    f ^= 1; 	    	    	// "‚Ì‘Î‚ÌŠÔ‚Í‹ó”’‚ğƒtƒ@ƒCƒ‹–¼‚É‹–‚·.‚½‚ß‚Ìƒtƒ‰ƒO.
 
-            // ‚¿‚å‚Á‚Æ‹C‚¿ˆ«‚¢‚ªAWin(XP)‚Ìcmd.exe‚Ì‹““®‚É‡‚í‚¹‚Ä‚İ‚é.
-            // (‚Ù‚ñ‚Æ‚É‚ ‚Á‚Ä‚é‚©A\•ª‚É‚Í’²‚×‚Ä‚È‚¢)
-            if (*s == T('"') && f == 0) // •Â‚¶"‚Ì’¼Œã‚É‚³‚ç‚É"‚ª‚ ‚ê‚ÎA‚»‚ê‚Í‚»‚Ì‚Ü‚Ü•\¦‚·‚é.
-                ++s;
-            else
-                continue;               // ’Êí‚Í " ‚ÍÈ‚¢‚Ä‚µ‚Ü‚¤.
-        }
-        if (d < e) {
-            *d++ = (char_t)c;
-        }
+    	    // ‚¿‚å‚Á‚Æ‹C‚¿ˆ«‚¢‚ªAWin(XP)‚Ìcmd.exe‚Ì‹““®‚É‡‚í‚¹‚Ä‚İ‚é.
+    	    // (‚Ù‚ñ‚Æ‚É‚ ‚Á‚Ä‚é‚©A\•ª‚É‚Í’²‚×‚Ä‚È‚¢)
+    	    if (*s == T('"') && f == 0) // •Â‚¶"‚Ì’¼Œã‚É‚³‚ç‚É"‚ª‚ ‚ê‚ÎA‚»‚ê‚Í‚»‚Ì‚Ü‚Ü•\¦‚·‚é.
+    	    	++s;
+    	    else
+    	    	continue;   	    	// ’Êí‚Í " ‚ÍÈ‚¢‚Ä‚µ‚Ü‚¤.
+    	}
+    	if (d < e) {
+    	    *d++ = (char_t)c;
+    	}
     } while (c >= 0x20 && (c != T(' ') || f != 0));
     *--d  = T('\0');
     --s;
@@ -1016,14 +1016,14 @@ static char_t *ExArgv_fname_scanArgStr(const char_t *str, char_t arg[], int argS
 #if EXARGV_USE_WC || (EXARGV_USE_CONFIG && defined DOSWIN32 == 0)
 /** ƒtƒ@ƒCƒ‹ƒpƒX–¼’†‚ÌƒfƒBƒŒƒNƒgƒŠ‚ğœ‚¢‚½ƒtƒ@ƒCƒ‹–¼‚ÌˆÊ’u‚ğ•Ô‚·.
  */
-static char_t*  ExArgv_fname_baseName(const char_t* adr)
+static char_t*	ExArgv_fname_baseName(const char_t* adr)
 {
     const char_t *p = adr;
     while (*p != T('\0')) {
-        if (*p == T(':') || ExArgv_isDirSep(*p)) {
-            adr = p + 1;
-        }
-        p = ExArgv_FNAME_CHARNEXT(p);
+    	if (*p == T(':') || ExArgv_isDirSep(*p)) {
+    	    adr = p + 1;
+    	}
+    	p = ExArgv_FNAME_CHARNEXT(p);
     }
     return (char_t*)adr;
 }
@@ -1038,57 +1038,57 @@ static char_t*  ExArgv_fname_baseName(const char_t* adr)
  */
 static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName, int recFlag)
 {
-  #if defined _WIN32        // ¦dos–¢‘Î‰(“¯—l‚Éì¬‰Â”\‚¾‚¯‚Ç)
-    unsigned            num         = 0;
-    WIN32_FIND_DATA*    pFindData   = (WIN32_FIND_DATA*)ExArgv_alloc(sizeof(WIN32_FIND_DATA));
-    HANDLE              hdl         = FindFirstFile(srchName, pFindData);
-    char_t*             pathBuf;
-    char_t*             baseName;
-    size_t              baseNameSz;
+  #if defined _WIN32	    // ¦dos–¢‘Î‰(“¯—l‚Éì¬‰Â”\‚¾‚¯‚Ç)
+    unsigned	    	num 	    = 0;
+    WIN32_FIND_DATA*	pFindData   = (WIN32_FIND_DATA*)ExArgv_alloc(sizeof(WIN32_FIND_DATA));
+    HANDLE  	    	hdl 	    = FindFirstFile(srchName, pFindData);
+    char_t* 	    	pathBuf;
+    char_t* 	    	baseName;
+    size_t  	    	baseNameSz;
 
     pathBuf  = (char_t*)ExArgv_alloc(FILEPATH_SZ);
     str_l_cpy(pathBuf, srchName, FILEPATH_SZ);
 
-    baseName    = ExArgv_fname_baseName(pathBuf);
-    *baseName   = T('\0');
-    baseNameSz  = FILEPATH_SZ - STR_LEN(pathBuf);
+    baseName	= ExArgv_fname_baseName(pathBuf);
+    *baseName	= T('\0');
+    baseNameSz	= FILEPATH_SZ - STR_LEN(pathBuf);
     assert(baseNameSz >= MAX_PATH);
 
     if (hdl != INVALID_HANDLE_VALUE) {
-        // ƒtƒ@ƒCƒ‹–¼‚ğæ“¾. ¦ ‰B‚µƒtƒ@ƒCƒ‹‚Í‘ÎÛŠO‚É‚µ‚Ä‚¨‚­.
-        do {
-            str_l_cpy(baseName, pFindData->cFileName, baseNameSz);
-            if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
-                ExArgv_Vector_push( pVec, pathBuf );
-                ++num;
-            }
-        } while (FindNextFile(hdl, pFindData) != 0);
-        FindClose(hdl);
+    	// ƒtƒ@ƒCƒ‹–¼‚ğæ“¾. ¦ ‰B‚µƒtƒ@ƒCƒ‹‚Í‘ÎÛŠO‚É‚µ‚Ä‚¨‚­.
+    	do {
+    	    str_l_cpy(baseName, pFindData->cFileName, baseNameSz);
+    	    if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
+    	    	ExArgv_Vector_push( pVec, pathBuf );
+    	    	++num;
+    	    }
+    	} while (FindNextFile(hdl, pFindData) != 0);
+    	FindClose(hdl);
     }
 
    #if EXARGV_USE_WC_REC
     // ƒfƒBƒŒƒNƒgƒŠÄ‹A‚Åƒtƒ@ƒCƒ‹–¼‚ğæ“¾.
     if (recFlag && baseNameSz >= 16) {
-        const char_t* srch = ExArgv_fname_baseName(srchName);
-        str_l_cpy(baseName, T("*.*"), 4);
-        hdl = FindFirstFile(pathBuf, pFindData);
-        if (hdl != INVALID_HANDLE_VALUE) {
-            do {
-                str_l_cpy(baseName, pFindData->cFileName, baseNameSz);
-                if ((pFindData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                    if (STR_CMP(baseName, T(".")) == 0 || STR_CMP(baseName, T("..")) == 0
-                        || (pFindData->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))           // ‰B‚µƒtƒHƒ‹ƒ_‚Í‘ÎÛŠO.
-                    {
-                        ;
-                    } else {
-                        str_l_cat(baseName, DIRSEP_STR, baseNameSz);
-                        str_l_cat(baseName, srch      , baseNameSz);
-                        num += ExArgv_Vector_findFname(pVec, pathBuf, 1);
-                    }
-                }
-            } while (FindNextFile(hdl, pFindData) != 0);
-            FindClose(hdl);
-        }
+    	const char_t* srch = ExArgv_fname_baseName(srchName);
+    	str_l_cpy(baseName, T("*.*"), 4);
+    	hdl = FindFirstFile(pathBuf, pFindData);
+    	if (hdl != INVALID_HANDLE_VALUE) {
+    	    do {
+    	    	str_l_cpy(baseName, pFindData->cFileName, baseNameSz);
+    	    	if ((pFindData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+    	    	    if (STR_CMP(baseName, T(".")) == 0 || STR_CMP(baseName, T("..")) == 0
+    	    	    	|| (pFindData->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))   	    // ‰B‚µƒtƒHƒ‹ƒ_‚Í‘ÎÛŠO.
+    	    	    {
+    	    	    	;
+    	    	    } else {
+    	    	    	str_l_cat(baseName, DIRSEP_STR, baseNameSz);
+    	    	    	str_l_cat(baseName, srch      , baseNameSz);
+    	    	    	num += ExArgv_Vector_findFname(pVec, pathBuf, 1);
+    	    	    }
+    	    	}
+    	    } while (FindNextFile(hdl, pFindData) != 0);
+    	    FindClose(hdl);
+    	}
     }
    #elif defined _MSC_VER || defined __WATCOMC__ || defined __BORLANDC__
     recFlag;
@@ -1100,25 +1100,25 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
 
   #else // linux/unixŒn...
     struct dirent** namelist = 0;
-    unsigned        num      = 0;
-    char_t*         pathBuf  = (char_t*)ExArgv_alloc(FILEPATH_SZ);
-    int             dirNum;
-    char_t*         srchBase = ExArgv_fname_baseName(srchName);
-    char_t*         baseName;
-    size_t          baseNameSz;
-    int             flag = 0;
+    unsigned	    num      = 0;
+    char_t* 	    pathBuf  = (char_t*)ExArgv_alloc(FILEPATH_SZ);
+    int     	    dirNum;
+    char_t* 	    srchBase = ExArgv_fname_baseName(srchName);
+    char_t* 	    baseName;
+    size_t  	    baseNameSz;
+    int     	    flag = 0;
 
     str_l_cpy(pathBuf, srchName, FILEPATH_SZ);
 
-    baseName    = ExArgv_fname_baseName(pathBuf);
+    baseName	= ExArgv_fname_baseName(pathBuf);
 
-    if (baseName == pathBuf) {          // ƒfƒBƒŒƒNƒgƒŠ•”‚ª–³‚¢ê‡.
-        str_l_cpy(pathBuf, T("./"), 3); // ƒJƒŒƒ“ƒgw’è‚ğˆê“I‚Éİ’è.
-        baseName = pathBuf+2;
-        flag     = 1;
+    if (baseName == pathBuf) {	    	// ƒfƒBƒŒƒNƒgƒŠ•”‚ª–³‚¢ê‡.
+    	str_l_cpy(pathBuf, T("./"), 3); // ƒJƒŒƒ“ƒgw’è‚ğˆê“I‚Éİ’è.
+    	baseName = pathBuf+2;
+    	flag	 = 1;
     }
-    *baseName   = 0;
-    baseNameSz  = FILEPATH_SZ - STR_LEN(pathBuf);
+    *baseName	= 0;
+    baseNameSz	= FILEPATH_SZ - STR_LEN(pathBuf);
     assert(baseNameSz >= MAX_PATH);
 
     // ƒfƒBƒŒƒNƒgƒŠƒGƒ“ƒgƒŠ‚Ìæ“¾.
@@ -1127,51 +1127,51 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
     baseName[-1] = T('/');
 
     if (flag) { // ˆê“I‚ÈƒJƒŒƒ“ƒgw’è‚¾‚Á‚½‚È‚ç‚ÎAÌ‚Ä‚é.
-        baseName  = pathBuf;
-        *baseName = T('\0');
+    	baseName  = pathBuf;
+    	*baseName = T('\0');
     }
 
     if (namelist) {
-        struct stat statBuf;
-        int         i;
+    	struct stat statBuf;
+    	int 	    i;
 
-        // ƒtƒ@ƒCƒ‹–¼‚ğæ“¾.
-        for (i = 0; i < dirNum; ++i) {
-            struct dirent* d = namelist[i];
-            if (fnmatch(srchBase, d->d_name, FNM_NOESCAPE) == 0) {
-                str_l_cpy(baseName, d->d_name, baseNameSz);
-                if (stat(pathBuf, &statBuf) >= 0) {
-                    if ((statBuf.st_mode & S_IFMT) != S_IFDIR) {
-                        ExArgv_Vector_push( pVec, pathBuf );
-                        ++num;
-                    }
-                }
-            }
-        }
+    	// ƒtƒ@ƒCƒ‹–¼‚ğæ“¾.
+    	for (i = 0; i < dirNum; ++i) {
+    	    struct dirent* d = namelist[i];
+    	    if (fnmatch(srchBase, d->d_name, FNM_NOESCAPE) == 0) {
+    	    	str_l_cpy(baseName, d->d_name, baseNameSz);
+    	    	if (stat(pathBuf, &statBuf) >= 0) {
+    	    	    if ((statBuf.st_mode & S_IFMT) != S_IFDIR) {
+    	    	    	ExArgv_Vector_push( pVec, pathBuf );
+    	    	    	++num;
+    	    	    }
+    	    	}
+    	    }
+    	}
 
        #if EXARGV_USE_WC_REC
-        // ƒfƒBƒŒƒNƒgƒŠ‚ª‚ ‚ê‚ÎÄ‹A.
-        if (recFlag && baseNameSz >= 16) {
-            const char_t* srch = ExArgv_fname_baseName(srchName);
-            for (i = 0; i < dirNum; ++i) {
-                struct dirent* d = namelist[i];
-                str_l_cpy(baseName, d->d_name, baseNameSz);
-                if (stat(pathBuf, &statBuf) >= 0 && STR_CMP(baseName,T(".")) != 0 && STR_CMP(baseName,T("..")) !=0 ) {
-                    if ((statBuf.st_mode & S_IFMT) == S_IFDIR) {
-                        str_l_cat(baseName, T("/"), baseNameSz);
-                        str_l_cat(baseName, srch  , baseNameSz);
-                        num += ExArgv_Vector_findFname(pVec, pathBuf, 1);
-                    }
-                }
-            }
-        }
+    	// ƒfƒBƒŒƒNƒgƒŠ‚ª‚ ‚ê‚ÎÄ‹A.
+    	if (recFlag && baseNameSz >= 16) {
+    	    const char_t* srch = ExArgv_fname_baseName(srchName);
+    	    for (i = 0; i < dirNum; ++i) {
+    	    	struct dirent* d = namelist[i];
+    	    	str_l_cpy(baseName, d->d_name, baseNameSz);
+    	    	if (stat(pathBuf, &statBuf) >= 0 && STR_CMP(baseName,T(".")) != 0 && STR_CMP(baseName,T("..")) !=0 ) {
+    	    	    if ((statBuf.st_mode & S_IFMT) == S_IFDIR) {
+    	    	    	str_l_cat(baseName, T("/"), baseNameSz);
+    	    	    	str_l_cat(baseName, srch  , baseNameSz);
+    	    	    	num += ExArgv_Vector_findFname(pVec, pathBuf, 1);
+    	    	    }
+    	    	}
+    	    }
+    	}
       #endif
 
-        // g‚Á‚½ƒƒ‚ƒŠ‚ğŠJ•ú.
-        for (i = 0; i < dirNum; ++i) {
-            free( namelist[i] );
-        }
-        free( namelist );
+    	// g‚Á‚½ƒƒ‚ƒŠ‚ğŠJ•ú.
+    	for (i = 0; i < dirNum; ++i) {
+    	    free( namelist[i] );
+    	}
+    	free( namelist );
     }
     ExArgv_free( pathBuf );
     return num;
@@ -1192,10 +1192,10 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
 static ExArgv_Vector* ExArgv_Vector_create(unsigned size)
 {
     ExArgv_Vector* pVec = (ExArgv_Vector*)ExArgv_alloc( sizeof(ExArgv_Vector) );
-    size                = ((size + EXARGV_VECTOR_CAPA_BASE) / EXARGV_VECTOR_CAPA_BASE) * EXARGV_VECTOR_CAPA_BASE;
-    pVec->capa          = size;
-    pVec->size          = 0;
-    pVec->buf           = (char_t**)ExArgv_alloc(sizeof(void*) * size);
+    size    	    	= ((size + EXARGV_VECTOR_CAPA_BASE) / EXARGV_VECTOR_CAPA_BASE) * EXARGV_VECTOR_CAPA_BASE;
+    pVec->capa	    	= size;
+    pVec->size	    	= 0;
+    pVec->buf	    	= (char_t**)ExArgv_alloc(sizeof(void*) * size);
     return pVec;
 }
 
@@ -1208,35 +1208,35 @@ static void ExArgv_Vector_push(ExArgv_Vector* pVec, const char_t* pStr)
     assert(pVec != 0);
     assert(pStr  != 0);
     if (pStr && pVec) {
-        unsigned    capa = pVec->capa;
-        assert(pVec->buf != 0);
-        if (pVec->size >= capa) {   // ƒLƒƒƒp‚ğ’´‚¦‚Ä‚¢‚½‚çAƒƒ‚ƒŠ‚ğŠm•Û‚µ‚È‚¨‚·.
-            char_t**        buf;
-            unsigned        newCapa = capa + EXARGV_VECTOR_CAPA_BASE;
-          #if 1 // •’Ê‚ÍƒRƒŒˆÈ‘O‚Éƒƒ‚ƒŠ•s‘«‚É‚È‚é‚¾‚ë‚¤‚ªˆê‰.
-            if (newCapa < capa) {   // ˆì‚ê‚½‚çƒGƒ‰[...
-                if (capa < 0xFFFFFFFF) {
-                    newCapa = 0xFFFFFFFF;
-                } else {
-                    FPRINTF(STDERR, T("too many arguments.\n"));
-                    exit(1);
-                }
-            }
-          #endif
-            //x printf("!  %p: %p %d %d ::%s\n", pVec, pVec->buf, pVec->capa, pVec->size, pStr);
-            assert(pVec->size == capa);
-            pVec->capa  = newCapa;
-            buf         = (char_t**)ExArgv_alloc(sizeof(void*) * pVec->capa);
-            if (pVec->buf)
-                memcpy(buf, pVec->buf, capa*sizeof(void*));
-            memset(buf+capa, 0, EXARGV_VECTOR_CAPA_BASE*sizeof(void*));
-            ExArgv_free(pVec->buf);
-            pVec->buf   = buf;
-        }
-        assert(pVec->size < pVec->capa);
-        pVec->buf[ pVec->size ] = ExArgv_strdup(pStr);
-        ++ pVec->size;
-        //x printf("!!  %p: %p %d %d ::%s\n", pVec, pVec->buf, pVec->capa, pVec->size, pStr);
+    	unsigned    capa = pVec->capa;
+    	assert(pVec->buf != 0);
+    	if (pVec->size >= capa) {   // ƒLƒƒƒp‚ğ’´‚¦‚Ä‚¢‚½‚çAƒƒ‚ƒŠ‚ğŠm•Û‚µ‚È‚¨‚·.
+    	    char_t**	    buf;
+    	    unsigned	    newCapa = capa + EXARGV_VECTOR_CAPA_BASE;
+    	  #if 1 // •’Ê‚ÍƒRƒŒˆÈ‘O‚Éƒƒ‚ƒŠ•s‘«‚É‚È‚é‚¾‚ë‚¤‚ªˆê‰.
+    	    if (newCapa < capa) {   // ˆì‚ê‚½‚çƒGƒ‰[...
+    	    	if (capa < 0xFFFFFFFF) {
+    	    	    newCapa = 0xFFFFFFFF;
+    	    	} else {
+    	    	    FPRINTF(STDERR, T("too many arguments.\n"));
+    	    	    exit(1);
+    	    	}
+    	    }
+    	  #endif
+    	    //x printf("!  %p: %p %d %d ::%s\n", pVec, pVec->buf, pVec->capa, pVec->size, pStr);
+    	    assert(pVec->size == capa);
+    	    pVec->capa	= newCapa;
+    	    buf     	= (char_t**)ExArgv_alloc(sizeof(void*) * pVec->capa);
+    	    if (pVec->buf)
+    	    	memcpy(buf, pVec->buf, capa*sizeof(void*));
+    	    memset(buf+capa, 0, EXARGV_VECTOR_CAPA_BASE*sizeof(void*));
+    	    ExArgv_free(pVec->buf);
+    	    pVec->buf	= buf;
+    	}
+    	assert(pVec->size < pVec->capa);
+    	pVec->buf[ pVec->size ] = ExArgv_strdup(pStr);
+    	++ pVec->size;
+    	//x printf("!!	%p: %p %d %d ::%s\n", pVec, pVec->buf, pVec->capa, pVec->size, pStr);
     }
 }
 
@@ -1250,8 +1250,8 @@ static void* ExArgv_alloc(unsigned size)
 {
     void* p = malloc(size);
     if (p == NULL) {
-        FPRINTF(STDERR, T("not enough memory.\n"));
-        exit(1);
+    	FPRINTF(STDERR, T("not enough memory.\n"));
+    	exit(1);
     }
     memset(p, 0, size);
     return p;
@@ -1264,10 +1264,10 @@ static void* ExArgv_alloc(unsigned size)
 static char_t* ExArgv_strdup(const char_t* s)
 {
     size_t   sz = STR_LEN(s) + 1;
-    char_t*  p  = (char_t*)malloc(sz * sizeof(char_t));
+    char_t*  p	= (char_t*)malloc(sz * sizeof(char_t));
     if (p == NULL) {
-        FPRINTF(STDERR, T("not enough memory.\n"));
-        exit(1);
+    	FPRINTF(STDERR, T("not enough memory.\n"));
+    	exit(1);
     }
     return (char_t*) memcpy(p, s, sz*sizeof(char_t));
 }
@@ -1279,5 +1279,5 @@ static char_t* ExArgv_strdup(const char_t* s)
 static void ExArgv_free(void* s)
 {
     if (s)
-        free(s);
+    	free(s);
 }

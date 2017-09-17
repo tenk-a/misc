@@ -1,8 +1,8 @@
 /**
- *	@file	cmisc.h
- *	@brief	Šî–{“I‚ÉCŒ¾Œê‚Å‘‚©‚ê‚½G‘½‚Èƒ‹[ƒ`ƒ“ŒS
+ *  @file   cmisc.h
+ *  @brief  Šî–{“I‚ÉCŒ¾Œê‚Å‘‚©‚ê‚½G‘½‚Èƒ‹[ƒ`ƒ“ŒS
  *
- *	@author	–k‘º‰ëj<NBB00541@nifty.com>
+ *  @author –k‘º‰ëj<NBB00541@nifty.com>
  */
 
 
@@ -10,13 +10,13 @@
 #define CMISC_H
 
 
-#define STDERR			stdout
-//#define STDERR		stderr
-#define CERR			cout
-//#define CERR			cerr
+#define STDERR	    	stdout
+//#define STDERR    	stderr
+#define CERR	    	cout
+//#define CERR	    	cerr
 
 
-#define ISKANJI(c)		((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
+#define ISKANJI(c)  	((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
 #define ISKANJI2(c) 	((unsigned char)(c) >= 0x40 && (unsigned char)(c) <= 0xfc && (c) != 0x7f)
 
 #ifdef __cplusplus
@@ -45,8 +45,8 @@ char *strDup(const char *s, int addSz);
 #if defined(__cplusplus) || defined(inline)
 /// @fn strSkipSpc ‹ó”’‚ğ“Ç‚İ”ò‚Î‚·
 inline char *strSkipSpc(const char *s) {
-	while ((*s && *(const unsigned char *) s <= ' ') || *s == 0x7f) {s++;}
-	return (char*)s;
+    while ((*s && *(const unsigned char *) s <= ' ') || *s == 0x7f) {s++;}
+    return (char*)s;
 }
 #else
 char *strSkipSpc(const char *s);
@@ -100,7 +100,7 @@ std::string& fname_chgExt(std::string &fname, const char *ext);
 #endif
 
 #if __cplusplus
-};		// CMISC
+};  	// CMISC
 #endif
 
 

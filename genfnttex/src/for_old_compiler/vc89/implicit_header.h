@@ -1,6 +1,6 @@
 /**
  *  @file implicit_header.h
- *  @brief  c/c++ language 
+ *  @brief  c/c++ language
  */
 #ifndef IMPLICIT_HEADER_H
 #define IMPLICIT_HEADER_H
@@ -19,9 +19,9 @@
     2017    14.1    1910
 */
  #ifndef __WRaP_M_CAT
-  #define __WRaP_M_CAT(a,b)     __WRaP_M_CAT_S2(a,b)
-  #define __WRaP_M_CAT_S2(a,b)  __WRaP_M_CAT_S3(a##b)
-  #define __WRaP_M_CAT_S3(x)    x
+  #define __WRaP_M_CAT(a,b) 	__WRaP_M_CAT_S2(a,b)
+  #define __WRaP_M_CAT_S2(a,b)	__WRaP_M_CAT_S3(a##b)
+  #define __WRaP_M_CAT_S3(x)	x
  #endif
 
  /*
@@ -37,7 +37,7 @@
  */
 
  #if defined(__cplusplus)
-  #if 1 //__cplusplus < 201101L         // less c++11
+  #if 1 //__cplusplus < 201101L     	// less c++11
    #if _MSC_VER < 1400
     #if !defined(override)
      #define override
@@ -45,74 +45,74 @@
    #endif
    #if _MSC_VER < 1600
     #if !defined(__func__)
-     #define __func__               __FUNCTION__
+     #define __func__	    	    __FUNCTION__
     #endif
     #if !defined(_Pragma)
-     #define _Pragma(...)           __pragma(__VA_ARGS__)
+     #define _Pragma(...)   	    __pragma(__VA_ARGS__)
     #endif
     #if !defined(noexcept)
-     #define noexcept               throw()
+     #define noexcept	    	    throw()
     #endif
     #if !defined(nullptr)
-     #define nullptr                (0)
+     #define nullptr	    	    (0)
     #endif
     #if !defined(static_assert)
      #define static_assert(c,m)     typedef char __WRaP_M_CAT(__static_assert_failed_L,__LINE__)[(c) ? 1/*OK*/ : -1/*NG*/]
     #endif
-    typedef wchar_t                 char16_t;
-    typedef unsigned                char32_t;
+    typedef wchar_t 	    	    char16_t;
+    typedef unsigned	    	    char32_t;
    #endif
    #if _MSC_VER < 1700
     #if !defined(override)
-     #define final                  sealed
+     #define final  	    	    sealed
     #endif
    #endif
    #if _MSC_VER < 1800
     #if !defined(alignas)
-     #define alignas(a)             __declspec(align(a))
+     #define alignas(a)     	    __declspec(align(a))
     #endif
     #if !defined(alignof)
-     #define alignof(a)             __alignof(a)
+     #define alignof(a)     	    __alignof(a)
     #endif
    #endif
    #if _MSC_VER < 1900
     #if !defined(thread_local)
-     #define thread_local           __declspec(thread)
+     #define thread_local   	    __declspec(thread)
     #endif
    #endif
    #if _MSC_VER < 1910
     #if !defined(__has_include)
-     #define __has_include(x)           0
+     #define __has_include(x)	    	0
     #endif
    #endif
   #endif
- #else  // for c
+ #else	// for c
   #if _MSC_VER < 1900
    #if !defined inline
-    #define inline                  __inline
+    #define inline  	    	    __inline
    #endif
    #if !defined(_Alignof)
-    #define _Alignof(t)             __alignof(t)
+    #define _Alignof(t)     	    __alignof(t)
    #endif
   #endif
   #if 1
    #if !defined restrict
-    #define restrict                __restrict
+    #define restrict	    	    __restrict
    #endif
    #if !defined _Bool
-    #define _Bool                   char
+    #define _Bool   	    	    char
    #endif
    #ifndef _Noreturn
-    #define _Noreturn               __declspec(noreturn)
+    #define _Noreturn	    	    __declspec(noreturn)
    #endif
    #ifndef _Alignas
-    #define _Alignas(a)             __declspec(align(a))
+    #define _Alignas(a)     	    __declspec(align(a))
    #endif
    #ifndef _Thread_local
-    #define _Thread_local           __declspec(thread)
+    #define _Thread_local   	    __declspec(thread)
    #endif
    #ifndef _Static_assert
-    #define _Static_assert          typedef char __WRaP_M_CAT(__static_assert_failed_L,__LINE__)[(c) ? 1/*OK*/ : -1/*NG*/]
+    #define _Static_assert  	    typedef char __WRaP_M_CAT(__static_assert_failed_L,__LINE__)[(c) ? 1/*OK*/ : -1/*NG*/]
    #endif
    #define __STDC_NO_VLA__
    #define __STDC_NO_COMPLEX__
@@ -128,4 +128,4 @@
 #endif
 
 
-#endif  // IMPLICIT_HEADER_H
+#endif	// IMPLICIT_HEADER_H

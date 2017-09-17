@@ -1,8 +1,8 @@
 /**
- *	@file	cmisc.h
- *	@brief	基本的にC言語で書かれた雑多なルーチン郡
+ *  @file   cmisc.h
+ *  @brief  基本的にC言語で書かれた雑多なルーチン郡
  *
- *	@author	北村雅史<NBB00541@nifty.com>
+ *  @author 北村雅史<NBB00541@nifty.com>
  */
 
 
@@ -10,19 +10,19 @@
 #define CMISC_H
 
 
-#define STDERR			stdout
-//#define STDERR		stderr
-#define CERR			cout
-//#define CERR			cerr
+#define STDERR	    	stdout
+//#define STDERR    	stderr
+#define CERR	    	cout
+//#define CERR	    	cerr
 
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__BORLANDC__)
 #  include <mbstring.h>
-#else		// シフトJIS専用
-#  define _ismbblead(c)		((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
-#  define _ismbbtrail(c)	((unsigned char)(c) >= 0x40 && (unsigned char)(c) <= 0xfc && (c) != 0x7f)
+#else	    // シフトJIS専用
+#  define _ismbblead(c)     ((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
+#  define _ismbbtrail(c)    ((unsigned char)(c) >= 0x40 && (unsigned char)(c) <= 0xfc && (c) != 0x7f)
 #endif
-#define ISKANJI(c)		_ismbblead(c)
+#define ISKANJI(c)  	_ismbblead(c)
 #define ISKANJI2(c) 	_ismbbtrail(c)
 
 #ifdef __cplusplus
@@ -51,8 +51,8 @@ char *strDup(const char *s, int addSz);
 #if defined(__cplusplus) || defined(inline)
 /// @fn strSkipSpc 空白を読み飛ばす
 inline char *strSkipSpc(const char *s) {
-	while ((*s && *(const unsigned char *) s <= ' ') || *s == 0x7f) {s++;}
-	return (char*)s;
+    while ((*s && *(const unsigned char *) s <= ' ') || *s == 0x7f) {s++;}
+    return (char*)s;
 }
 #else
 char *strSkipSpc(const char *s);
@@ -106,7 +106,7 @@ std::string& fname_chgExt(std::string &fname, const char *ext);
 #endif
 
 #if __cplusplus
-};		// CMISC
+};  	// CMISC
 #endif
 
 

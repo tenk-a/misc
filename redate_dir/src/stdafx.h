@@ -1,6 +1,6 @@
 /**
- *	@file	stdafx.h
- *	@brief	全体で使われる、プリコンパイルされるヘッダ
+ *  @file   stdafx.h
+ *  @brief  全体で使われる、プリコンパイルされるヘッダ
  */
 #ifndef STDAFX_H
 #define STDAFX_H
@@ -8,7 +8,7 @@
 #pragma once
 
 
-//#define TARGET	0
+//#define TARGET    0
 
 
 #if defined _MSC_VER && _MSC_VER < 1600
@@ -32,8 +32,8 @@
 
 #undef max
 #undef min
-using		std::vector;
-//#define	vector		km_vector
+using	    std::vector;
+//#define   vector  	km_vector
 
 //#include "misc/noncopyable.h"
 #include "misc/CString.h"

@@ -1,9 +1,9 @@
 #ifndef __TREE_H__
 #define __TREE_H__
 typedef struct TREE_NODE {
-	struct TREE_NODE *link[2];
-	void			 *element;
-	short			 avltFlg;
+    struct TREE_NODE *link[2];
+    void    	     *element;
+    short   	     avltFlg;
 } TREE_NODE;
 
 typedef void *(*TREE_NEW)(void *);
@@ -13,14 +13,14 @@ typedef void *(*TREE_MALLOC)(unsigned);
 typedef void (*TREE_FREE)(void *);
 
 typedef struct TREE {
-	TREE_NODE *root;
-	TREE_NODE *node;
-	int 	  flag;
-	TREE_NEW  newElement;
-	TREE_DEL  delElement;
-	TREE_CMP  cmpElement;
-	TREE_MALLOC malloc;
-	TREE_FREE	free;
+    TREE_NODE *root;
+    TREE_NODE *node;
+    int       flag;
+    TREE_NEW  newElement;
+    TREE_DEL  delElement;
+    TREE_CMP  cmpElement;
+    TREE_MALLOC malloc;
+    TREE_FREE	free;
 } TREE;
 
 TREE *TREE_Make(TREE_NEW newElement,TREE_DEL delElement,TREE_CMP cmpElement, TREE_MALLOC funcMalloc, TREE_FREE funcFree);
