@@ -102,7 +102,7 @@ csstob v1.01  －－ Ｃソース中の // コメントを /* コメント */ �
 
 ■  ライセンス等
 
-    二条項BSDライセンスです。
+    ライセンスは Boost software license Version 1.0
 
     再コンパイルですが、 ANSI系,unix系のライブラリ関数以外で使ってるのは
   stricmpだけなので、MS-Cを意識した(MS-DOS用ANSI)Ｃコンパイラならば,ほぼ

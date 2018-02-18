@@ -58,7 +58,7 @@ binat  v1.16b
 
 ■  その他
 
-  2条項BSDライセンス。
+  ライセンスは Boost software license Version 1.0
 
                                         Masashi KITAMURA (tenka@6809.net)
                          https://github.com/tenk-a/misc/tree/master/binat

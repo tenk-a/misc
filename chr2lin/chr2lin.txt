@@ -25,7 +25,7 @@ usage> chr2lin [-opts] textfile
 
 ■ ライセンス
 
-二条項BSDライセンス
+Boost software license Version 1.0
 
 
 

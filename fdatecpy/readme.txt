@@ -2,6 +2,6 @@ FDateCpy v1.11
 
 ファイルの日付を、別のファイルの日付にする
 
-二条項BSDライセンス
+ライセンスは Boost software license Version 1.0
 
 fdatecpy.txt を参照のこと

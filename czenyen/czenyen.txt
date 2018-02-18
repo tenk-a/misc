@@ -122,7 +122,7 @@ czenyen v1.11
 
 ■  その他
 
-    二条項BSDライセンスです。
+      ライセンスは Boost software license Version 1.0
 
       再コンパイルですが、 ANSI系,unix系のライブラリ関数以外で使ってるの
     はstricmpだけのはずなので、MS-C を意識した(MS-DOS用ANSI)Ｃコンパイラ

@@ -60,3 +60,5 @@
         式の値を long long に変更. ポインタを可能ならconstに変更. utf-8対応
         メモリ解放漏れの修正
         ライセンス変更
+2018-02
+        ライセンスを Boost software license version 1.0 に変更

@@ -46,7 +46,7 @@ borland-c依存の関数を使わず、比較的一般的な
 
 ■
 
-二条項BSDライセンス
+ライセンスは Boost software license Version 1.0
 
 
 

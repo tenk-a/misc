@@ -66,7 +66,7 @@ ectab   ver. 2.11
 
 ■  その他
 
-2条項BSDライセンス.
+ライセンスは Boost software license Version 1.0
 
 自分の手に馴染んでる自分用ツール。
 名前は好きだったSF作家E.C.タブにちなんで。

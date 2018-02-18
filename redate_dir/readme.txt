@@ -2,4 +2,4 @@ redate_dir
 
 指定したフォルダの日付を、フォルダ内の最新ファイルの日付にする.
 
-二条項BSDライセンス
+ライセンスは Boost software license Version 1.0

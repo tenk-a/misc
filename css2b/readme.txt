@@ -2,6 +2,6 @@ csstob
 
 Ｃソース中の // コメントを /* コメント */ に変換
 
-二条項BSDライセンス
+Boost software license Version 1.0
 
 csstob.txt を参照のこと

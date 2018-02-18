@@ -2,6 +2,6 @@ knjt
 
 JIS漢字表の出力
 
-二条項BSDライセンス
+PDS
 
 knjt.txt を参照のこと

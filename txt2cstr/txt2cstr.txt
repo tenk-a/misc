@@ -19,7 +19,7 @@ c2htm作成で、急遽でっち上げた代物です...前にも似たような
 はずだが見当たらんので。
 
 
-二条項BSDライセンス
+ライセンスは Boost software license Version 1.0
 
 
                                              Masashi KITAMURA (tenka@6809.net)
