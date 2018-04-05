@@ -10,6 +10,7 @@
 #include <map>
 #include <windows.h>
 #include <assert.h>
+#include "TexChFontInfo.h"
 
 
 
@@ -123,23 +124,39 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     if (tm.tmInternalLeading != 0) {
     	offset_y    = offset_y - tm.tmDescent;
     }
-    if (offset_y < 0) {
-    	offset_y     = 0;
-    }
+    int ox = 0;
+    int oy = 0;
+
+    //if (offset_y < 0) {
+    //	offset_y     = 0;
+    //}
 
     dw	     = (dw+(mul_-1)) / mul_;
     dh	     = (dh+(mul_-1)) / mul_;
     offset_x = (offset_x) / mul_;
     offset_y = (offset_y) / mul_;
 
-    if (offset_x + dw > int(cellW_))
+    if (offset_x + dw > int(cellW_)) {
+		ox       = offset_x + dw - cellW_;
     	offset_x = int(cellW_) - dw;
-    if (offset_x < 0)
+		if (offset_x < 0)
+			offset_x = 0;
+    } else if (offset_x < 0) {
+		ox = offset_x;
     	offset_x = 0;
-    if (offset_y + dh > int(cellH_))
+    }
+    if (offset_y + dh > int(cellH_)) {
+		oy       = offset_y + dh - cellH_;
     	offset_y = int(cellH_) - dh;
-    if (offset_y < 0)
+		if (offset_y < 0)
+			offset_y = 0;
+    } else if (offset_y < 0) {
+		oy = offset_y;
     	offset_y = 0;
+    }
+
+	font.ox = ox;
+	font.oy = oy;
 
 	unsigned fontH = fontW_;
 	unsigned fontW = fontW_;
@@ -268,4 +285,24 @@ void FontGetter::printFontInfo() {
     for (FontNames::iterator ite = fntNames.begin(); ite != fntNames.end(); ++ite) {
     	printf("%s\n", ite->first.c_str());
     }
+}
+
+
+
+void Font::getPara(TexChFontInfo& dst) const
+{
+	dst.x	= this->x;
+	dst.y	= this->y;
+	dst.w	= this->w;
+	dst.h	= this->h;
+	dst.ox	= this->ox;
+	dst.oy	= this->oy;
+}
+
+void Font::getPara(TexChFontInfo0& dst) const
+{
+	dst.x	= this->x;
+	dst.y	= this->y;
+	dst.w	= this->w;
+	dst.h	= this->h;
 }

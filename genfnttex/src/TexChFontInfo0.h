@@ -1,5 +1,5 @@
-#ifndef TEXFONTINFO_H_INCLUDED
-#define TEXFONTINFO_H_INCLUDED
+#ifndef TEXFONTINFO0_H_INCLUDED
+#define TEXFONTINFO0_H_INCLUDED
 
 #ifdef __cplusplus
 #include <cassert>
@@ -16,7 +16,6 @@ typedef struct TexChFontInfoHeader {
     unsigned short  texH;
     unsigned short  fontW;
     unsigned short  fontH;
-    short   	    rsv[2];
   #ifdef __cplusplus
     unsigned	    texChW() const { return texW / fontW; }
     unsigned	    texChH() const { return texH / fontH; }
@@ -32,28 +31,7 @@ typedef struct TexChFontInfo {
     unsigned short  y;
     unsigned short  w;
     unsigned short  h;
-    short   	    ox;
-    short   	    oy;
 } TexChFontInfo;
-
-// old header & data
-typedef struct TexChFontInfoHeader0 {
-    unsigned	    id;
-    unsigned	    chCount;
-    unsigned short  texW;
-    unsigned short  texH;
-    unsigned short  fontW;
-    unsigned short  fontH;
-} TexChFontInfoHeader0;
-
-typedef struct TexChFontInfo0 {
-    unsigned	    code;
-    unsigned	    index;
-    unsigned short  x;
-    unsigned short  y;
-    unsigned short  w;
-    unsigned short  h;
-} TexChFontInfo0;
 
 #ifdef __cplusplus
 } //extern "C"
@@ -87,7 +65,7 @@ public:
     	return NULL;
     }
 
-    bool charCodeToPageUVWH(unsigned charCode, unsigned& rPage, unsigned& rU, unsigned& rV, unsigned& rW, unsigned& rH, int& rOX, int& rOY) const {
+    bool charCodeToPageUVWH(unsigned charCode, unsigned& rPage, unsigned& rU, unsigned& rV, unsigned& rW, unsigned& rH) const {
     	TexChFontInfo const* fnd = searchCharCode(charCode);
     	if (!fnd)
     	    return false;
@@ -108,8 +86,6 @@ public:
     	rW    = fnd->w;
     	//rH  = fnd->h;
     	rH    = hdr->fontH;
-    	rOX   = fnd->ox;
-    	rOY   = fnd->oy;
     	return true;
     }
 };
