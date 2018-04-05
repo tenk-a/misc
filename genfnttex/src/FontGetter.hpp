@@ -27,7 +27,7 @@ typedef std::vector<Font>   FontVec;
 
 class FontGetter {
 public:
-    FontGetter(char const* ttfname, unsigned fontW, unsigned cellW, unsigned mul, unsigned bpp);
+    FontGetter(char const* ttfname, unsigned fontW, unsigned cellW, unsigned cellH, unsigned mul, unsigned bpp, unsigned weight, bool italic);
     ~FontGetter();
 
     bool get(FontVec& fonts);
@@ -42,9 +42,12 @@ private:
     char*   	    	    ttfname_;
     unsigned	    	    fontW_;
     unsigned	    	    cellW_;
+    unsigned	    	    cellH_;
     unsigned	    	    mul_;
     unsigned	    	    bpp_;
     unsigned	    	    tone_;
+    unsigned				weight_;
+    bool					italic_;
     std::vector<uint8_t>    wkBuf_;
 };
 

@@ -15,6 +15,9 @@ usage>genfnttex [-opts] file(s)
  -fs[N]          Win-apiで取得する文字フォントのサイズ
  -mul[N]         縦横N倍サイズの文字フォントで取得し1/N する.
  -addascii       0x21..0x7E までのascii文字を入力した扱いにする
+ -addspc         空白(0x20) を対象に加える
+ -weight=N       N=0..9  0=default  1(細)..5(標準)..9(太)
+ -italic         イタリック(斜体)指定
  -fontlist       現在使えるフォントの一覧表示
  -oldtable       旧テーブルで出力
 
@@ -25,6 +28,6 @@ usage>genfnttex [-opts] file(s)
 
 ■ その他
 
-二条項BSDライセンス
+Boost Software License - Version 1.0
 
                                Masashi KITAMURA (tenka@6809.net)

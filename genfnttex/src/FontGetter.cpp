@@ -13,10 +13,21 @@
 
 
 
-FontGetter::FontGetter(char const* ttfname, unsigned fontW, unsigned cellW, unsigned mul, unsigned bpp)
-    : ttfname_(strdup(ttfname ? ttfname : "")), fontW_(fontW), cellW_(cellW), mul_(mul), bpp_(bpp), tone_(1 << bpp)
+FontGetter::FontGetter(char const* ttfname, unsigned fontW, unsigned cellW, unsigned cellH
+						, unsigned mul, unsigned bpp, unsigned weight, bool italic)
+    : ttfname_(strdup(ttfname ? ttfname : ""))
+    , fontW_(fontW)
+    , cellW_(cellW)
+    , cellH_(cellH)
+    , mul_(mul)
+    , bpp_(bpp)
+    , tone_(1 << bpp)
+    , weight_(weight)	// 0..9
+    , italic_(italic)
 {
     assert(1 <= bpp && bpp <= 8);
+    if (mul_ == 0)
+    	mul_ = 1;
 }
 
 FontGetter::~FontGetter() {
@@ -32,8 +43,8 @@ bool FontGetter::get(FontVec& rFonts) {
     logfont.lfWidth 	    	= 0;	    	    	    // フォントの幅（平均）
     logfont.lfEscapement    	= 0;	    	    	    // 文字送り方向の角度
     logfont.lfOrientation   	= 0;	    	    	    // ベースラインの角度
-    logfont.lfWeight	    	= FW_DONTCARE;	    	    // フォントの太さ
-    logfont.lfItalic	    	= FALSE;    	    	    // 斜体にするかどうか
+    logfont.lfWeight	    	= (weight_) ? weight_*100 : FW_DONTCARE;	// フォントの太さ
+    logfont.lfItalic	    	= (italic_) ? TRUE : FALSE; // 斜体にするかどうか
     logfont.lfUnderline     	= FALSE;    	    	    // 下線を付けるかどうか
     logfont.lfStrikeOut     	= FALSE;    	    	    // 取り消し線を付けるかどうか
     //logfont.lfCharSet     	= SHIFTJIS_CHARSET; 	    // 文字セットの識別子
@@ -58,7 +69,7 @@ bool FontGetter::get(FontVec& rFonts) {
     HFONT   old_hfont	= (HFONT)::SelectObject( hdc, new_hfont );
 
     for (unsigned no = 0; no < rFonts.size(); ++no) {
-    	rFonts[no].data.resize(cellW_ * cellW_);
+    	rFonts[no].data.resize(cellW_ * cellH_);
     	getFont(hdc, rFonts[no]);
     	adjustFontSize(rFonts[no]);
     }
@@ -78,7 +89,7 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     HDC     	hdc 	= (HDC)hdc0;
     UINT    	nChar	= font.ch;
     TEXTMETRIC	tm  	= {0};
-    GetTextMetrics( hdc, &tm );
+    ::GetTextMetrics( hdc, &tm );
     static MAT2 const mat2 = {
     	{ 0, 1, }, { 0, 0, },
     	{ 0, 0, }, { 0, 1, }
@@ -101,7 +112,7 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     	return false;
     }
 
-    rc = GetTextMetrics( hdc, &tm );
+    rc = ::GetTextMetrics( hdc, &tm );
 
     int pitch	    = (gm.gmBlackBoxX + 3) & ~3;
 
@@ -125,22 +136,34 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
     	offset_x = int(cellW_) - dw;
     if (offset_x < 0)
     	offset_x = 0;
-    if (offset_y + dh > int(cellW_))
-    	offset_y = int(cellW_) - dh;
+    if (offset_y + dh > int(cellH_))
+    	offset_y = int(cellH_) - dh;
     if (offset_y < 0)
     	offset_y = 0;
 
+	unsigned fontH = fontW_;
+	unsigned fontW = fontW_;
     if (mul_ == 1) {
-    	for ( unsigned j = 0 ; j < unsigned(dh) && j < cellW_ && j < fontW_; ++j ) {
-    	    for ( unsigned i = 0 ; i < unsigned(dw) && i < cellW_ && i < fontW_; ++i ) {
+		if (fontW < pitch) {
+			fontW = pitch;
+			if (fontW > cellW_)
+				fontW = cellW_;
+		}
+    	for ( unsigned j = 0 ; j < unsigned(dh) && j < cellH_ && j < fontH; ++j ) {
+    	    for ( unsigned i = 0 ; i < unsigned(dw) && i < cellW_ && i < fontW; ++i ) {
     	    	unsigned alp  = wkBuf_[j * pitch + i];
     	    	alp   = (alp * (tone_-1) ) / 64;
     	    	font.data[((j+offset_y) * cellW_) + (i + offset_x)]   = alp;
     	    }
     	}
     }else {
-    	for ( unsigned j = 0 ; j < unsigned(dh) && j < cellW_ && j < fontW_; ++j ) {
-    	    for ( unsigned i = 0 ; i < unsigned(dw) && i < cellW_ && i < fontW_; ++i ) {
+		if (fontW < pitch/mul_) {
+			fontW = pitch/mul_;
+			if (fontW > cellW_)
+				fontW = cellW_;
+		}
+    	for ( unsigned j = 0 ; j < unsigned(dh) && j < cellH_ && j < fontH; ++j ) {
+    	    for ( unsigned i = 0 ; i < unsigned(dw) && i < cellW_ && i < fontW; ++i ) {
     	    	unsigned total = 0;
     	    	for(unsigned y = 0 ; y < mul_ && y+(j*mul_) < gm.gmBlackBoxY ; ++y) {
     	    	    for(unsigned x = 0 ; x < mul_ && x+(i*mul_) < gm.gmBlackBoxX ; ++x) {
@@ -160,11 +183,11 @@ bool FontGetter::getFont(void* hdc0, Font& font) {
  */
 bool FontGetter::adjustFontSize(Font& rFont) {
     unsigned x0 = cellW_;
-    unsigned y0 = cellW_;
+    unsigned y0 = cellH_;
     unsigned x1 = 0;
     unsigned y1 = 0;
     unsigned w	= cellW_;
-    unsigned h	= cellW_;
+    unsigned h	= cellH_;
     for (unsigned y = 0; y < h; ++y) {
     	for (unsigned x = 0; x < w; ++x) {
     	    unsigned c = rFont.data[y * w + x];
@@ -176,11 +199,11 @@ bool FontGetter::adjustFontSize(Font& rFont) {
     	    }
     	}
     }
-    if (x0 == cellW_ && y0 == cellW_ && x1 == 0 && y1 == 0) {
+    if (x0 == cellW_ && y0 == cellH_ && x1 == 0 && y1 == 0) {
     	rFont.x = 0;
     	rFont.y = 0;
     	rFont.w = cellW_;
-    	rFont.h = cellW_;
+    	rFont.h = cellH_;
     	return	false;
     }
     w = 1+x1-x0;
@@ -231,7 +254,7 @@ static int CALLBACK enumFontFamExProc(
 void FontGetter::printFontInfo() {
     LOGFONTW	logfont = {0};
     logfont.lfCharSet	= DEFAULT_CHARSET;
-    HDC     hdc     	= ::CreateCompatibleDC(NULL);
+    HDC			hdc     = ::CreateCompatibleDC(NULL);
 
     FontNames	fntNames;
     EnumFontFamiliesExW(

@@ -29,12 +29,17 @@ public:
     	, texH_(2048)
     	, fontW_(0)
     	, cellW_(0)
+    	, cellH_(0)
     	, texChW_(0)
     	, texChH_(0)
     	, mul_(1)
     	, bpp_(4)
     	, addascii_(false)
+    	, addspc_(false)
+    	, addcr_(false)
     	, oldTable_(false)
+    	, weight_(0)
+    	, italic_(false)
     {
     	makeClut();
     	//mbs_setEnv("ja_JP.UTF-8");
@@ -83,6 +88,12 @@ public:
     	    return 1;
     	if (saveTga() == false)
     	    return 1;
+
+    	//if (addcr_) {
+   	    //	cmap_[0x0a] = 0x0a;
+   	    //	cmap_[0x0d] = 0x0d;
+		//}
+
     	if (oldTable_) {
     	    if (saveOldChFontTableHeader() == false)
     	    	return 1;
@@ -107,16 +118,19 @@ private:
     int usage() {
     	fprintf(stderr, "usage>%s [-opts] file(s)\n", appname_);
     	fprintf(stderr,
-    	   "       https://github.com/tenk-a/misc/tree/master/genfnttex\n"
+    	   "       https://github.com/tenk-a/genfnttex\n"
     	   " -ttf=[TTFNAME]  ttf font name\n"
     	   " -o=[OUTPUT]     output base name\n"
     	   " -tblname=[NAME] c table var name\n"
     	   " -ts[W:H]        texture size W*H (2^N)\n"
-    	   " -fs[N]          input-font size (pixel)\n"
-    	   " -cs[N]          tex-cell(char)/font size (pixel)\n"
+    	   " -fs[N]          input-font size (N pixels)\n"
+    	   " -cs[W:H]        tex-cell(char)/font size (W*H pixels)\n"
     	   " -mul[N]         input-font-size*N(/N)\n"
     	   " -bpp[N]         bit per pixel. N=1..8\n"
     	   " -addascii       generate 0x21..0x7E\n"
+    	   " -addspc         genetate space(0x20)\n"
+		   " -weight=[N]     1-9:weight(5:standard) 0:default\n"
+		   " -italic         italic\n"
     	   " -fontlist       output font name list\n"
     	   " (-oldtable      use old table)\n"
     	);
@@ -157,6 +171,14 @@ private:
     	    cellW_ = (int)strtoul(p, (char**)&p, 0);
     	    if (rangeCheck(cellW_, 4, 2048, arg) == false)
     	    	return false;
+			if (*p != '\0') {
+				++p;
+				cellH_ = (int)strtoul(p, (char**)&p, 0);
+	    	    if (rangeCheck(cellH_, 4, 2048, arg) == false)
+	    	    	return false;
+			}
+    	    if (cellH_ == 0)
+    	    	cellH_ = cellW_;
     	} else if (paramEquLong(p, "-mul", p)) {
     	    mul_ = (int)strtoul(p, (char**)&p, 0);
     	    if (rangeCheck(cellW_, 1, 256, arg) == false)
@@ -166,10 +188,21 @@ private:
     	    if (rangeCheck(bpp_, 1, 8, arg) == false)
     	    	return false;
     	} else if (paramEquLong(p, "-addascii", p)) {
-    	    addascii_ = (*p != '-');
+    	    addascii_	= (*p != '-');
+    	} else if (paramEquLong(p, "-addspc", p)) {
+    	    addspc_ 	= (*p != '-');
+    	} else if (paramEquLong(p, "-addcr", p)) {
+    	    addcr_  	= (*p != '-');
     	} else if (paramEquLong(p, "-fontlist", p)) {
     	    FontGetter::printFontInfo();
-    	    return true;
+    	} else if (paramEquLong(p, "-weight", p)) {
+    	    if (*p == '=')
+    	    	++p;
+    	    weight_	= (unsigned)strtoul(p, (char**)&p, 0);
+    	    if (rangeCheck(weight_, 0, 9, arg) == false)
+    	    	return false;
+    	} else if (paramEquLong(p, "-italic", p)) {
+    	    italic_	= (*p != '-');
     	} else {
     	    fprintf(stderr, "unkown option : %s\n", arg);
     	    return false;
@@ -215,12 +248,21 @@ private:
     	    fprintf(stderr, "ERROR: need font-size < cell-size (%d,%d)\n", fontW_, cellW_);
     	    return false;
     	}
+		if (cellH_ == 0)
+			cellH_ = cellW_;
 
     	if (!tblname_) {
     	    _snprintf(tblNameBuf_, sizeof(tblNameBuf_), "g_chFontTable_%s", oname_);
     	    tblname_ = tblNameBuf_;
     	}
 
+    	if (addspc_ || addcr_) {
+   	    	cmap_[0x20] = 0x20;
+		}
+    	//if (addcr_) {
+   	    //	cmap_[0x0a] = 0x0a;
+   	    //	cmap_[0x0d] = 0x0d;
+		//}
     	if (addascii_) {
     	    for (int i = 0x21; i < 0x7F; ++i) {
     	    	cmap_[i] = i;
@@ -267,18 +309,18 @@ private:
     	    ++no;
     	}
 
-    	FontGetter fontGetter(ttfname_, fontW_, cellW_, mul_, bpp_);
+    	FontGetter fontGetter(ttfname_, fontW_, cellW_, cellH_, mul_, bpp_, weight_, italic_);
     	fontGetter.get(fonts_);
     	return true;
     }
 
     bool makeTex() {
     	unsigned nw = texW_ / cellW_;
-    	unsigned nh = texH_ / cellW_;
+    	unsigned nh = texH_ / cellH_;
     	texChW_ = nw;
     	texChH_ = nh;
-    	if (nw == 0 || nh == 0 || fontW_ > cellW_) {
-    	    fprintf(stderr, "ERROR: bad size ... tex:%d*%d font:%d*%d  cell:%d*%d\n", texW_, texH_, fontW_, fontW_, cellW_, cellW_);
+    	if (nw == 0 || nh == 0 || fontW_ > cellW_ || fontW_ > cellH_) {
+    	    fprintf(stderr, "ERROR: bad size ... tex:%d*%d font:%d*%d  cell:%d*%d\n", texW_, texH_, fontW_, fontW_, cellW_, cellH_);
     	    return false;
     	}
     	unsigned cnum	   = unsigned(fonts_.size());
@@ -303,10 +345,10 @@ private:
     }
 
     void copyFont(uint8_t* tex, unsigned nx, unsigned ny, uint8_t const* font) {
-    	for (unsigned y = 0; y < cellW_; ++y) {
+    	for (unsigned y = 0; y < cellH_; ++y) {
     	    for (unsigned x = 0; x < cellW_; ++x) {
     	    	int xx = nx * cellW_ + x;
-    	    	int yy = ny * cellW_ + y;
+    	    	int yy = ny * cellH_ + y;
     	    	tex[yy * texW_ + xx] = font[y * cellW_ + x];
     	    }
     	}
@@ -424,7 +466,7 @@ private:
     	    fprintf(fp, "\t%u,\t// texW\n", texW_);
     	    fprintf(fp, "\t%u,\t// texH\n", texH_);
     	    fprintf(fp, "\t%u,\t// fontW\n", cellW_);
-    	    fprintf(fp, "\t%u,\t// fontH\n", cellW_);
+    	    fprintf(fp, "\t%u,\t// fontH\n", cellH_);
     	    fprintf(fp, "\t%u,\t// texChW\n", texChW_);
     	    fprintf(fp, "\t%u,\t// texChH\n", texChH_);
     	    fprintf(fp, "\t%u,\t// texPage\n", unsigned(texs_.size()));
@@ -443,7 +485,7 @@ private:
     	    fprintf(fp, "\t\t%10u,\t// texW\n", texW_);
     	    fprintf(fp, "\t\t%10u,\t// texH\n", texH_);
     	    fprintf(fp, "\t\t%10u,\t// fontW\n", cellW_);
-    	    fprintf(fp, "\t\t%10u,\t// fontH\n", cellW_);
+    	    fprintf(fp, "\t\t%10u,\t// fontH\n", cellH_);
     	    fprintf(fp, "\t},\n");
     	    fprintf(fp, "\n");
     	    fprintf(fp, "\t// code     , index, texW, texH,fontW,fontH,\n");
@@ -477,7 +519,7 @@ private:
     	hdr->texW    = texW_;
     	hdr->texH    = texH_;
     	hdr->fontW   = cellW_;
-    	hdr->fontH   = cellW_;
+    	hdr->fontH   = cellH_;
     	TexChFontInfo*	fontInfo = reinterpret_cast<TexChFontInfo*>( &buf[ sizeof(TexChFontInfoHeader) ] );
     	for (unsigned i = 0; i < fonts_.size(); ++i) {
     	    Font const&    s = fonts_[i];
@@ -549,13 +591,16 @@ private:
     unsigned	fontW_;
     //int   	fontH_;
     unsigned	cellW_;
-    //int   	cellH_;
+ 	unsigned   	cellH_;
     unsigned	texChW_;
     unsigned	texChH_;
     unsigned	mul_;
     unsigned	bpp_;
     bool    	addascii_;
+	bool		addspc_;
     bool    	oldTable_;
+    unsigned	weight_;
+    bool		italic_;
     TexBuf  	texs_;
     uint32_t	clut_[256];
 
