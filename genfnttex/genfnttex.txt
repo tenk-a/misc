@@ -1,0 +1,30 @@
+genfnttex
+
+
+UTF8テキストを読み込み、そこで使われている文字を文字コード
+でソートし、windows にインストールされた指定フォントの指定サイズ
+でテクスチャ画像に敷き詰めtga画像ファイルで出力する
+
+
+usage>genfnttex [-opts] file(s)
+ -ttf=[TTFNAME]  ttf フォント名
+ -o=[OUTPUT]     出力ファイルの基本となる名前
+ -tblname=[NAME] cで出力するテーブル名
+ -ts[W:H]        テクスチャサイズ W*H (2^N)
+ -cs[N]          テクスチャに敷き詰める文字の間隔/サイズ (pixel)
+ -fs[N]          Win-apiで取得する文字フォントのサイズ
+ -mul[N]         縦横N倍サイズの文字フォントで取得し1/N する.
+ -addascii       0x21..0x7E までのascii文字を入力した扱いにする
+ -fontlist       現在使えるフォントの一覧表示
+ -oldtable       旧テーブルで出力
+
+
+-o指定がなければ、最初の入力ファイル名の拡張子を除いた文字列が
+指定されたことになる。
+
+
+■ その他
+
+二条項BSDライセンス
+
+                               Masashi KITAMURA (tenka@6809.net)
