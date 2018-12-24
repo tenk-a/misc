@@ -216,7 +216,7 @@ int sjis2jis(int c)
 }
 
 /** UCS2 ‚ð utf8 ‚É•ÏŠ·.*/
-unsigned utf32toUtf8(unsigned c)
+uint64_t utf32toUtf8(unsigned c)
 {
     if (c < 0x80) {
     	return c;
