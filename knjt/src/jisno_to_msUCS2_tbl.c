@@ -18,7 +18,7 @@ unsigned short ubyte_to_msUCS2_tbl[] = {
 };
 
 
-unsigned kubun_to_msUCS2_tbl[] = {
+unsigned kuten_to_msUCS2_tbl[] = {
 	// 1-01 (  1)
 	0x00003000, 0x00003001, 0x00003002, 0x0000ff0c, 0x0000ff0e, 0x000030fb, 0x0000ff1a, 0x0000ff1b, 0x0000ff1f, 0x0000ff01,
 	0x0000309b, 0x0000309c, 0x000000b4, 0x0000ff40, 0x000000a8, 0x0000ff3e, 0x0000ffe3, 0x0000ff3f, 0x000030fd, 0x000030fe,
@@ -1462,7 +1462,7 @@ unsigned kubun_to_msUCS2_tbl[] = {
 
 
 
-unsigned kubun2004_to_msUCS2_tbl[] = {
+unsigned kuten2004_to_msUCS2_tbl[] = {
 	// 1-01 (  1)
 	0x00003000, 0x00003001, 0x00003002, 0x0000ff0c, 0x0000ff0e, 0x000030fb, 0x0000ff1a, 0x0000ff1b, 0x0000ff1f, 0x0000ff01,
 	0x0000309b, 0x0000309c, 0x000000b4, 0x0000ff40, 0x000000a8, 0x0000ff3e, 0x0000ffe3, 0x0000ff3f, 0x000030fd, 0x000030fe,

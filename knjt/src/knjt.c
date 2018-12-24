@@ -9,6 +9,8 @@
     	    v1.01 -pN のNページごとを付加
     2004/01 v2.00 unicode表示を付加. eucや句点の扱いを変更. -tの仕様変更
     2018/12 v3.00 JIS2004(JIS X 213) ベースにし、オプションで MS-CP932 に対応.(jis-unicode変換はMS依存)
+
+    ライセンスは Boost software license Version 1.0
  */
 
 #include <stdio.h>
@@ -40,8 +42,8 @@ static char kubun[94 * 2 + 2];
 static int  kubunMen = 0;
 static char ms932 = 0;
 
-extern unsigned 		kubun2004_to_msUCS2_tbl[];
-extern unsigned 		kubun_to_msUCS2_tbl[];
+extern unsigned 		kuten2004_to_msUCS2_tbl[];
+extern unsigned 		kuten_to_msUCS2_tbl[];
 extern unsigned short	ubyte_to_msUCS2_tbl[];
 
 
@@ -49,12 +51,14 @@ extern unsigned short	ubyte_to_msUCS2_tbl[];
 static void Usage(void)
 {
     printf(
-    	"usage>knjt [-opts]       // v2.00 " __DATE__ "  by tenk*\n"
-    	"    シフトJIS文字で全角文字一覧のテキストを生成する\n"
+    	"usage>knjt [-opts]       // v3.00 " __DATE__ "\n"
+    	"    https://github.com/tenk-a/misc/tree/master/knjt\n"
+    	"    全角文字一覧のテキストを生成する.\n"
     	"  -opts:  （デフォルトは -l16 -c1 -t0）\n"
     	"    -w[seo]    結果を s:SJIS e:EUC o:UTF8 にして出力\n"
     	"    -t[kjseuo] 各行の先頭に文字コードを付加. -t0だと付加しない\n"
-    	"               k:句点 j:JIS s:SJIS e:EUC u:UCS2 o:UTF8 を付加.(組合わせる)\n"
+    	"               k:句点 j:JIS s:SJIS e:EUC u:UTF32 o:UTF8 を付加.(組合わせる)\n"
+    	"    -x         SJIS を cp932 とし、拡張95-120区も対象.\n"
     	"    -k         区の分類の表示(ヘルプ)\n"
     	"    -k[N:M]    表示する区の範囲を指定. 1～94. 複数指定可能\n"
     	"    -kb[N:M]   2面の区指定. 1～94.\n"
@@ -62,23 +66,26 @@ static void Usage(void)
     	"    -0x        1-15区指定\n"
     	"    -1         漢字第一水準の指定. -k16:47 に同じ\n"
     	"    -2         漢字第ニ水準の指定. -k48:84 に同じ\n"
-    	"    -3         85-94区指定.\n"
-    	"    -4         JIS X 213 2面の1,3-5,8,12-15,78-94区指定\n"
-    	"    -x         SJIS を MS-CP932 とし、機種依存SJIS拡張の95-120区も対象.\n"
+    	"    -3         JIS X 213 漢字第三水準の指定. -k84:94 に同じ\n"
+    	"    -4         JIS X 213 漢字第四水準の指定. 2面の1,3-5,8,12-15,78-94区指定\n"
     	"    -l[N]      1行に表示する文字数. 1～94(デフォルト 16)\n"
     	"               同時に -c0 が指定されたことになる.\n"
-    	"    -cN        JISコード換算での??20,??7fを\n"
-    	"               0:表示しない    1:半角空白２つ'  '(デフォルト)\n"
-    	"               2:全角空白一つ'　'\n"
+    	//"    -cN        JISコード換算での??20,??7fを\n"
+    	//"               0:表示しない    1:半角空白２つ'  '(デフォルト)\n"
+    	//"               2:全角空白一つ'　'\n"
     	"    -m         目盛りを付加\n"
     	"    -p[N]      区ごとに空行(+目盛り)を挿入.(Nが2以上ならN区ごとに挿入)\n"
     	"    -b         テキストでなく、文字コードのみのバイナリ出力\n"
-    	" ※ ??20, ??7F のシフトJIS表示の値はウソになります(次の文字の値です)\n"
-    	/*
-    	//  "	 -t[N]	    各行の先頭に文字コードを付加. 0:何も追加しない\n"
-    	//  "	    	    1:JIS 2:SJIS 4:EUC 8:Unicode(UCS2) 16:UTF8	32:句点\n"
-    	//  "	    	    足し算して組み合わせて指定可.\n"
-    	*/
+    	"\n"
+    	"   SJIS は JIS2004ベースだが 1-88-94(JIS:787E,SJIS:ECFC)以下でcp932に\n"
+    	"   存在する(類似だが違う)文字はcp932に合わせている。\n"
+    	"   1-89-01(JIS:7921,SJIS:ED40)以降についてはMS-CP932と非互換になる.\n"
+    	"変換例:\n"
+    	" > knjt -tkjsu -l1 -wo -m\n"
+    	"   SJIS(2004)の表を'Unicode mapping table'に近い形式で utf8 テキストで出力\n"
+    	" > knjt -tkjsu -l1 -wo -m -x\n"
+    	"   MS-CP932の表を'Unicode mapping table'に近い形式で utf8 テキストで出力\n"
+    	"\n"
     );
     exit(1);
 }
@@ -208,80 +215,6 @@ int sjis2jis(int c)
 	}
 }
 
-#if 0
-static char*    utf8_setC(char*  dst, char* e, unsigned c) {
-    char* d = dst;
-    if (c < 0xC0/*0x80*/) {	// 0x80-xBF bad code
-		if (d >= e) goto ERR;
-        *d++ = c;
-    } else if (c <= 0x7FF) {
-		if (d+2 > e) goto ERR;
-        *d++ = 0xC0|(c>>6);
-        *d++ = 0x80|(c&0x3f);
-    } else if (c <= 0xFFFF) {
-		if (d+3 > e) goto ERR;
-        *d++ = 0xE0|(c>>12);
-        *d++ = 0x80|((c>>6)&0x3f);
-        *d++ = 0x80|(c&0x3f);
-        //if (c >= 0xff60 && c <= 0xff9f) {--(*adn); }	// hankaku-kana
-    } else if (c <= 0x1fFFFF) {
-		if (d+4 > e) goto ERR;
-        *d++ = 0xF0|(c>>18);
-        *d++ = 0x80|((c>>12)&0x3f);
-        *d++ = 0x80|((c>>6)&0x3f);
-        *d++ = 0x80|(c&0x3f);
-    } else if (c <= 0x3fffFFFF) {
-		if (d+5 > e) goto ERR;
-        *d++ = 0xF8|(c>>24);
-        *d++ = 0x80|((c>>18)&0x3f);
-        *d++ = 0x80|((c>>12)&0x3f);
-        *d++ = 0x80|((c>>6)&0x3f);
-        *d++ = 0x80|(c&0x3f);
-    } else {
-		if (d+6 > e) goto ERR;
-        *d++ = 0xFC|(c>>30);
-        *d++ = 0x80|((c>>24)&0x3f);
-        *d++ = 0x80|((c>>18)&0x3f);
-        *d++ = 0x80|((c>>12)&0x3f);
-        *d++ = 0x80|((c>>6)&0x3f);
-        *d++ = 0x80|(c&0x3f);
-    }
-    return d;
-
-ERR:
-	while (d < e)
-		*d++ = 0;
-	return e;
-}
-
-
-uint64_t  utf32toUtf8(unsigned c) {
-	uint64_t u = 0;
-	unsigned char buf[16] = {0};
-	unsigned char* p = buf;
-	if (c & 0x80000000) {
-		c &= 0x7fffffff;
-		utf8_setC((char*)buf, buf + sizeof buf, (uint16_t)c);
-		while (*p) {
-			u = (u << 8) | *p;
-			++p;
-		}
-		memset(buf, 0, sizeof buf);
-		utf8_setC((char*)buf, buf + sizeof buf, (uint16_t)(c >> 16));
-		while (*p) {
-			u = (u << 8) | *p;
-			++p;
-		}
-	} else {
-		utf8_setC((char*)buf, buf + sizeof buf, c);
-		while (*p) {
-			u = (u << 8) | *p;
-			++p;
-		}
-	}
-	return u;
-}
-#else
 /** UCS2 を utf8 に変換.*/
 unsigned utf32toUtf8(unsigned c)
 {
@@ -299,9 +232,6 @@ unsigned utf32toUtf8(unsigned c)
     	return BBBBBB(0xFC|(c>>30), 0x80|(c>>24)&0x3f, 0x80|(c>>18)&0x3f, 0x80|(c>>12)&0x3f, 0x80|(c>>6)&0x3f, 0x80|(c&0x3f));
     }
 }
-#endif
-
-
 
 #ifdef USE_WIN_API
 unsigned ms932ToUtf32(int sjis) {
@@ -326,8 +256,8 @@ unsigned ms932ToUtf32(int sjis) {
 unsigned ms932ToUtf32(int jis)
 {
 	unsigned ku  = ((jis >> 8) - 0x21);
-	unsigned bun = (jis & 0xff) - 0x21;
-    return kubun_to_msUCS2_tbl[ku * 94 + bun];
+	unsigned ten = (jis & 0xff) - 0x21;
+    return kuten_to_msUCS2_tbl[ku * 94 + ten];
 }
 #endif
 
@@ -336,9 +266,9 @@ unsigned jis2utf32(int jis)
 {
 	unsigned men = jis >> 16;
 	unsigned ku  = ((jis >> 8) & 0xff) - 0x21;
-	unsigned bun = (jis & 0xff) - 0x21;
-	//printf("%d-%02d-%02d %04x\n",men+1,ku+1,bun+1,kubun2004_to_msUCS2_tbl[men * 94*94 + ku * 94 + bun]);
-    return kubun2004_to_msUCS2_tbl[men * 94*94 + ku * 94 + bun];
+	unsigned ten = (jis & 0xff) - 0x21;
+	//printf("%d-%02d-%02d %04x\n",men+1,ku+1,ten+1,kuten2004_to_msUCS2_tbl[men * 94*94 + ku * 94 + ten]);
+    return kuten2004_to_msUCS2_tbl[men * 94*94 + ku * 94 + ten];
 }
 
 
@@ -350,6 +280,7 @@ enum {
 };
 
 int wrt_flags = 0;
+int wrt_clm = 0;
 
 static void wrt_putNbyte(uint64_t c);
 
@@ -369,7 +300,11 @@ void wrt_putCh(unsigned long jis)
 			uc = ms932ToUtf32( jis2sjis(jis) );
 		else
 			uc = jis2utf32( jis );
-		if (uc) {
+		if (!uc && wrt_clm <= 1) {
+    	    c = 0x236e6f6e65LL; /* none */
+		} else {
+			if (!uc)
+				uc = 0x30fb; /* ・ */
 			if (uc & 0x80000000) {
 				unsigned d = (uint16_t)uc;
 				c = utf32toUtf8( d );
@@ -377,9 +312,7 @@ void wrt_putCh(unsigned long jis)
 				uc = (uc >> 16) & 0x7fff;
 			}
 			c = utf32toUtf8( uc );
-		} else {
-    	    c = 0x236e6f6e65LL; /* none */
-    	}
+		}
 	} else {
 		if (jis != 0x2020)
 	    	c = jis2sjis(jis);
@@ -423,13 +356,9 @@ void wrt_putNbyte(uint64_t c)
 /** 指定個の半角空白を出力 */
 static void printSpc(int n)
 {
-  #if 0
-    printf("%*c", n, ' ');
-  #else /* printfが古い仕様のままのとき */
     int i;
     for (i = 0; i < n; i++)
     	printf(" ");
-  #endif
 }
 
 
@@ -581,6 +510,7 @@ static void printKnjTbl(int flags, int lc, int patCh, int pgMode, int memoriFlg)
 {
     int m, y, x, jis, sj, euc, ucs2, clm, cc, yend;
 
+	wrt_clm = lc;
     clm = 0;
     if (memoriFlg)
     	printMemori(flags, lc);
@@ -734,12 +664,18 @@ static void ku_help(void)
     	{0x2621, 0x267E, "ギリシア文字"},
     	{0x2721, 0x277E, "キリル文字"},
     	{0x2821, 0x287E, "罫線素片"},
-    	{0x2921, 0x2F7E, "JIS X 208 未定義 | JIS X 213 定義"},
+    	{0x2921, 0x2c7E, "JIS X 213 非漢字"},
+    	{0x2d21, 0x2d7E, "JIS X 213 非漢字 | NEC特殊文字"},
+    	{0x2e21, 0x2F7E, "JIS X 213 未定義"},
     	{0x3021, 0x4F7E, "第一水準漢字"},
-    	{0x5021, 0x747E, "第二水準漢字"},
-    	{0x7521, 0x7E7E, "JIS X 208 で未定義 | JIS X 213 定義"},
+    	{0x5021, 0x7406, "第二水準漢字"},
+    	{0x7407, 0x7E7E, "JIS X 213 第三水準"},
     	{0x7f21, 0x987E, "(SJIS機種依存拡張領域)"},
-    	{0x12121,0x17E7E, "JIS X 213 定義"},
+    	{0x12121,0x1217E, "JIS X 213 第四水準"},
+    	{0x12321,0x1257E, "JIS X 213 第四水準"},
+    	{0x12821,0x1287E, "JIS X 213 第四水準"},
+    	{0x12c21,0x12f7E, "JIS X 213 第四水準"},
+    	{0x16e21,0x17E7E, "JIS X 213 第四水準"},
     };
     int i, n, c1,c2;
 
@@ -750,32 +686,30 @@ static void ku_help(void)
     	n  = (c2>>8) - (c1>>8);
 		if (c1 < 0x10000) {
 	    	if (n == 0) {
-	    	    printf("%2d    区", (c1>>8)-0x20);
-		    	printf("  %x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
+	    	    printf("1面%2d    区", (c1>>8)-0x20);
+		    	printf("  3-%x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
 	    	} else {
 				if ((c2>>8) <= 0x20+99) {
-	    	    	printf("%2d～%2d区", (c1>>8)-0x20, (c2>>8)-0x20);
-		    		printf("  %x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
+	    	    	printf("1面%2d～%2d区", (c1>>8)-0x20, (c2>>8)-0x20);
+		    		printf("  3-%x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
 		    	} else {
-	    	    	printf("%2d～%2d区", (c1>>8)-0x20, (c2>>8)-0x20);
-		    		printf(" %x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
+	    	    	printf("1面%2d～%2d区", (c1>>8)-0x20, (c2>>8)-0x20);
+		    		printf(" 3-%x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
 				}
 	    	}
 		} else {
 	    	if (n == 0) {
-	    	    printf("2面%2d区  ", ((c1>>8)&0xff)-0x20);
-		    	printf("  %x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
+	    	    printf("2面%2d    区", ((c1>>8)&0xff)-0x20);
+		    	printf("  4-%x～%x  %x～%x   ", (uint16_t)c1, (uint16_t)c2, jis2sjis(c1), jis2sjis(c2));
 	    	} else {
     	    	printf("2面%2d～%2d区", ((c1>>8)&0xff)-0x20, ((c2>>8)&0xff)-0x20);
-	    		printf("  %x～%x  %x～%x   ", c1, c2, jis2sjis(c1), jis2sjis(c2));
+	    		printf("  4-%x～%x  %x～%x   ", (uint16_t)c1, (uint16_t)c2, jis2sjis(c1), jis2sjis(c2));
 			}
 		}
     	printf("%s\n", stbl[i].msg);
     }
     printf(
     	"※ 終わりは各区で0x7E(94)未満の場合もあるが、一律 ??7Eにしている\n"
-    	"※ JIS X 208 での未定義エリアには機種依存文字や\n"
-    	"   その後の規格で拡張された文字が入っている場合がある。\n"
     );
     exit(1);
 }
@@ -978,4 +912,3 @@ int main(int argc, char *argv[])
     	outputKnjTblB();
     return 0;
 }
-

@@ -1,0 +1,17 @@
+たぶん unicode コンソーシアムかどっかで配布されてる？ jis と unicode の対応表を
+プログラムに組み込むため 区点の連番のunicode配列 を吐き出すためのプログラム。
+
+ネットで見かけたページをコピペしたもの。入手元失念だが
+JIS X 0213:2004 vs Unicode mapping table
+を検索してみつかるどこか。
+
+元版
+JIS_X_0213_2004_vs_Unicode_mapping_table_orig.txt
+
+上記のうち 0x80未満のコードへの変換は 全角等別のunicodeに変更したもの.
+JIS_X_0213_2004_vs_Unicode_mapping_table_no_ascii.txt
+
+記号等はすべて Windows CP-932 にあわせたもの.
+JIS_X_0213_2004_vs_Unicode_mapping_table_mod_for_ms932.txt
+※ とりあえず knjt 向けにはこれを採用
+
