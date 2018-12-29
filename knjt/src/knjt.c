@@ -33,19 +33,44 @@
 #define BB(a,b)     	((((uint8_t)(a))<<8)|(uint8_t)(b))
 
 /** 8bit数4つを上位から順につなげて32ビット数にする */
-#define BBBB(a,b,c,d)	((((uint8_t)(a))<<24)|(((uint8_t)(b))<<16)|(((uint8_t)(c))<<8)|((uint8_t)(d)))
+#define BBBB(a,b,c,d)	(((uint32_t)((uint8_t)(a))<<24)|(((uint8_t)(b))<<16)|(((uint8_t)(c))<<8)|((uint8_t)(d)))
 
 /** 8bit数6つを... 64bit整数用 */
 #define BBBBBB(a,b,c,d,e,f) (((uint64_t)((uint8_t)(a))<<40)|((uint64_t)((uint8_t)(b))<<32)|(((uint8_t)(c))<<24)|(((uint8_t)(d))<<16)|(((uint8_t)(e))<<8)|((uint8_t)(f)))
 
-static char kubun[94 * 2 + 2];
-static int  kubunMen = 0;
+static char kuten[94 * 2 + 2];
+static int  kutenMen = 0;
 static char ms932 = 0;
+static char ms932xxxxFlag = 0;
+#ifdef USE_WIN_API
+static char useWinApi = 0;
+#endif
 
-extern unsigned 		kuten2004_to_msUCS2_tbl[];
-extern unsigned 		kuten_to_msUCS2_tbl[];
-extern unsigned short	ubyte_to_msUCS2_tbl[];
+//extern unsigned 		kuten2004_to_msUCS2_tbl[];
+//extern unsigned 		kuten_to_msUCS2_tbl[];
+//extern unsigned short	ubyte_to_msUCS2_tbl[];
+unsigned short ubyte_to_msUCS2_tbl[] = {
+    0x0000,0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,0x0007,0x0008,0x0009,0x000a,0x000b,0x000c,0x000d,0x000e,0x000f,
+    0x0010,0x0011,0x0012,0x0013,0x0014,0x0015,0x0016,0x0017,0x0018,0x0019,0x001a,0x001b,0x001c,0x001d,0x001e,0x001f,
+    0x0020,0x0021,0x0022,0x0023,0x0024,0x0025,0x0026,0x0027,0x0028,0x0029,0x002a,0x002b,0x002c,0x002d,0x002e,0x002f,
+    0x0030,0x0031,0x0032,0x0033,0x0034,0x0035,0x0036,0x0037,0x0038,0x0039,0x003a,0x003b,0x003c,0x003d,0x003e,0x003f,
+    0x0040,0x0041,0x0042,0x0043,0x0044,0x0045,0x0046,0x0047,0x0048,0x0049,0x004a,0x004b,0x004c,0x004d,0x004e,0x004f,
+    0x0050,0x0051,0x0052,0x0053,0x0054,0x0055,0x0056,0x0057,0x0058,0x0059,0x005a,0x005b,0x005c,0x005d,0x005e,0x005f,
+    0x0060,0x0061,0x0062,0x0063,0x0064,0x0065,0x0066,0x0067,0x0068,0x0069,0x006a,0x006b,0x006c,0x006d,0x006e,0x006f,
+    0x0070,0x0071,0x0072,0x0073,0x0074,0x0075,0x0076,0x0077,0x0078,0x0079,0x007a,0x007b,0x007c,0x007d,0x007e,0x007f,
+    0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
+    0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
+    0xf8f0,0xff61,0xff62,0xff63,0xff64,0xff65,0xff66,0xff67,0xff68,0xff69,0xff6a,0xff6b,0xff6c,0xff6d,0xff6e,0xff6f,
+    0xff70,0xff71,0xff72,0xff73,0xff74,0xff75,0xff76,0xff77,0xff78,0xff79,0xff7a,0xff7b,0xff7c,0xff7d,0xff7e,0xff7f,
+    0xff80,0xff81,0xff82,0xff83,0xff84,0xff85,0xff86,0xff87,0xff88,0xff89,0xff8a,0xff8b,0xff8c,0xff8d,0xff8e,0xff8f,
+    0xff90,0xff91,0xff92,0xff93,0xff94,0xff95,0xff96,0xff97,0xff98,0xff99,0xff9a,0xff9b,0xff9c,0xff9d,0xff9e,0xff9f,
+    0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
+    0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
+};
 
+extern unsigned short const fks_mbc_kutenIdx2uni[];
+extern unsigned const 		fks_mbc_kutenIdx2uniAdd[];
+static unsigned short const* fks_mbc_cp932kutenIdx2uni;
 
 /** 使い方 */
 static void Usage(void)
@@ -56,9 +81,13 @@ static void Usage(void)
     	"    全角文字一覧のテキストを生成する.\n"
     	"  -opts:  （デフォルトは -l16 -c1 -t0）\n"
     	"    -w[seo]    結果を s:SJIS e:EUC o:UTF8 にして出力\n"
-    	"    -t[kjseuo] 各行の先頭に文字コードを付加. -t0だと付加しない\n"
+    	"    -t[kjseuo-] 各行の先頭に文字コードを付加. -t- だと付加しない\n"
     	"               k:句点 j:JIS s:SJIS e:EUC u:UTF32 o:UTF8 を付加.(組合わせる)\n"
-    	"    -x         SJIS を cp932 とし、拡張95-120区も対象.\n"
+    	"    -x         SJIS(JIS) を MS-CP932 とし、拡張95-120区も対象.\n"
+	 #ifdef USE_WIN_API
+		"    -xapi      cp932->unicodeの変換に win-api を用いる\n"
+	 #endif
+    	"    -X212      JIS X 212 の 2面 2,6,7,9-11,16-77区も対象(SJISは嘘値)\n"
     	"    -k         区の分類の表示(ヘルプ)\n"
     	"    -k[N:M]    表示する区の範囲を指定. 1～94. 複数指定可能\n"
     	"    -kb[N:M]   2面の区指定. 1～94.\n"
@@ -77,14 +106,11 @@ static void Usage(void)
     	"    -p[N]      区ごとに空行(+目盛り)を挿入.(Nが2以上ならN区ごとに挿入)\n"
     	"    -b         テキストでなく、文字コードのみのバイナリ出力\n"
     	"\n"
-    	"   SJIS は JIS2004ベースだが 1-88-94(JIS:787E,SJIS:ECFC)以下でcp932に\n"
-    	"   存在する(類似だが違う)文字はcp932に合わせている。\n"
-    	"   1-89-01(JIS:7921,SJIS:ED40)以降についてはMS-CP932と非互換になる.\n"
-    	"変換例:\n"
-    	" > knjt -tkjsu -l1 -wo -m\n"
-    	"   SJIS(2004)の表を'Unicode mapping table'に近い形式で utf8 テキストで出力\n"
-    	" > knjt -tkjsu -l1 -wo -m -x\n"
-    	"   MS-CP932の表を'Unicode mapping table'に近い形式で utf8 テキストで出力\n"
+    	//"   SJIS は JIS2004ベースだが 1-88-94(JIS:787E,SJIS:ECFC)以下でcp932に\n"
+    	//"   存在する(類似だが違う)文字はcp932に合わせている。\n"
+    	"   JIS X 213(2004) ベースだが、0x7f以下のコードへの変換はしないよう\n"
+    	"   Fullwidth 文字に変更している.\n"
+    	"   ※区点1-89-01=JIS:7921=SJIS:ED40 以降についてはMS-CP932と非互換になる.\n"
     	"\n"
     );
     exit(1);
@@ -218,23 +244,23 @@ int sjis2jis(int c)
 /** UCS2 を utf8 に変換.*/
 uint64_t utf32toUtf8(unsigned c)
 {
-    if (c < 0x80) {
+    if (c < 0xC0/*0x80*/) {
     	return c;
     } else if (c <= 0x7FF) {
     	return BB(0xC0|(c>>6), 0x80|(c&0x3f));
-    } else if (c <= 0xFFFF) {
+    } else if (c <= 0xffFF) {
     	return BBBB(0, 0xE0|(c>>12), 0x80|(c>>6)&0x3f, 0x80|(c&0x3f));
-    } else if (c <= 0x1fFFFF) {
+    } else if (c <= 0x1FffFF) {
     	return BBBB(0xF0|(c>>18), 0x80|(c>>12)&0x3f, 0x80|(c>>6)&0x3f, 0x80|(c&0x3f));
-    } else if (c <= 0x3fffFFFF) {
-    	return BBBBBB(00, 0xF8|(c>>24), 0x80|(c>>18)&0x3f, 0x80|(c>>12)&0x3f,0x80|(c>>6)&0x3f,0x80|(c&0x3f));
+    } else if (c <= 0x3fFFffFF) {
+    	return BBBBBB(00, 0xF8|(c>>24), 0x80|(c>>18)&0x3f, 0x80|(c>>12)&0x3f, 0x80|(c>>6)&0x3f, 0x80|(c&0x3f));
     } else {
     	return BBBBBB(0xFC|(c>>30), 0x80|(c>>24)&0x3f, 0x80|(c>>18)&0x3f, 0x80|(c>>12)&0x3f, 0x80|(c>>6)&0x3f, 0x80|(c&0x3f));
     }
 }
 
 #ifdef USE_WIN_API
-unsigned ms932ToUtf32(int sjis) {
+unsigned ms932ToUtf32winApi(int sjis) {
 	char sjisStr[4] = { 0 };
 	wchar_t wcs[4] = { 0 };
 	int l;
@@ -252,23 +278,98 @@ unsigned ms932ToUtf32(int sjis) {
 	}
 	return c;
 }
-#else
-unsigned ms932ToUtf32(int jis)
+#endif
+
+static void fks_mbc_init_cp932kutenIdx2uni(void)
+{
+	static unsigned short const s_repl_cp932[9][2] = {
+		{ (1-1)*94+(17-1), 0xFFE3 },		// 203E →	￣	OVERLINE
+		{ (1-1)*94+(29-1), 0x2015 },		// 2014 →	―	EM DASH
+		{ (1-1)*94+(33-1), 0xFF5E },		// 301C →	～	WAVE DASH
+		{ (1-1)*94+(34-1), 0x2225 },		// 2016 →	∥	DOUBLE VERTICAL LINE
+		{ (1-1)*94+(61-1), 0xFF0D },		// 2212 →	2	MINUS SIGN
+		{ (1-1)*94+(79-1), 0xFFE5 },		// 00A5 →	￥	YEN SIGN
+		{ (1-1)*94+(81-1), 0xFFE0 },		// 00A2 →	￠	CENT SIGN
+		{ (1-1)*94+(82-1), 0xFFE1 },		// 00A3 →	￡	POUND SIGN
+		{ (2-1)*94+(44-1), 0xFFE2 },		// 00AC →	￢	NOT SIGN
+	};
+	int i, c;
+	unsigned short const* s;
+	unsigned short* dst = (short*)calloc(1, 120 * 94 * sizeof(unsigned short));
+	if (!dst)
+		return;
+	memcpy(dst, fks_mbc_kutenIdx2uni, 120*94*sizeof(unsigned short));
+	s = fks_mbc_kutenIdx2uni + 2 * 94 * 94;
+	// 89-92:NEC選定IBM拡張文字.
+	for (i = (89-1)*94; i < (93-1) * 94; ++i) {
+		c = s[i - (89-1)*94];
+		if (c)
+			dst[i] = c;
+	}
+	// ユーザー外字.
+	for (i = (95-1) * 94; i < (115-1) * 94; ++i) {
+		c = 0xE000 + i - (95-1) * 94;
+		dst[i] = c;
+	}
+	// 115-119:IBM拡張文字.
+	for (i = (115-1) * 94; i < (119-1) * 94 + 12; ++i) {
+		c = s[i - (115-1)*94 + (93-89)*94];
+		if (c)
+			dst[i] = c;
+	}
+
+	for (i = 0; i < 9; ++i)
+		dst[s_repl_cp932[i][0]] = s_repl_cp932[i][1];
+	fks_mbc_cp932kutenIdx2uni = dst;
+}
+
+unsigned ms932JisToUtf32(unsigned jis)
 {
 	unsigned ku  = ((jis >> 8) - 0x21);
 	unsigned ten = (jis & 0xff) - 0x21;
-    return kuten_to_msUCS2_tbl[ku * 94 + ten];
+	unsigned idx = ku * 94 + ten;
+	unsigned rc;
+	if (!fks_mbc_cp932kutenIdx2uni)
+		fks_mbc_init_cp932kutenIdx2uni();
+	rc = fks_mbc_cp932kutenIdx2uni[idx];
+	if (0xDC00 <= rc && rc <= 0xDFFF)
+		rc = fks_mbc_kutenIdx2uniAdd[rc - 0xDC00];
+	return rc;
 }
-#endif
 
-/** JIS2004 を MS-UCS2 に変換 */
-unsigned jis2utf32(int jis)
+unsigned ms932ToUtf32(unsigned sjis)
+{
+#ifdef USE_WIN_API
+	if (useWinApi) {
+		return ms932ToUtf32winApi(sjis);
+	} else
+#endif
+	{
+		unsigned jis = sjis2jis(sjis);
+		return ms932JisToUtf32(jis);
+	}
+}
+
+/** JIS X 213:2004(with JIS X 212) を UTF32 に変換
+ * return unicode (bit31が立っていた場合は 2キャラ合成)
+ */
+unsigned jis2utf32(unsigned jis)
 {
 	unsigned men = jis >> 16;
 	unsigned ku  = ((jis >> 8) & 0xff) - 0x21;
 	unsigned ten = (jis & 0xff) - 0x21;
+	unsigned idx = men * 94*94 + ku * 94 + ten;
+	unsigned rc;
+ #if 1
+	rc = fks_mbc_kutenIdx2uni[idx];
+	if (0xDC00 <= rc && rc <= 0xDFFF) {
+		rc = fks_mbc_kutenIdx2uniAdd[rc - 0xDC00];
+	}
+ #else
+    rc = kuten2004_to_msUCS2_tbl[idx];
+ #endif
 	//printf("%d-%02d-%02d %04x\n",men+1,ku+1,ten+1,kuten2004_to_msUCS2_tbl[men * 94*94 + ku * 94 + ten]);
-    return kuten2004_to_msUCS2_tbl[men * 94*94 + ku * 94 + ten];
+    return rc;
 }
 
 
@@ -277,6 +378,7 @@ unsigned jis2utf32(int jis)
 /** 表示するコード体系の種類 */
 enum {
     F_JIS=1, F_SJIS=2, F_EUC=4, F_UCS2=8, F_UTF8=16, F_KUTEN=32, F_KUTEN94=64,
+    F_JIS_B=128,
 };
 
 int wrt_flags = 0;
@@ -406,7 +508,8 @@ static void printMemori(int flags, int lc)
     if (flags & F_UTF8)
     	n += 8;
     n = n + (lc == 94)*3;
-    printf("#");
+	if (lc != 94)
+	    printf("#");
     if (lc < 10 || (((flags & F_KUTEN) == 0 || (flags & F_JIS)) && lc <= 16)) { /*一行ですむとき */
     	printFlags(flags, (lc == 94)*3);
     	if (lc > 1) {
@@ -470,13 +573,16 @@ static void printCode(int jis, int sj, int flags)
    	    printf("%d-%02d-%02d\t", men, ku, ten);
     }
     if (flags & F_JIS) {
-    	printf("%d-%04X\t", men+2, jis & 0xffff);
+		if (flags & F_JIS_B)
+	    	printf("%d-%04X\t", men+2, jis & 0xffff);
+	    else
+	    	printf("%04X\t", jis);
     }
     if (flags & F_SJIS) {
-    	printf("%04X\t", sj);
+		printf("%04X\t", sj);
     }
     if (flags & F_EUC) {
-    	printf("%04X\t", euc);
+		printf("%04X\t", euc);
     }
     if (flags & F_UCS2) {
     	if (ucs2 == 0 || ucs2 == 0xFFFF) {
@@ -504,6 +610,24 @@ static void printCode(int jis, int sj, int flags)
 }
 
 
+// 自作変換ルーチン向けの cp932 独自コード
+static unsigned convMs932xxxx(unsigned c)
+{
+	unsigned a;
+	if (c < 0x7921 || c > 0xFCFC)
+		return c;
+	if (0x7921 <= c && c <= 0x7C7E) {
+		c = 0x2100 + c - 0x7900;
+		c |= 0x20000;
+		return c;
+	} else if (0x9321 <= c && c <= 0x972c) {
+		c = 0x2100 + (c - 0x9300) + 0x400;
+		c |= 0x20000;
+		return c;
+	}
+	return c;
+}
+
 
 /** 漢字コード表をテキスト出力 */
 static void printKnjTbl(int flags, int lc, int patCh, int pgMode, int memoriFlg)
@@ -515,9 +639,9 @@ static void printKnjTbl(int flags, int lc, int patCh, int pgMode, int memoriFlg)
     if (memoriFlg)
     	printMemori(flags, lc);
     yend = (ms932) ? (0x21 + 120) : 0x7f;
-    for (m = 0; m < kubunMen; ++m) {
+    for (m = 0; m < kutenMen; ++m) {
 	    for (y = 0x21; y < yend; y++) {
-	    	if (kubun[m * 94 + y-0x21] == 0)     	    	/* 表示しない区分は飛ばす */
+	    	if (kuten[m * 94 + y-0x21] == 0)     	    	/* 表示しない区分は飛ばす */
 	    	    continue;
 	    	for (x = 0x21-(patCh!=0); x < 0x7f+(patCh!=0); x++) {
 	    	    /* JIS */
@@ -525,24 +649,28 @@ static void printKnjTbl(int flags, int lc, int patCh, int pgMode, int memoriFlg)
 
 	    	    if (m)
 	    	    	jis |= 0x10000;
-
 	    	    /* Shift JIS */
-	    	    if (x == 0x20)
-	    	    	cc = jis + 1;
-	    	    else if (x == 0x7f)
-	    	    	cc = jis + 1;
-	    	    else
-	    	    	cc = jis;
+				if (x == 0x20 || x == 0x7f) {
+					if (lc <= 1)
+						continue;
+					cc = jis + 1;
+				} else {
+					cc = jis;
+				}
 	    	    sj = jis2sjis(cc);
 
 	    	    if (clm == 0) { 	    	    	/*左端の文字コードの表示 */
+					unsigned cc2;
 	    	    	if (lc == 94 && memoriFlg) {	/* 区表示 */
 	    	    	    if (flags & F_KUTEN94)
 	    	    	    	printf("%2d ", ((jis>>8)&0xff)-0x20);
 	    	    	    else
 	    	    	    	printf("%2x ", (jis>>8)&0xff);
 	    	    	}
-	    	    	printCode(jis, sj, flags);
+	    	    	cc2 = cc;
+					if (ms932xxxxFlag)
+						cc2 = convMs932xxxx(cc2);
+    	    		printCode(cc2, sj, flags);
 	    	    }
 	    	    if (x >= 0x21 && x <= 0x7E) {   	/* 通常の表示 */
 	    	    	wrt_putCh(cc/*sj*/);
@@ -607,8 +735,6 @@ static void printSjisLine(const char *str, int flags, int memoriFlg)
 }
 
 
-
-
 /** バイナリ出力 */
 static void outputKnjTblB(void)
 {
@@ -617,9 +743,9 @@ static void outputKnjTblB(void)
     int x, y,c,j;
 	int yy = (ms932) ? 0x21 + 120 : 0x7f;
 	int m;
-	for (m = 0; m < kubunMen; ++m) {
+	for (m = 0; m < kutenMen; ++m) {
 	    for (y = 0x21; y < yy; y++) {
-	    	if (kubun[m * 94 + y - 0x21] == 0)     	    	/* 表示しない区分は飛ばす */
+	    	if (kuten[m * 94 + y - 0x21] == 0)     	    	/* 表示しない区分は飛ばす */
 	    	    continue;
 	    	for (x = 0x21; x <= 0x7E; x++) {
 	    	    c = (m << 16) | (y<<8) | x;
@@ -631,22 +757,36 @@ static void outputKnjTblB(void)
 }
 
 
-static void  setNimen() {
+static void  setJISX213Nimen() {
 	unsigned t = 94 - 1;
 	int i;
 
-	kubun[t + 1] = 2;
-	kubun[t + 3] = 2;
-	kubun[t + 4] = 2;
-	kubun[t + 5] = 2;
-	kubun[t + 8] = 2;
-	kubun[t + 12] = 2;
-	kubun[t + 13] = 2;
-	kubun[t + 14] = 2;
-	kubun[t + 15] = 2;
+	kuten[t + 1] = 2;
+	kuten[t + 3] = 2;
+	kuten[t + 4] = 2;
+	kuten[t + 5] = 2;
+	kuten[t + 8] = 2;
+	kuten[t + 12] = 2;
+	kuten[t + 13] = 2;
+	kuten[t + 14] = 2;
+	kuten[t + 15] = 2;
 
 	for (i = 78; i <= 94; ++i)
-		kubun[t + i] = 2;
+		kuten[t + i] = 2;
+}
+
+static void  setJISX212Nimen() {
+	unsigned t = 94 - 1;
+	int i;
+
+	kuten[t + 2] = 2;
+	kuten[t + 6] = 2;
+	kuten[t + 7] = 2;
+	kuten[t + 9] = 2;
+	kuten[t + 10] = 2;
+	kuten[t + 11] = 2;
+	for (i = 16; i <= 77; ++i)
+		kuten[t + i] = 2;
 }
 
 /** 区分に関するヘルプ表示 */
@@ -726,7 +866,7 @@ int main(int argc, char *argv[])
     if (argc < 2)
     	Usage();
 
-    memset(kubun, 0, sizeof(kubun));
+    memset(kuten, 0, sizeof(kuten));
     for (i = 1; i < argc; i++) {
     	p = argv[i];
     	if (*p == '-') {
@@ -768,7 +908,9 @@ int main(int argc, char *argv[])
     	    	    pgMode = strtol(p,0,10);
     	    	break;
     	    case 't':
-    	    	if (isdigit(*p)) {
+    	    	if (*p == '-') {
+					flags = 0;
+				} else if (isdigit(*p)) {
     	    	    c = strtol(p, 0, 0);
     	    	    if (c < 0 || c > 63)
     	    	    	goto OPT_ERR;
@@ -784,6 +926,7 @@ int main(int argc, char *argv[])
     	    	    	switch (c) {
     	    	    	case 'k':   flags |= F_KUTEN;	break;
     	    	    	case 'j':   flags |= F_JIS; 	break;
+    	    	    	case 'J':   flags |= F_JIS|F_JIS_B; 	break;
     	    	    	case 's':   flags |= F_SJIS;	break;
     	    	    	case 'e':   flags |= F_EUC; 	break;
     	    	    	case 'u':   flags |= F_UCS2;	break;
@@ -802,7 +945,6 @@ int main(int argc, char *argv[])
     	    	    if (c == 0)
     	    	    	break;
     	    	    switch (c) {
-    	    	    /* case 'k':wrt_flags =F_KUTEN; break; */
     	    	    /* case 'j':wrt_flags = F_JIS;  break; */
     	    	    case 's':	wrt_flags = F_SJIS; break;
     	    	    case 'e':	wrt_flags = F_EUC;  break;
@@ -816,9 +958,9 @@ int main(int argc, char *argv[])
     	    case 'k':
     	    	if (*p == 0)
     	    	    ku_help();
-    	    	kubunMen = 1;
+    	    	kutenMen = 1;
     	    	if (*p == 'b')
-    	    		kubunMen = 2;
+    	    		kutenMen = 2;
     	    	d = c = strtol(p,&p,10);
     	    	if (c < 1 || c > 120/*94*/)
     	    	    goto OPT_ERR;
@@ -827,38 +969,51 @@ int main(int argc, char *argv[])
     	    	if (d < c)
     	    	    goto OPT_ERR;
     	    	for (k = c; k <= d; k++)
-    	    	    kubun[(kubunMen-1)*94 + k-1] = 1;
+    	    	    kuten[(kutenMen-1)*94 + k-1] = 1;
     	    	break;
     	    case '0':
-    	    	kubunMen = 1;
+    	    	kutenMen = 1;
     	    	d = (*p == 'x') ? 15 : 8;
     	    	for (k = 1; k <= d; k++)
-    	    	    kubun[k-1] = 1;
+    	    	    kuten[k-1] = 1;
     	    	break;
     	    case '1':
-    	    	kubunMen = 1;
+    	    	kutenMen = 1;
     	    	for (k = 16; k <= 47; k++)
-    	    	    kubun[k-1] = 1;
+    	    	    kuten[k-1] = 1;
     	    	break;
     	    case '2':
-    	    	kubunMen = 1;
+    	    	kutenMen = 1;
     	    	for (k = 48; k <= 84; k++)
-    	    	    kubun[k-1] = 1;
+    	    	    kuten[k-1] = 1;
     	    	break;
     	    case '3':
-    	    	kubunMen = 1;
+    	    	kutenMen = 1;
     	    	for (k = 85; k <= 94; k++)
-    	    	    kubun[k-1] = 1;
+    	    	    kuten[k-1] = 1;
     	    	break;
     	    case '4':
-    	    	kubunMen = 2;
-				setNimen();
+    	    	kutenMen = 2;
+				setJISX213Nimen();
     	    	break;
-    	    case 'x':
-    	    	//kubunMen = 0;
+    	    case 'X':
+    	    	//kutenMen = 0;
+    	    	if (strcmp(p,"212") == 0) {
+	    	    	kutenMen = 2;
+					setJISX212Nimen();
+				}
+				break;
+			case 'x':
     	    	ms932 = 1;
+				if (*p == 'V') {	// 自作変換処理向けに、区点|JIS表記において、1-89-01以降を2-01-01|5-2121のように2面(group5)に区単位で隙間を詰めて並べて出力.
+					ms932xxxxFlag = 1;
+				}
+			 #ifdef USE_WIN_API
+				if (strcmp(p,"api") == 0)
+					useWinApi = 1;
+			 #endif
     	    	for (k = 95; k <= 120; k++)
-    	    	    kubun[k-1] = 1;
+    	    	    kuten[k-1] = 1;
     	    	break;
     	    case 'j':
     	    	c = strtol(p,0,16);
@@ -894,16 +1049,16 @@ int main(int argc, char *argv[])
     	flags |= F_KUTEN94;
     }
 
-    if (kubunMen == 0) {    /* 区の指定がなければすべて表示 */
+    if (kutenMen == 0) {    /* 区の指定がなければすべて表示 */
 		if (ms932) {
-			kubunMen = 1;
+			kutenMen = 1;
 	    	for (k = 1; k <= 120; k++)
-	    	    kubun[k-1] = 1;
+	    	    kuten[k-1] = 1;
 	   	} else {
-			kubunMen = 2;
+			kutenMen = 2;
 	    	for (k = 1; k <= 94; k++)
-	    	    kubun[k-1] = 1;
-			setNimen();
+	    	    kuten[k-1] = 1;
+			setJISX213Nimen();
 		}
     }
     if (binFlg == 0)

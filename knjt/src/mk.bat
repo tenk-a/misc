@@ -1,1 +1,1 @@
-cl -Ox -DNDEBUG knjt.c jisno_to_msUCS2_tbl.c
+cl -Ox -DNDEBUG knjt.c jis213_212_932_to_uc.c

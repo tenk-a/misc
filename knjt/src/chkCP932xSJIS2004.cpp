@@ -15,15 +15,14 @@
 #define BB(a,b)     	((((uint8_t)(a))<<8)|(uint8_t)(b))
 
 /** 8bit数4つを上位から順につなげて32ビット数にする */
-#define BBBB(a,b,c,d)	((((uint8_t)(a))<<24)|(((uint8_t)(b))<<16)|(((uint8_t)(c))<<8)|((uint8_t)(d)))
+#define BBBB(a,b,c,d)	(((uint32_t)((uint8_t)(a))<<24)|(((uint8_t)(b))<<16)|(((uint8_t)(c))<<8)|((uint8_t)(d)))
 
 /** 8bit数6つを... 64bit整数用 */
 #define BBBBBB(a,b,c,d,e,f) (((uint64_t)((uint8_t)(a))<<40)|((uint64_t)((uint8_t)(b))<<32)|(((uint8_t)(c))<<24)|(((uint8_t)(d))<<16)|(((uint8_t)(e))<<8)|((uint8_t)(f)))
 
 
-extern "C" unsigned 		kuten2004_to_msUCS2_tbl[];
-extern "C" unsigned 		kuten_to_msUCS2_tbl[];
-extern "C" unsigned short	ubyte_to_msUCS2_tbl[];
+extern "C" unsigned 		kutenIdx_to_utf32_tbl_jisx213with212[];
+extern "C" unsigned 		kutenIdx_to_utf32_tbl_cp932[];
 
 
 class App {
@@ -37,11 +36,13 @@ public:
     int main(int argc, char* argv[]) {
 		MapUU uniToSjisX;
 		for (int i = 1; i <= 2*94; ++i) {
+			int ku = kuTbl_[i-1];
 			for (int j = 1; j <= 94; ++j) {
-				int n = (i-1)*94 + (j-1);
-				unsigned uc  = kuten2004_to_msUCS2_tbl[n];
-				unsigned jis = ((i+0x20)<<8) + (j+0x20);
-				uniToSjisX[uc] = jis;
+				int n = ku*94 + (j-1);
+				unsigned uc  = kutenIdx_to_utf32_tbl_jisx213with212[n];
+				unsigned jis = ((ku+0x21)<<8) + (j+0x20);
+				if (!uniToSjisX[uc])
+					uniToSjisX[uc] = jis;
 			}
 		}
 		MapUU cp932toSjisX;
@@ -53,7 +54,7 @@ public:
 				continue;
 			for (int j = 1; j <= 94; ++j) {
 				int n = (i-1)*94 + (j-1);
-				unsigned uc = kuten_to_msUCS2_tbl[n];
+				unsigned uc = kutenIdx_to_utf32_tbl_cp932[n];
 				if (uc == 0)
 					continue;
 				unsigned jis = ((i+0x20)<<8) + (j+0x20);
@@ -61,7 +62,7 @@ public:
 				if (xjis == 0) {
 					char buf[100] = {0};
 					utf8_setC(buf, buf + sizeof buf, uc);
-					fprintf(stderr, "WARNING: JIS:%04x U+%04X(%s) not found in sjis2004\n", jis, uc, buf);
+					fprintf(stderr, "WARNING: JIS:%04x U+%04X(%s) not found in JIS-X-213(with 212)\n", jis, uc, buf);
 				} else {
 					cp932toSjisX[jis] = xjis;
 					sjisXToCp932[xjis] = jis;
@@ -139,6 +140,36 @@ public:
 			*d++ = 0;
 		return e;
 	}
+
+	void initKuTbl() {
+		uint8_t* p = kuTbl_;
+		for (int i = 0; i < 94; ++i)
+			*p++ = i;
+		// jis x 213
+		*p++ = 94 +  1 - 1;
+		*p++ = 94 +  3 - 1;
+		*p++ = 94 +  4 - 1;
+		*p++ = 94 +  5 - 1;
+		*p++ = 94 +  8 - 1;
+		*p++ = 94 + 12 - 1;
+		*p++ = 94 + 13 - 1;
+		*p++ = 94 + 14 - 1;
+		*p++ = 94 + 15 - 1;
+		for (int i = 78-1; i <= 94 - 1; ++i)
+			*p++ = 94 + i;
+		// jis x 212
+		*p++ = 94 +  2 - 1;
+		*p++ = 94 +  6 - 1;
+		*p++ = 94 +  7 - 1;
+		*p++ = 94 +  9 - 1;
+		*p++ = 94 + 10 - 1;
+		*p++ = 94 + 11 - 1;
+		for (int i = 16-1; i <= 77 - 1; ++i)
+			*p++ = 94 + i;
+	}
+
+private:
+	uint8_t		kuTbl_[2 * 94];
 };
 
 
