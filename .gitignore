@@ -1,9 +1,12 @@
 tmp
+tmp_*
 *.tmp
 sav
+sav_*
 *.sav
 bak
 *.bak
+my_*
 *.obj
 *.pdb
 *.sdf

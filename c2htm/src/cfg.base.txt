@@ -1,0 +1,217 @@
+TAB=4
+LNO=5
+LNOSEP=" : "
+SYM =!"#%&'()=~|-^[:]/\,.{}*+?><;`$@
+NAMESYM =_
+C_LNO   =color:#808080;
+C_SY    =color:#661155;
+C_STR   =color:#888833;
+C_CH    =color:#888800;
+C_ESC   =color:#805030;
+C_ESCX  =color:#FF4411;
+C_VAL   =color:#888800;
+C_OCT   =color:#802000;
+C_CMT   =color:#90B090;
+C_CMTJ  =color:#20A040;
+C_CMTEX1=color:#A0A0A0;
+C_CMTEX2=color:#F06010;
+C_SH    =color:#308080; font-weight:normal;
+C_W1    =color:#000080; font-weight:normal;
+C_W2    =color:#204080; font-weight:normal;
+C_W3    =color:#206080; font-weight:normal;
+C_W4    =color:#006080; font-weight:normal;
+C_W5    =color:#000080; font-weight:normal;
+C_W6    =color:#204080; font-weight:normal;
+C_W7    =color:#204080; font-weight:normal;
+C_W8    =color:#204080; font-weight:normal;
+C_W9    =color:#204080; font-weight:normal;
+C_HT    =color:#A0A0A0;
+SHARP   {
+    #define
+    #if
+    #elif
+    #else
+    #endif
+    #ifdef
+    #ifndef
+    #include
+    #pragma
+    #error
+    #undef
+    defined
+    __FILE__
+    __LINE__
+    __DATE__
+    __FUNCTION__
+    __func__
+    __VA_ARGS__
+    __has_include
+}
+
+WORD1   {
+    break
+    case
+    continue
+    default
+    else
+    for
+    goto
+    if
+    return
+    switch
+    while
+    do
+    delete
+    new
+    throw
+    try
+    catch
+    asm
+}
+
+WORD2   {
+    auto
+    typedef
+    static
+    struct
+    extern
+    const
+    void
+    int
+    char
+    long
+    short
+    float
+    double
+    signed
+    unsigned
+    volatile
+    typeof
+    union
+    enum
+    register
+    sizeof
+    _Bool
+    _Noreaturn
+    _Alignas
+    _Alignof
+    _Complex
+    _Static_assert
+    typename
+    bool
+    inline
+    template
+    using
+    virtual
+    using
+    mutable
+    namespace
+    explicit
+    friend
+    class
+    private
+    protected
+    public
+    explicit
+    const_cast
+    static_cast
+    dynamic_cast
+    reinterpret_cast
+    wchar_t
+    operator
+    typeid
+    this
+    false
+    true
+    alignas
+    alignof
+    char16_t
+    char32_t
+    constexpr
+    decltype
+    final
+    noexcept
+    nullptr
+    override
+    static_assert
+}
+
+WORD3   {
+    NULL
+    offsetof
+    size_t
+    ptrdiff_t
+    int8_t
+    uint8_t
+    int16_t
+    uint16_t
+    int32_t
+    uint32_t
+    int64_t
+    uint64_t
+    intptr_t
+    uintptr_t
+    intmax_t
+    uintmax_t
+    std
+}
+
+WORD4   {
+    typeof
+    __cdecl
+    __far
+    __near
+    __huge
+    __int64
+    __int128
+    __inline
+    __inline__
+    __forceinline
+    _inline
+    __fastcall
+    __stdcall
+    __based
+    pascal
+    cdecl
+    __declspec
+    __attribute__
+}
+
+HEADER  {
+<html>
+<head>
+<title> *fn* </title>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<style><!--
+.C_PRE{background-color: #f0f0f0;}
+*css*
+--></style>
+</head>
+<body>
+<blockquote>
+<pre class=C_PRE>
+}
+
+FOOTER  {
+</pre>
+</blockquote>
+</body>
+</html>
+}
+
+HEADER1 {
+<pre>
+}
+FOOTER1 {
+</pre>
+}
+
+HEADER2 {
+}
+FOOTER2 {
+}
+
+HEADER3 {
+}
+FOOTER3 {
+}
