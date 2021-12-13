@@ -19,16 +19,12 @@ int usage() {
 
 int main(int argc, char* argv[]) {
     static char buf[0x8000];
-    FILE** files;
-    size_t i;
-    size_t j = 0;
-    size_t count = 0;
-    char   flag = 0;
-    char const* mode = "w";
-
     if (argc < 2)
         return usage();
-    for (i = 1; i < (size_t)argc; ++i) {
+    char const* mode = "w";
+    size_t count = 0;
+    char   flag = 0;
+    for (size_t i = 1; i < (size_t)argc; ++i) {
         char* p = argv[i];
         if (*p == '-' && !flag) {
             ++p;
@@ -44,13 +40,9 @@ int main(int argc, char* argv[]) {
     }
     if (!count)
         return usage();
-    files = (FILE**)malloc(sizeof(FILE*) * count);
-    if (!files) {
-        fputs("Not enough memory.\n", stderr);
-        return 1;
-    }
-    flag = 0;
-    for (i = 1; i < (size_t)argc; ++i) {
+    FILE* files[count];
+    size_t j = 0;
+    for (size_t i = 1; i < (size_t)argc; ++i) {
         char* p = argv[i];
         if (*p == '-' && !flag) {
             if (p[1] == '-')
@@ -67,11 +59,10 @@ int main(int argc, char* argv[]) {
     }
     while (fgets(buf, sizeof buf, stdin) != NULL) {
         fputs(buf, stdout);
-        for (j = 0; j < count; ++j)
-            fputs(buf, files[j]);
+        for (size_t i = 0; i < count; ++i)
+            fputs(buf, files[i]);
     }
-    for (j = 0; j < count; ++j)
-        fclose(files[j]);
-    free(files);
+    for (size_t i = 0; i < count; ++i)
+        fclose(files[i]);
     return 0;
 }
