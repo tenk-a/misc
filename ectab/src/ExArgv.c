@@ -842,7 +842,7 @@ static void ExArgv_convBackSlash(ExArgv_Vector* pVec)
 
     for (pp = pVec->buf; pp != ee; ++pp) {
         char_t* s = *pp;
-        if (ExArgv_isOpt(*s) == 0) {        // オプション以外の文字列で、
+        if (ExArgv_isOpt(*s) == 0) {        // オプション以外の文字列で,
           #if (defined EXARGV_TOSLASH)
             ExArgv_fname_backslashToSlash(s);       // \ を / に置換.
           #else

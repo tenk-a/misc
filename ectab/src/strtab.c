@@ -146,7 +146,7 @@ void MPUTC(unsigned char **ad, unsigned char *e, int c, int *adn, int utf8)
     	    	MPUT1(ad, e, 0xE0|(c>>12));
     	    	MPUT1(ad, e, 0x80|(c>>6)&0x3f);
     	    	MPUT1(ad, e, 0x80|(c&0x3f));
-    	    	// 半角カナなら、半角文字扱い
+    	    	// 半角カナなら、半角文字扱い.
     	    	if (c >= 0xff60 && c <= 0xff9f) {
     	    	    --(*adn);
     	    	}

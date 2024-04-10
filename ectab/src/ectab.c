@@ -305,7 +305,7 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
     	if (o->sjisSw && isJstrBroken(p)) {
     	    fprintf(stderr, "%s (%d): 壊れた全角文字がある.\n", iname, lno);
     	}
-    	// 行を出力
+    	// 行を出力.
     	if (o->numbering) { // 行番号付き.
     	    fprintf(ofp, "%*d%s%s", o->numbering, numb, o->numbSep, p);
     	} else {    	    // そのまま.
