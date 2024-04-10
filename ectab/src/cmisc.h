@@ -1,6 +1,6 @@
 /**
  *  @file   cmisc.h
- *  @brief  Šî–{“I‚ÉCŒ¾Œê‚Å‘‚©‚ê‚½G‘½‚Èƒ‹[ƒ`ƒ“ŒS.
+ *  @brief  åŸºæœ¬çš„ã«Cè¨€èªã§æ›¸ã‹ã‚ŒãŸé›‘å¤šãªãƒ«ãƒ¼ãƒãƒ³éƒ¡.
  *
  *  @author Masashi Kitamura (tenka@6809.net)
  */
@@ -13,7 +13,7 @@
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__BORLANDC__)
 #  include <mbstring.h>
-#else	    // ƒVƒtƒgJISê—p.
+#else	    // ã‚·ãƒ•ãƒˆJISå°‚ç”¨.
 #  define _ismbblead(c)     ((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
 #  define _ismbbtrail(c)    ((unsigned char)(c) >= 0x40 && (unsigned char)(c) <= 0xfc && (c) != 0x7f)
 #endif
@@ -29,15 +29,15 @@ namespace CMISC {
 #endif
 
 //-------------------------------------------------------------------------
-// C•¶š—ñŠÖŒW.
+// Cæ–‡å­—åˆ—é–¢ä¿‚.
 
-/// •¶š—ñ––‚É‚ ‚é‹ó”’‚ğíœ‚·‚é.
+/// æ–‡å­—åˆ—æœ«ã«ã‚ã‚‹ç©ºç™½ã‚’å‰Šé™¤ã™ã‚‹.
 char *strTrimSpcR(char str[], int flags);
 
-/// •¶š—ñ’†‚Ì”¼Šp‚Ì‘å•¶š‚Ì¬•¶š‰»,¬•¶š‚Ì‘å•¶š‰».
+/// æ–‡å­—åˆ—ä¸­ã®åŠè§’ã®å¤§æ–‡å­—ã®å°æ–‡å­—åŒ–,å°æ–‡å­—ã®å¤§æ–‡å­—åŒ–.
 char *strUpLow(char str[], unsigned flags);
 
-/// @fn strTab src•¶š—ñ’†‚Ìtab‚ğ‹ó”’‚É,‹ó”’‚ÌŒq‚ª‚è‚ğV‚½‚Ètab‚É•ÏŠ·‚µ‚Ä•¶š—ñdst‚ğì¬.
+/// @fn strTab srcæ–‡å­—åˆ—ä¸­ã®tabã‚’ç©ºç™½ã«,ç©ºç™½ã®ç¹‹ãŒã‚Šã‚’æ–°ãŸãªtabã«å¤‰æ›ã—ã¦æ–‡å­—åˆ—dstã‚’ä½œæˆ.
 #ifdef __cplusplus
 size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags=0, int dstSz=0);
 #else

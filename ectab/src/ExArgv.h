@@ -1,38 +1,38 @@
 /**
  *  @file   ExArgv.h
- *  @brief  argc,argv‚ÌŠg’£ˆ—(ƒƒCƒ‹ƒhƒJ[ƒh,ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹).
+ *  @brief  argc,argvã®æ‹¡å¼µå‡¦ç†(ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰,ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«).
  *  @author Masashi KITAMURA
  *  @date   2006-2010,2023
  *  @note
- *  -   main(int argc,char* argv[]) ‚Ìargc,argv‚É‘Î‚µA
- *      ƒƒCƒ‹ƒhƒJ[ƒhŽw’è‚âƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹Žw’è“™‚ð“WŠJ‚µ‚½argc,argv‚É•ÏŠ·.
- *      main()‚Ì‰‚Á’[‚®‚ç‚¢‚Å
+ *  -   main(int argc,char* argv[]) ã®argc,argvã«å¯¾ã—ã€
+ *      ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰æŒ‡å®šã‚„ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«æŒ‡å®šç­‰ã‚’å±•é–‹ã—ãŸargc,argvã«å¤‰æ›.
+ *      main()ã®åˆã£ç«¯ãã‚‰ã„ã§
  *          ExArgv_conv(&argc, &argv);
- *      ‚Ì‚æ‚¤‚ÉŒÄ‚Ño‚·.
- *  -   WinMain() ‚ÅŽg‚¤ê‡‚Í EXARGV_FOR_WINMAIN ‚ð’è‹`‚µA
+ *      ã®ã‚ˆã†ã«å‘¼ã³å‡ºã™.
+ *  -   WinMain() ã§ä½¿ã†å ´åˆã¯ EXARGV_FOR_WINMAIN ã‚’å®šç¾©ã—ã€
  *          ExArgv_forWinMain(cmdl, &argc, &argv);
- *      ‚Ì‚æ‚¤‚ÉŒÄ‚Ño‚·.
+ *      ã®ã‚ˆã†ã«å‘¼ã³å‡ºã™.
  *
- *  -   Žå‚ÉWin/DosŒn(‚ÌƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒc[ƒ‹)‚Å‚Ì—˜—p‚ð‘z’è.
- *      ˆê‰ž mac,linux gcc/clang ‚Å‚ÌƒRƒ“ƒpƒCƒ‹‰Â.
- *      (unixŒn‚¾‚ÆƒƒCƒ‹ƒhƒJ[ƒh‚ÍƒVƒFƒ‹”C‚¹‚¾‚ë‚¤‚ÅAƒƒŠƒbƒg­‚È‚­)
+ *  -   ä¸»ã«Win/Dosç³»(ã®ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ãƒ„ãƒ¼ãƒ«)ã§ã®åˆ©ç”¨ã‚’æƒ³å®š.
+ *      ä¸€å¿œ mac,linux gcc/clang ã§ã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«å¯.
+ *      (unixç³»ã ã¨ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰ã¯ã‚·ã‚§ãƒ«ä»»ã›ã ã‚ã†ã§ã€ãƒ¡ãƒªãƒƒãƒˆå°‘ãªã)
  *
- *  -   ExArgv.h‚ÍAˆê‰žƒwƒbƒ_‚¾‚ªAExArgv.c ‚ÌÝ’èƒtƒ@ƒCƒ‹‚Å‚à‚ ‚é.
- *      ƒAƒvƒŠ‚²‚Æ‚É ExArgv.h ExArgv.c ‚ðƒRƒs[‚µ‚ÄAExArgv.h‚ð
- *      ƒJƒXƒ^ƒ€‚µ‚ÄŽg‚¤‚Ì‚ð‘z’è.
- *  -   Ý’è‚Å‚«‚é—v‘f‚ÍA
- *          - ƒƒCƒ‹ƒhƒJ[ƒh (on/off)
- *          - ƒƒCƒ‹ƒhƒJ[ƒhŽž‚ÌÄ‹AŽw’è(**)‚Ì—L–³ (on/off)
- *          - @ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹ (on/off)
- *          - .exe˜A“® .cfg ƒtƒ@ƒCƒ‹ “Çž (on/off)
- *          - ƒIƒvƒVƒ‡ƒ“ŠÂ‹«•Ï”–¼‚Ì—˜—p
- *          “™
+ *  -   ExArgv.hã¯ã€ä¸€å¿œãƒ˜ãƒƒãƒ€ã ãŒã€ExArgv.c ã®è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã§ã‚‚ã‚ã‚‹.
+ *      ã‚¢ãƒ—ãƒªã”ã¨ã« ExArgv.h ExArgv.c ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ã€ExArgv.hã‚’
+ *      ã‚«ã‚¹ã‚¿ãƒ ã—ã¦ä½¿ã†ã®ã‚’æƒ³å®š.
+ *  -   è¨­å®šã§ãã‚‹è¦ç´ ã¯ã€
+ *          - ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰ (on/off)
+ *          - ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰æ™‚ã®å†å¸°æŒ‡å®š(**)ã®æœ‰ç„¡ (on/off)
+ *          - @ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ•ã‚¡ã‚¤ãƒ« (on/off)
+ *          - .exeé€£å‹• .cfg ãƒ•ã‚¡ã‚¤ãƒ« èª­è¾¼ (on/off)
+ *          - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ç’°å¢ƒå¤‰æ•°åã®åˆ©ç”¨
+ *          ç­‰
  *
- *  -   ˆø”•¶Žš—ñ‚Ìæ“ª‚ª'-'‚È‚ç‚ÎƒIƒvƒVƒ‡ƒ“‚¾‚ë‚¤‚ÅA‚»‚Ì•¶Žš—ñ’†‚É
- *      ƒƒCƒ‹ƒhƒJ[ƒh•¶Žš‚ª‚ ‚Á‚Ä‚à“WŠJ‚µ‚È‚¢.
- *  -   ƒ}ƒNƒ UNICODE ‚© EXARGV_USE_WCHAR ‚ð’è‹`‚Å wchar_t—pA‚È‚¯‚ê‚Îchar—p.
- *  -   UTF8 ‚ª•‹y‚µ‚½‚Ì‚ÅAEXARGV_USE_MBC ’è‹`Žž‚Ì‚ÝMBC‚Ì2ƒoƒCƒg–Ú'\'‘Îˆ.
- *  -   _WIN32 ‚ª’è‹`‚³‚ê‚Ä‚¢‚ê‚Î win—pA‚Å‚È‚¯‚ê‚Î unixŒn‚ð‘z’è.
+ *  -   å¼•æ•°æ–‡å­—åˆ—ã®å…ˆé ­ãŒ'-'ãªã‚‰ã°ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã ã‚ã†ã§ã€ãã®æ–‡å­—åˆ—ä¸­ã«
+ *      ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰æ–‡å­—ãŒã‚ã£ã¦ã‚‚å±•é–‹ã—ãªã„.
+ *  -   ãƒžã‚¯ãƒ­ UNICODE ã‹ EXARGV_USE_WCHAR ã‚’å®šç¾©ã§ wchar_tç”¨ã€ãªã‘ã‚Œã°charç”¨.
+ *  -   UTF8 ãŒæ™®åŠã—ãŸã®ã§ã€EXARGV_USE_MBC å®šç¾©æ™‚ã®ã¿MBCã®2ãƒã‚¤ãƒˆç›®'\'å¯¾å‡¦.
+ *  -   _WIN32 ãŒå®šç¾©ã•ã‚Œã¦ã„ã‚Œã° winç”¨ã€ã§ãªã‘ã‚Œã° unixç³»ã‚’æƒ³å®š.
  *
  *  - Public Domain Software
  */
@@ -41,67 +41,67 @@
 #define EXARGV_INCLUDED__
 
 // ---------------------------------------------------------------------------
-// Ý’è.
+// è¨­å®š.
 
-//[] ’è‹`‚·‚é‚ÆAWinMain —p‚É ExArgv_forWinMain ‚ð¶¬.(ExArgv_conv ‚Í–³)
+//[] å®šç¾©ã™ã‚‹ã¨ã€WinMain ç”¨ã« ExArgv_forWinMain ã‚’ç”Ÿæˆ.(ExArgv_conv ã¯ç„¡)
 //#define EXARGV_FOR_WINMAIN
 
-//[] ’è‹`‚³‚ê ‚©‚Â UNICODE –¢’è‹`‚È‚ç MBCS ‚Æ‚µ‚Ä2ƒoƒCƒg–Ú\•¶Žš‘Îˆ‚ðs‚¤
+//[] å®šç¾©ã•ã‚Œ ã‹ã¤ UNICODE æœªå®šç¾©ãªã‚‰ MBCS ã¨ã—ã¦2ãƒã‚¤ãƒˆç›®\æ–‡å­—å¯¾å‡¦ã‚’è¡Œã†
 //#define EXARGV_USE_MBC
 
-//[] ’è‹`‚·‚é‚ÆAwchar_t —p‚Æ‚µ‚Ä¶¬. UNICODE ’è‹`Žž‚ÍŽ©“®‚Å’è‹`‚³‚ê‚é.
+//[] å®šç¾©ã™ã‚‹ã¨ã€wchar_t ç”¨ã¨ã—ã¦ç”Ÿæˆ. UNICODE å®šç¾©æ™‚ã¯è‡ªå‹•ã§å®šç¾©ã•ã‚Œã‚‹.
 //#define EXARGV_USE_WCHAR
 
-//[] EXARGV_USE_WCHARŽž‚É’è‹`‚·‚é‚ÆAExArgv_conv ‚Å‚È‚­ ExArgv_conv_to_utf8 ‚ð¶¬.
+//[] EXARGV_USE_WCHARæ™‚ã«å®šç¾©ã™ã‚‹ã¨ã€ExArgv_conv ã§ãªã ExArgv_conv_to_utf8 ã‚’ç”Ÿæˆ.
 //#define EXARGV_USE_WCHAR_TO_UTF8
 
-//[] ƒƒCƒ‹ƒhƒJ[ƒhŽw’è‚ð 1=—LŒø  0=–³Œø  –¢’è‹`=ƒfƒtƒHƒ‹ƒgÝ’è(1)
+//[] ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰æŒ‡å®šã‚’ 1=æœ‰åŠ¹  0=ç„¡åŠ¹  æœªå®šç¾©=ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®š(1)
 //#define EXARGV_USE_WC         1
 
-//[] ƒƒCƒ‹ƒhƒJ[ƒhonŽž‚ÉAƒƒCƒ‹ƒhƒJ[ƒh•¶Žš ** ‚ª‚ ‚ê‚ÎÄ‹AŒŸõ‚É
-//      1=‚·‚é 0=‚µ‚È‚¢ –¢’è‹`=ƒfƒtƒHƒ‹ƒgÝ’è(1)
+//[] ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰onæ™‚ã«ã€ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰æ–‡å­— ** ãŒã‚ã‚Œã°å†å¸°æ¤œç´¢ã«
+//      1=ã™ã‚‹ 0=ã—ãªã„ æœªå®šç¾©=ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®š(1)
 #define EXARGV_USE_WC_REC     1
 
 
-//[] @ƒŒƒXƒ|ƒ“ƒXƒtƒ@ƒCƒ‹‚ð
-//      1=—LŒø   0=–³Œø  –¢’è‹`=ƒfƒtƒHƒ‹ƒgÝ’è(0)
+//[] @ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’
+//      1=æœ‰åŠ¹   0=ç„¡åŠ¹  æœªå®šç¾©=ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®š(0)
 //#define EXARGV_USE_RESFILE    0
 
 
-//[] ŠÈˆÕƒRƒ“ƒtƒBƒO(ƒŒƒXƒ|ƒ“ƒX)ƒtƒ@ƒCƒ‹“ü—Í‚ð
-//      1=—LŒø  0=–³Œø  –¢’è‹`=ƒfƒtƒHƒ‹ƒg(0)
-//   —LŒøŽž‚ÍAwin/dos‚È‚ç .exe ‚ð .cfg ‚É’uŠ·‚µ‚½ƒpƒX–¼.
-//             ˆÈŠO‚È‚ç unix Œn‚¾‚ë‚¤‚Å ~/.ŽÀsƒtƒ@ƒCƒ‹–¼.cfg
+//[] ç°¡æ˜“ã‚³ãƒ³ãƒ•ã‚£ã‚°(ãƒ¬ã‚¹ãƒãƒ³ã‚¹)ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã‚’
+//      1=æœ‰åŠ¹  0=ç„¡åŠ¹  æœªå®šç¾©=ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ(0)
+//   æœ‰åŠ¹æ™‚ã¯ã€win/dosãªã‚‰ .exe ã‚’ .cfg ã«ç½®æ›ã—ãŸãƒ‘ã‚¹å.
+//             ä»¥å¤–ãªã‚‰ unix ç³»ã ã‚ã†ã§ ~/.å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«å.cfg
 //#define EXARGV_USE_CONFIG     0
 
 
-//[] ƒRƒ“ƒtƒBƒOƒtƒ@ƒCƒ‹“ü—Í—LŒø‚Ì‚Æ‚«A‚±‚ê‚ð’è‹`‚·‚ê‚ÎA
-//      ƒRƒ“ƒtƒBƒOƒtƒ@ƒCƒ‹‚ÌŠg’£Žq‚ð‚±‚ê‚É‚·‚é.
+//[] ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›æœ‰åŠ¹ã®ã¨ãã€ã“ã‚Œã‚’å®šç¾©ã™ã‚Œã°ã€
+//      ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­ã‚’ã“ã‚Œã«ã™ã‚‹.
 //#define EXARGV_CONFIG_EXT     ".cfg"  // .conf
 
 
-//[] ’è‹`‚·‚é‚ÆA‚±‚Ì–¼‘O‚ÌŠÂ‹«•Ï”‚ðƒRƒ}ƒ“ƒhƒ‰ƒCƒ“•¶Žš—ñ‚Æ‚µ‚Ä—˜—p.
+//[] å®šç¾©ã™ã‚‹ã¨ã€ã“ã®åå‰ã®ç’°å¢ƒå¤‰æ•°ã‚’ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³æ–‡å­—åˆ—ã¨ã—ã¦åˆ©ç”¨.
 //#define EXARGV_ENVNAME    "your_app_env_name"
 
 
-//[] winŠÂ‹«‚Ì‚Ý. argv[0] ‚ÌŽÀsƒtƒ@ƒCƒ‹–¼‚ðƒtƒ‹ƒpƒX‰»
-//      1=—LŒø  0=–³Œø      –¢’è‹`=ƒfƒtƒHƒ‹ƒg(0)
-//   ¦bcc,dmc,watcom‚ÍŒ³‚©‚çƒtƒ‹ƒpƒX‚È‚Ì‚Å‰½‚à‚µ‚Ü‚¹‚ñ. ‚Ì‚Åvc,gccŒü.
+//[] winç’°å¢ƒã®ã¿. argv[0] ã®å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«åã‚’ãƒ•ãƒ«ãƒ‘ã‚¹åŒ–
+//      1=æœ‰åŠ¹  0=ç„¡åŠ¹      æœªå®šç¾©=ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ(0)
+//   â€»bcc,dmc,watcomã¯å…ƒã‹ã‚‰ãƒ•ãƒ«ãƒ‘ã‚¹ãªã®ã§ä½•ã‚‚ã—ã¾ã›ã‚“. ã®ã§vc,gccå‘.
 //#define EXARGV_USE_FULLPATH_ARGV0
 
-//[] ’è‹`‚·‚ê‚ÎAfilePath’†‚Ì \ ‚ð / ‚É’uŠ·.
+//[] å®šç¾©ã™ã‚Œã°ã€filePathä¸­ã® \ ã‚’ / ã«ç½®æ›.
 //#define EXARGV_TOSLASH
 
 
-//[] ’è‹`‚·‚ê‚ÎAfilePath’†‚Ì / ‚ð \ ‚É’uŠ·.
+//[] å®šç¾©ã™ã‚Œã°ã€filePathä¸­ã® / ã‚’ \ ã«ç½®æ›.
 //#define EXARGV_TOBACKSLASH
 
 
-//[] ’è‹`‚·‚ê‚ÎA/ ‚àƒIƒvƒVƒ‡ƒ“ŠJŽn•¶Žš‚Æ‚Ý‚È‚·.
+//[] å®šç¾©ã™ã‚Œã°ã€/ ã‚‚ã‚ªãƒ—ã‚·ãƒ§ãƒ³é–‹å§‹æ–‡å­—ã¨ã¿ãªã™.
 //#define EXARGV_USE_SLASH_OPT
 
-//[] ŽÀŒ±. VC‚Ì‚Ý. ’è‹`‚·‚é‚ÆAsetargv‚Ì‘ã—p•i‚Æ‚µ‚ÄƒRƒ“ƒpƒCƒ‹(ExArgv_get‚Í–³)
-//   Œ»ó setargv.obj ‚ÌƒŠƒ“ƒN‚à•K—v.
+//[] å®Ÿé¨“. VCã®ã¿. å®šç¾©ã™ã‚‹ã¨ã€setargvã®ä»£ç”¨å“ã¨ã—ã¦ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«(ExArgv_getã¯ç„¡)
+//   ç¾çŠ¶ setargv.obj ã®ãƒªãƒ³ã‚¯ã‚‚å¿…è¦.
 // #define EXARGV_USE_SETARGV
 
 
@@ -112,9 +112,9 @@ extern "C" {
 #endif
 
 
-#if defined EXARGV_USE_SETARGV  // VC‚ÌˆÃ–Ùˆ—‚Ì’u‚«Š·‚¦—p.
+#if defined EXARGV_USE_SETARGV  // VCã®æš—é»™å‡¦ç†ã®ç½®ãæ›ãˆç”¨.
 
-#elif defined EXARGV_FOR_WINMAIN // win-gui—p. _WINDOWS ‚ÍCONSOLE—p‚Å‚à’è‹`‚³‚ê‚é‚±‚Æ‚à‚ ‚è”pŽ~.
+#elif defined EXARGV_FOR_WINMAIN // win-guiç”¨. _WINDOWS ã¯CONSOLEç”¨ã§ã‚‚å®šç¾©ã•ã‚Œã‚‹ã“ã¨ã‚‚ã‚ã‚Šå»ƒæ­¢.
  #if defined UNICODE || defined EXARGV_USE_WCHAR
   #if defined(EXARGV_USE_WCHAR_TO_UTF8)
    void ExArgv_to_utf8_forWinMain(const wchar_t* pCmdLine, int* pArgc, wchar_t*** pppArgv, char*** pppUtf8s);
@@ -124,7 +124,7 @@ extern "C" {
  #else
    void ExArgv_forWinMain(const char*    pCmdLine, int* pArgc, char***    pppArgv);
  #endif
-#else                       // ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒc[ƒ‹—p. main‚Ì‰‚Á’[‚­‚ç‚¢‚ÉŒÄ‚Ô‚Ì‚ð‘z’è.
+#else                       // ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ãƒ„ãƒ¼ãƒ«ç”¨. mainã®åˆã£ç«¯ãã‚‰ã„ã«å‘¼ã¶ã®ã‚’æƒ³å®š.
  #if defined UNICODE || defined EXARGV_USE_WCHAR
   #if defined(EXARGV_USE_WCHAR_TO_UTF8)
    char** ExArgv_conv_to_utf8(int* pArgc, wchar_t*** ppArgv);

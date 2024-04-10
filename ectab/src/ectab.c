@@ -1,11 +1,11 @@
 /**
  *  @file   ectab.c
- *  @brief  ‹ó”’ƒ^ƒu•ÏŠ·ƒc[ƒ‹.
+ *  @brief  ç©ºç™½ã‚¿ãƒ–å¤‰æ›ãƒ„ãƒ¼ãƒ«.
  *
  *  @author Masashi Kitamura (tenka@6809.net)
- *  @date   2001(?)` 2004-01-29,2024
+ *  @date   2001(?)ï½ 2004-01-29,2024
  *  @note
- *  	ƒAƒZƒ“ƒuƒ‰‚Å‘‚©‚ê‚½msdos-16bit-exe”Å‚ğƒŠƒƒCƒN.
+ *  	ã‚¢ã‚»ãƒ³ãƒ–ãƒ©ã§æ›¸ã‹ã‚ŒãŸmsdos-16bit-exeç‰ˆã‚’ãƒªãƒ¡ã‚¤ã‚¯.
  */
 
 #include <stdio.h>
@@ -13,54 +13,54 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#if defined(_WIN32)
+ #include <windows.h>
+#endif
 #include "cmisc.h"
 #ifndef NO_USE_EXARGV
 #include "ExArgv.h"
 #endif
 
+#ifndef _MAX_PATH
+#define _MAX_PATH	4100
+#endif
+
 #undef	BOOL
 #define BOOL int
 
-#undef	STDERR
-#define STDERR	stderr
 
-#define DBG_S(s)    	    	printf("%-14s %5d : %s", __FILE__, __LINE__, (s), 0)
-#define DBG_F(s)    	    	printf s
-#define DBG_M()     	    	printf("%-14s %5d :\n", __FILE__, __LINE__)
-
-
-/** à–¾•\¦•I—¹.
+/** èª¬æ˜è¡¨ç¤ºï¼†çµ‚äº†.
  */
 static void usage(void)
 {
-    printf("usage> ectab [-opts] file(s)    // v2.11 " __DATE__ "  writen by M.Kitamura\n"
+    printf("usage> ectab [-opts] file(s)    // v2.12 " __DATE__ "  writen by M.Kitamura\n"
     	   "            https://github.com/tenk-a/misc/tree/master/ectab\n"
-    	   "  ƒ^ƒu•ÏŠ·,s––‹ó”’íœ“™‚ğs‚¤. ƒfƒtƒHƒ‹ƒg‚Å‚Í•W€o—Í.\n"
-    	   "  ‰üs‚Æ‚µ‚Ä LF(\\n un*x) CR(\\r mac) CRLF(\\r\\n win/dos) ‚ğ”F¯.\n"
-    	   "  -o        o—Í‚ğŒ³ƒtƒ@ƒCƒ‹–¼‚É‚·‚é. Œ³X‚Ìƒtƒ@ƒCƒ‹‚Í.bak‰».\n"
-    	   "  -o[FILE]  FILE‚Éo—Í.\n"
-    	   "  -m        s––‚Ì‹ó”’‚ğíœ.\n"
-    	   "  -r[0-3]   ‰üs‚ğ 0:“ü—Í‚Ì‚Ü‚Ü 1:'\\n' 2:'\\r' 3:'\\r\\n' ‚É•ÏŠ·(fileo—Í‚Ì‚İ)\n"
-    	   "  -s[N]     o—Í‚Ìƒ^ƒuƒTƒCƒY‚ğ N ‚É‚·‚é(‹ó”’->ƒ^ƒu)\n"
-    	   "  -t[N]     “ü—Í‚Ìƒ^ƒuƒTƒCƒY‚ğ N ‚É‚·‚é(ƒ^ƒu->‹ó”’)\n"
-    	   "  -z        o—Í‚Ìƒ^ƒuƒTƒCƒY‚ª‹ó”’1•¶š‚É‚µ‚©‚È‚ç‚È‚¢ê‡‚Í‹ó”’‚Åo—Í.\n"
-    	   "  -j        o—Í‚Ìƒ^ƒuƒTƒCƒY’š“x‚Ì‹ó”’‚Ì‚İƒ^ƒu‚É•ÏŠ·.\n"
-    	   "  -q        o—Í‚ğ4ƒ^ƒu8ƒ^ƒu‚ÅŒ©‚½–Ú‚ªˆá‚í‚È‚¢‚æ‚¤‚É‚·‚é.\n"
-    	   "  -b[0-2]   C/C++‚Ì \" '‘Î‚ğl—¶ 0:‚µ‚È‚¢ 1:‚·‚é 2:‘Î’†‚Ìctrl•¶š‚ğ\\•¶š‰».\n"
-    	   "  -u        ”¼Šp¬•¶š‚Ì‘å•¶š‰».\n"
-    	   "  -l        ”¼Šp‘å•¶š‚Ì¬•¶š‰».\n"
-    	   "  -a        EOF‚Æ‚µ‚Ä0x1a‚ğo—Í.\n"
-    	   "  -k[0-2]   0:1ƒoƒCƒgŒn  1:ƒVƒtƒgJIS(MBC)  2:UTF8  (ƒfƒtƒHƒ‹ƒg -k2)\n"
-    	   "  -n[N:M:L:STR]  s”Ô†‚ğ•t‰Á. N:Œ…”,M:ƒXƒLƒbƒv”,L:0s–Ú‚Ìs”Ô†,STR:‹æØ.\n"
+    	   "  ã‚¿ãƒ–å¤‰æ›,è¡Œæœ«ç©ºç™½å‰Šé™¤ç­‰ã‚’è¡Œã†. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯æ¨™æº–å‡ºåŠ›.\n"
+    	   "  æ”¹è¡Œã¨ã—ã¦ LF(\\n un*x) CR(\\r mac) CRLF(\\r\\n win/dos) ã‚’èªè­˜.\n"
+    	   "  -o        å‡ºåŠ›ã‚’å…ƒãƒ•ã‚¡ã‚¤ãƒ«åã«ã™ã‚‹. å…ƒã€…ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯.bakåŒ–.\n"
+    	   "  -o[FILE]  FILEã«å‡ºåŠ›.\n"
+    	   "  -m        è¡Œæœ«ã®ç©ºç™½ã‚’å‰Šé™¤.\n"
+    	   "  -r[0-3]   æ”¹è¡Œã‚’ 0:å…¥åŠ›ã®ã¾ã¾ 1:'\\n' 2:'\\r' 3:'\\r\\n' ã«å¤‰æ›(fileå‡ºåŠ›æ™‚ã®ã¿)\n"
+    	   "  -s[N]     å‡ºåŠ›ã®ã‚¿ãƒ–ã‚µã‚¤ã‚ºã‚’ N ã«ã™ã‚‹(ç©ºç™½->ã‚¿ãƒ–)\n"
+    	   "  -t[N]     å…¥åŠ›ã®ã‚¿ãƒ–ã‚µã‚¤ã‚ºã‚’ N ã«ã™ã‚‹(ã‚¿ãƒ–->ç©ºç™½)\n"
+    	   "  -z        å‡ºåŠ›ã®ã‚¿ãƒ–ã‚µã‚¤ã‚ºãŒç©ºç™½1æ–‡å­—ã«ã—ã‹ãªã‚‰ãªã„å ´åˆã¯ç©ºç™½ã§å‡ºåŠ›.\n"
+    	   "  -j        å‡ºåŠ›ã®ã‚¿ãƒ–ã‚µã‚¤ã‚ºä¸åº¦ã®ç©ºç™½ã®ã¿ã‚¿ãƒ–ã«å¤‰æ›.\n"
+    	   "  -q        å‡ºåŠ›ã‚’4ã‚¿ãƒ–8ã‚¿ãƒ–ã§è¦‹ãŸç›®ãŒé•ã‚ãªã„ã‚ˆã†ã«ã™ã‚‹.\n"
+    	   "  -b[0-2]   C/C++ã® \" 'å¯¾ã‚’è€ƒæ…® 0:ã—ãªã„ 1:ã™ã‚‹ 2:å¯¾ä¸­ã®ctrlæ–‡å­—ã‚’\\æ–‡å­—åŒ–.\n"
+    	   "  -u        åŠè§’å°æ–‡å­—ã®å¤§æ–‡å­—åŒ–.\n"
+    	   "  -l        åŠè§’å¤§æ–‡å­—ã®å°æ–‡å­—åŒ–.\n"
+    	   "  -a        EOFã¨ã—ã¦0x1aã‚’å‡ºåŠ›.\n"
+    	   "  -k[0-2]   0:1ãƒã‚¤ãƒˆç³»  1:ã‚·ãƒ•ãƒˆJIS(MBC)  2:UTF8  (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ -k2)\n"
+    	   "  -n[N:M:L:STR]  è¡Œç•ªå·ã‚’ä»˜åŠ . N:æ¡æ•°,M:ã‚¹ã‚­ãƒƒãƒ—æ•°,L:0è¡Œç›®ã®è¡Œç•ªå·,STR:åŒºåˆ‡.\n"
     );
     exit(1);
 }
 
 
-#define stpcpy(d,s) 	    	((d) + sprintf((d), "%s", (s)))
+//#define stpcpy(d,s) 	((d) + sprintf((d), "%s", (s)))
 
 
-/// ƒIƒvƒVƒ‡ƒ“İ’è.
+/// ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¨­å®š.
 typedef struct opts_t {
     int  		stab;
     int  		dtab;
@@ -79,14 +79,14 @@ typedef struct opts_t {
     unsigned	numbStart;
     int     	numbSkip;
     char       *numbSep;
-    // –{—ˆ“ü‚ê‚½‚­‚È‚©‚Á‚½‚ªA–Ê“|‚È‚ñ‚Å.
+
     const char *outname;
     const char *extname;
 } opts_t;
 
 
-/** •¶š—ñ’†‚É‰ó‚ê‚½‘SŠp•¶š‚ª‚È‚¢‚©ƒ`ƒFƒbƒN.
- *  @return  0:‰ó‚ê‚Ä‚È‚©‚Á‚½ 1:‰ó‚ê‚Ä‚¢‚½.
+/** æ–‡å­—åˆ—ä¸­ã«å£Šã‚ŒãŸå…¨è§’æ–‡å­—ãŒãªã„ã‹ãƒã‚§ãƒƒã‚¯.
+ *  @return  0:å£Šã‚Œã¦ãªã‹ã£ãŸ 1:å£Šã‚Œã¦ã„ãŸ.
  */
 static int isJstrBroken(char buf[])
 {
@@ -112,12 +112,12 @@ static int isJstrBroken(char buf[])
 
 
 
-/** '\n','\r','\r\n'‚Ì‰½‚ê‚©‚ğ‰üs‚Æ‚·‚é‚Ps“ü—Í.
- *  @param  buf     “Ç‚İ‚Şƒoƒbƒtƒ@.
- *  @param  len     ƒoƒbƒtƒ@ƒTƒCƒY.
- *  @param  crlfMd  ‰üs‚ğ 0:•ÏŠ·‚µ‚È‚¢ 1:\n‚É•ÏŠ· 2:\r‚É•ÏŠ· 3:\r\n‚É•ÏŠ·.
- *  @return 0:³í“Ç	bit0=1:eof bit1=1:“ÇƒGƒ‰[ bit2:1s‚ª’·‚·‚¬‚é.
- *  	    bit3:'\0'İ‚è bit4:ƒoƒCƒiƒŠƒR[ƒh‚ª‚ ‚é.
+/** '\n','\r','\r\n'ã®ä½•ã‚Œã‹ã‚’æ”¹è¡Œã¨ã™ã‚‹ï¼‘è¡Œå…¥åŠ›.
+ *  @param  buf     èª­ã¿è¾¼ã‚€ãƒãƒƒãƒ•ã‚¡.
+ *  @param  len     ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º.
+ *  @param  crlfMd  æ”¹è¡Œã‚’ 0:å¤‰æ›ã—ãªã„ 1:\nã«å¤‰æ› 2:\rã«å¤‰æ› 3:\r\nã«å¤‰æ›.
+ *  @return 0:æ­£å¸¸èª­è¾¼	bit0=1:eof bit1=1:èª­è¾¼ã‚¨ãƒ©ãƒ¼ bit2:1è¡ŒãŒé•·ã™ãã‚‹.
+ *  	    bit3:'\0'åœ¨ã‚Š bit4:ãƒã‚¤ãƒŠãƒªã‚³ãƒ¼ãƒ‰ãŒã‚ã‚‹.
  */
 static int getLine(char *buf, size_t bufSz, int crlfMd, FILE *fp)
 {
@@ -133,7 +133,7 @@ static int getLine(char *buf, size_t bufSz, int crlfMd, FILE *fp)
     buf[0] = 0;
     for (;;) {
     	if (i == bufSz) {
-    	    rc |= 1<<2; //("1s‚ª’·‚·‚¬‚é\n");
+    	    rc |= 1<<2; //("1è¡ŒãŒé•·ã™ãã‚‹\n");
     	    break;
     	}
     	c = fgetc(fp);
@@ -144,11 +144,11 @@ static int getLine(char *buf, size_t bufSz, int crlfMd, FILE *fp)
     	    return 1<<0;
     	}
     	if (ferror(fp)) {
-    	    rc |= 1<<1; //("ƒŠ[ƒhƒGƒ‰[‚ª‹N‚«‚Ü‚µ‚½.\n");
+    	    rc |= 1<<1; //("ãƒªãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼ãŒèµ·ãã¾ã—ãŸ.\n");
     	}
     	if (c < 0x20 || c == 0x7f) {
     	    if (c == '\0') {
-    	    	rc |= 1<<3; //("s’†‚É '\\0' ‚ª¬‚´‚Á‚Ä‚¢‚é\n");
+    	    	rc |= 1<<3; //("è¡Œä¸­ã« '\\0' ãŒæ··ã–ã£ã¦ã„ã‚‹\n");
     	    	c = ' ';
     	    } else if (c == '\n') {
     	    	if (crlfMd & 3) {
@@ -185,7 +185,7 @@ static int getLine(char *buf, size_t bufSz, int crlfMd, FILE *fp)
     	    	    || c == 0x1a || c == 0x1b) {
     	    	;
     	    } else {
-    	    	rc |= 1 << 4;	// ƒRƒ“ƒgƒ[ƒ‹ƒR[ƒh‚ª¬‚´‚Á‚Ä‚¢‚é.
+    	    	rc |= 1 << 4;	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚³ãƒ¼ãƒ‰ãŒæ··ã–ã£ã¦ã„ã‚‹.
     	    	c = ' ';
     	    }
     	}
@@ -197,16 +197,16 @@ static int getLine(char *buf, size_t bufSz, int crlfMd, FILE *fp)
 }
 
 
-/** iname ‚ÌƒeƒLƒXƒg‚ğo‚Ì•ÏŠ·w’è‚É‚µ‚½‚ª‚Á‚Ä•ÏŠ·‚µ oname ‚Éo—Í.
- *  @param  iname   “ü—Íƒtƒ@ƒCƒ‹–¼. NULL‚È‚ç•W€“ü—Í.
- *  @param  oname   o—Íƒtƒ@ƒCƒ‹–¼. NULL‚È‚ç•W€o—Í.
- *  @return 	    0:¸”s 1:¬Œ÷.
+/** iname ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’oã®å¤‰æ›æŒ‡å®šã«ã—ãŸãŒã£ã¦å¤‰æ›ã— oname ã«å‡ºåŠ›.
+ *  @param  iname   å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«å. NULLãªã‚‰æ¨™æº–å…¥åŠ›.
+ *  @param  oname   å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«å. NULLãªã‚‰æ¨™æº–å‡ºåŠ›.
+ *  @return 	    0:å¤±æ•— 1:æˆåŠŸ.
  */
 static int convFile(const char *iname, const char *oname, opts_t *o)
 {
     enum {SBUF_SZ = 16*1024};
-    char buf[16*16*1024];
-    char sbuf[16*1024];
+    static char buf[16*16*1024];
+    static char sbuf[16*1024];
     char *p;
     FILE *ofp, *ifp;
     unsigned lno = 0, numb;
@@ -214,12 +214,12 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
     int  tabFlags, trimFlags, upLwrFlags;
 
     if (iname) {
-    	const char *md = "rb";	    	// ‰üs‚ğ©‘O‚ÅŠÇ—‚µ‚½‚¢‚Ì‚ÅƒoƒCƒiƒŠ‚ÅƒI[ƒvƒ“.
-    	if (oname == NULL)  	    	// o—Í‚ª•W€o—Í‚Ì‚Æ‚«‚ÍA\r\n‚Ìˆµ‚¢‚ª–Ê“|‚É‚È‚é‚Ì‚Å,
-    	    md = "rt";	    	    	// ‚¢‚Á‚»ƒeƒLƒXƒgƒ‚[ƒh‚É‚µ‚Ä\r\n‚Ì“ü—Í‚ğos/ƒ‰ƒCƒuƒ‰ƒŠ‚É”C‚·.
+    	const char *md = "rb";	    	// æ”¹è¡Œã‚’è‡ªå‰ã§ç®¡ç†ã—ãŸã„ã®ã§ãƒã‚¤ãƒŠãƒªã§ã‚ªãƒ¼ãƒ—ãƒ³.
+    	if (oname == NULL)  	    	// å‡ºåŠ›ãŒæ¨™æº–å‡ºåŠ›ã®ã¨ãã¯ã€\r\nã®æ‰±ã„ãŒé¢å€’ã«ãªã‚‹ã®ã§,
+    	    md = "rt";	    	    	// ã„ã£ããƒ†ã‚­ã‚¹ãƒˆãƒ¢ãƒ¼ãƒ‰ã«ã—ã¦\r\nã®å…¥åŠ›ã‚’os/ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã«ä»»ã™.
     	ifp = fopen(iname, md);
     	if (ifp == NULL) {
-    	    fprintf(STDERR, "%s ‚ªopen‚Å‚«‚È‚¢.\n", iname);
+    	    fprintf(stderr, "%s ãŒopenã§ããªã„.\n", iname);
     	    return 0;
     	}
     } else {
@@ -227,9 +227,9 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
     	ifp = stdin;
     }
     if (oname) {
-    	ofp = fopen(oname, "wb");   	// ‰üs‚ğ©‘O‚ÅŠÇ—‚µ‚½‚¢‚Ì‚ÅƒoƒCƒiƒŠ‚ÅƒI[ƒvƒ“.
+    	ofp = fopen(oname, "wb");   	// æ”¹è¡Œã‚’è‡ªå‰ã§ç®¡ç†ã—ãŸã„ã®ã§ãƒã‚¤ãƒŠãƒªã§ã‚ªãƒ¼ãƒ—ãƒ³.
     	if (ofp == NULL) {
-    	    fprintf(STDERR, "%s ‚ªopen‚Å‚«‚È‚¢.\n", oname);
+    	    fprintf(stderr, "%s ãŒopenã§ããªã„.\n", oname);
     	    exit(1);
     	}
     } else {
@@ -237,94 +237,94 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
     	ofp   = stdout;
     }
 
-    // s”Ô†•\¦ŠÖŒW‚Ìİ’è.
+    // è¡Œç•ªå·è¡¨ç¤ºé–¢ä¿‚ã®è¨­å®š.
     numb = o->numbStart;
     if (o->numbSkip == 0)
     	o->numbSkip = 1;
     if (o->numbSep == NULL)
     	o->numbSep = " ";
 
-    // ƒ^ƒu•ÏŠ·ŠÖŒW‚Ì€”õ.
+    // ã‚¿ãƒ–å¤‰æ›é–¢ä¿‚ã®æº–å‚™.
     tabFlags =	(o->cmode << 1) | (o->ajstab << 4) | (o->both48 << 5);
     if (o->cmode)
-    	tabFlags |= o->trimSw << 8; 	// cƒ‚[ƒh‚Ì‚Í'"ƒyƒA‚Ìƒ`ƒFƒbƒN‚Ì“s‡, strTab‚©‚çstrTrimSpcR‚ğŒÄ‚Ô.
-    if (tabFlags && o->stab == 0) { 	// •ÏŠ·w’è‚ª‚ ‚é‚Ì‚ÉAƒ\[ƒXƒ^ƒuƒTƒCƒY‚ª–³‚¢ê‡‚ÍA‹­§İ’è.
-    	if (o->cmode)	o->stab = 4;	// cƒ‚[ƒh‚È‚ç4.
-    	else	    	o->stab = 8;	// ˆÈŠO‚Í 9.
+    	tabFlags |= o->trimSw << 8; 	// cãƒ¢ãƒ¼ãƒ‰ã®æ™‚ã¯'"ãƒšã‚¢ã®ãƒã‚§ãƒƒã‚¯ã®éƒ½åˆ, strTabã‹ã‚‰strTrimSpcRã‚’å‘¼ã¶.
+    if (tabFlags && o->stab == 0) { 	// å¤‰æ›æŒ‡å®šãŒã‚ã‚‹ã®ã«ã€ã‚½ãƒ¼ã‚¹ã‚¿ãƒ–ã‚µã‚¤ã‚ºãŒç„¡ã„å ´åˆã¯ã€å¼·åˆ¶è¨­å®š.
+    	if (o->cmode)	o->stab = 4;	// cãƒ¢ãƒ¼ãƒ‰ãªã‚‰4.
+    	else	    	o->stab = 8;	// ä»¥å¤–ã¯ 9.
     }
     if (o->stab || o->dtab || tabFlags)
     	tabFlags |= (o->utf8Sw << 9) | (o->sjisSw << 7) | (1<<6) | (o->sp1ntb);
 
-    // ƒ^ƒu•ÏŠ·‚µ‚È‚¢‚¯‚ÇAs––‹ó”’íœ‚µ‚È‚¢ê‡‚Íê—p‚ÉŒÄ‚Ño‚·.
+    // ã‚¿ãƒ–å¤‰æ›ã—ãªã„ã‘ã©ã€è¡Œæœ«ç©ºç™½å‰Šé™¤ã—ãªã„å ´åˆã¯å°‚ç”¨ã«å‘¼ã³å‡ºã™.
     trimFlags = 0;
     if (tabFlags == 0 && o->trimSw) {
-    	// bit0=1:s––‚Ì'\n''\r'‚ÍŠO‚³‚È‚¢. bit1=1:C/C++‚Å‚Ì\•¶š‚ğl—¶(s˜AŒ‹‚É‰»‚¯‚È‚¢‚æ‚¤‚É)
+    	// bit0=1:è¡Œæœ«ã®'\n''\r'ã¯å¤–ã•ãªã„. bit1=1:C/C++ã§ã®\æ–‡å­—ã‚’è€ƒæ…®(è¡Œé€£çµã«åŒ–ã‘ãªã„ã‚ˆã†ã«)
     	trimFlags = (o->sjisSw << 7) /*|(o->cmode << 1)*/ | 1;
     }
 
-    // ‘å•¶š¬•¶š•ÏŠ·‚Ìİ’è.
+    // å¤§æ–‡å­—å°æ–‡å­—å¤‰æ›ã®è¨­å®š.
     upLwrFlags = (o->lwrSw<<1) | o->uprSw;
     if (upLwrFlags)
     	upLwrFlags |= (o->sjisSw << 7);
 
-    // c/c++Œü‚¯' " ƒyƒAƒ`ƒFƒbƒN‚Ì‰Šú‰».
+    // c/c++å‘ã‘' " ãƒšã‚¢ãƒã‚§ãƒƒã‚¯ã®åˆæœŸåŒ–.
     strTab(NULL, NULL, 0,0,0,0);
 
-    // •ÏŠ·–{•Ò.
+    // å¤‰æ›æœ¬ç·¨.
     for (;;) {
     	er = getLine(sbuf, sizeof(sbuf), crlfMd, ifp);
     	if (er) {
     	    if (er & 0x10)
-    	    	fprintf(STDERR, "%s (%d): “ü—Í‚Ì‚Ps‚ª’·‚·‚¬‚é.\n", iname, lno);
+    	    	fprintf(stderr, "%s (%d): å…¥åŠ›ã®ï¼‘è¡ŒãŒé•·ã™ãã‚‹.\n", iname, lno);
     	    if (er & 0x08)
-    	    	fprintf(STDERR, "%s (%d): ƒoƒCƒiƒŠEƒR[ƒh‚ª‚ ‚Á‚½.\n", iname, lno);
+    	    	fprintf(stderr, "%s (%d): ãƒã‚¤ãƒŠãƒªãƒ»ã‚³ãƒ¼ãƒ‰ãŒã‚ã£ãŸ.\n", iname, lno);
     	    if (er & 0x04)
-    	    	fprintf(STDERR, "%s (%d): '\0'‚ªs’†‚É‚ ‚Á‚½.\n", iname, lno);
+    	    	fprintf(stderr, "%s (%d): '\0'ãŒè¡Œä¸­ã«ã‚ã£ãŸ.\n", iname, lno);
     	    if (er & 0x02)
-    	    	break;	    // ƒŠ[ƒhƒGƒ‰[‚¾‚Á‚½.
+    	    	break;	    // ãƒªãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼ã ã£ãŸ.
     	    if (er & 0x01)
-    	    	break;	    // EOF‚¾‚Á‚½.
+    	    	break;	    // EOFã ã£ãŸ.
     	}
     	++lno;
     	numb += o->numbSkip;
     	p = sbuf;
-    	// ƒ^ƒu‹ó”’•ÏŠ·.
+    	// ã‚¿ãƒ–ç©ºç™½å¤‰æ›.
     	if (o->stab || o->dtab || tabFlags) {
     	    strTab(buf, sbuf, o->dtab, o->stab, tabFlags, sizeof(buf));
     	    p = buf;
     	}
-    	// s––‹ó”’‚Ìíœ.
+    	// è¡Œæœ«ç©ºç™½ã®å‰Šé™¤.
     	if (trimFlags) {
     	    strTrimSpcR(p, trimFlags);
     	}
-    	// •¶š—ñ‚Ì‘å•¶š/¬•¶š‰».
+    	// æ–‡å­—åˆ—ã®å¤§æ–‡å­—/å°æ–‡å­—åŒ–.
     	if (upLwrFlags) {
     	    strUpLow(p, upLwrFlags);
     	}
-    	// ‰ó‚ê‚½‘SŠp•¶š‚ª‚È‚¢‚©ƒ`ƒFƒbƒN.
+    	// å£Šã‚ŒãŸå…¨è§’æ–‡å­—ãŒãªã„ã‹ãƒã‚§ãƒƒã‚¯.
     	if (o->sjisSw && isJstrBroken(p)) {
-    	    fprintf(STDERR, "%s (%d): ‰ó‚ê‚½‘SŠp•¶š‚ª‚ ‚é.\n", iname, lno);
+    	    fprintf(stderr, "%s (%d): å£Šã‚ŒãŸå…¨è§’æ–‡å­—ãŒã‚ã‚‹.\n", iname, lno);
     	}
-    	// s‚ğo—Í
-    	if (o->numbering) { // s”Ô†•t‚«.
+    	// è¡Œã‚’å‡ºåŠ›
+    	if (o->numbering) { // è¡Œç•ªå·ä»˜ã.
     	    fprintf(ofp, "%*d%s%s", o->numbering, numb, o->numbSep, p);
-    	} else {    	    // ‚»‚Ì‚Ü‚Ü.
+    	} else {    	    // ãã®ã¾ã¾.
     	    fprintf(ofp, "%s", p);
     	}
     	if (ferror(ofp))
     	    break;
     }
-    // eof‚ğ‚Â‚©‚éê‡.
+    // eofã‚’ã¤ã‹ã‚‹å ´åˆ.
     if (o->eofSw) {
     	fputs("\x1a", ofp);
     }
-    // Œãˆ—.
+    // å¾Œå‡¦ç†.
     if (er & 2) {
-    	fprintf(STDERR, "%s (%d): “ÇƒGƒ‰[.\n", iname, lno);
+    	fprintf(stderr, "%s (%d): èª­è¾¼ã‚¨ãƒ©ãƒ¼.\n", iname, lno);
     	rc = 0;
     }
     if (ferror(ofp)) {
-    	fprintf(STDERR, "%s (%d): ‘ƒGƒ‰[.\n", oname, lno);
+    	fprintf(stderr, "%s (%d): æ›¸è¾¼ã‚¨ãƒ©ãƒ¼.\n", oname, lno);
     	rc = 0;
     }
     if (ifp != stdin)
@@ -335,21 +335,21 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
 }
 
 
-/** 1ƒtƒ@ƒCƒ‹‚Ì•ÏŠ·. ƒtƒ@ƒCƒ‹–¼‚Ì’Òåë‰ï‚í‚¹.
+/** 1ãƒ•ã‚¡ã‚¤ãƒ«ã®å¤‰æ›. ãƒ•ã‚¡ã‚¤ãƒ«åã®è¾»è¤„ä¼šã‚ã›.
  */
 static void oneFile(const char *iname, const char *oname, const char *extname, opts_t *o)
 {
-    // ƒtƒ@ƒCƒ‹–¼¶¬‚âƒoƒbƒNƒAƒbƒv‚Ìˆ—.
+    // ãƒ•ã‚¡ã‚¤ãƒ«åç”Ÿæˆã‚„ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã®å‡¦ç†.
     char nameBuf[_MAX_PATH+8];
     char *tmpname = NULL;
     int rc;
 
     if (iname) {
-    	if (iname && oname && oname[0] == 0) {	// “ü—Íƒtƒ@ƒCƒ‹–¼©g‚Éo—Í.
+    	if (iname && oname && oname[0] == 0) {	// å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«åè‡ªèº«ã«å‡ºåŠ›.
     	    sprintf(nameBuf, "%s.~tmp", iname);
     	    oname = nameBuf;
     	    tmpname = nameBuf;
-    	    fprintf(STDERR, "[%s]\n", iname);
+    	    fprintf(stderr, "[%s]\n", iname);
     	} else if (extname && extname[0]) {
     	    sprintf(nameBuf, "%s.%s", iname, extname);
     	    oname = nameBuf;
@@ -358,7 +358,7 @@ static void oneFile(const char *iname, const char *oname, const char *extname, o
 
     rc = convFile(iname, oname, o);
 
-    if (rc && iname && iname[0] && tmpname) {	    // “ü—Íƒtƒ@ƒCƒ‹©g‚Ìo—Í‚Ìê‡.
+    if (rc && iname && iname[0] && tmpname) {	    // å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«è‡ªèº«ã®å‡ºåŠ›ã®å ´åˆ.
     	char bakname[_MAX_PATH+8];
     	sprintf(bakname, "%s.bak", iname);
     	remove(bakname);
@@ -367,7 +367,7 @@ static void oneFile(const char *iname, const char *oname, const char *extname, o
     }
 }
 
-/** ƒIƒvƒVƒ‡ƒ“•¶š‚ÌŸ‚É'-'‚©'0'‚È‚ç‹U, ˆÈŠO‚È‚ç^‚É‚·‚éˆ×‚Ìƒ}ƒNƒ.
+/** ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ–‡å­—ã®æ¬¡ã«'-'ã‹'0'ãªã‚‰å½, ä»¥å¤–ãªã‚‰çœŸã«ã™ã‚‹ç‚ºã®ãƒã‚¯ãƒ­.
  */
 static int opts_getVal(const char *arg, char **pp, int dfltVal, int maxVal)
 {
@@ -383,20 +383,20 @@ static int opts_getVal(const char *arg, char **pp, int dfltVal, int maxVal)
     	val = dfltVal;
     }
     if (val > maxVal) {
-    	fprintf(STDERR, "ƒIƒvƒVƒ‡ƒ“ˆø”%s’†‚Ì’l %d ‚ª‘å‚«‚·‚¬‚é(>%d)\n", arg, val, maxVal);
+    	fprintf(stderr, "ã‚ªãƒ—ã‚·ãƒ§ãƒ³å¼•æ•°%sä¸­ã®å€¤ %d ãŒå¤§ãã™ãã‚‹(>%d)\n", arg, val, maxVal);
     	exit(1);
     }
     return val;
 }
 
 
-/** ƒIƒvƒVƒ‡ƒ“‰ğÍ.
+/** ã‚ªãƒ—ã‚·ãƒ§ãƒ³è§£æ.
  */
 static void opts_get(char *arg, opts_t *o)
 {
     char *p = arg + 1;
 
-    if (*p == '\0') {	// - ‚¾‚¯‚È‚ç•W€“ü—Í.
+    if (*p == '\0') {	// - ã ã‘ãªã‚‰æ¨™æº–å…¥åŠ›.
     	oneFile(NULL, o->outname, o->extname, o);
     	return;
     }
@@ -411,7 +411,7 @@ static void opts_get(char *arg, opts_t *o)
     	    o->extname = strdup(p);
     	    return;
     	case 'K':
-    	    o->sjisSw = opts_getVal(arg, &p, 1, 2);
+    	    o->sjisSw = opts_getVal(arg, &p, 2, 2);
     	    o->utf8Sw = o->sjisSw == 2;
     	    o->sjisSw &= 1;
     	    break;
@@ -475,7 +475,7 @@ static void opts_get(char *arg, opts_t *o)
     	    return;
     	default:
       //ERR_OPTS:
-    	    fprintf(STDERR, "’m‚ç‚È‚¢ƒIƒvƒVƒ‡ƒ“(%s)\n", arg);
+    	    fprintf(stderr, "Unkown option: %s\n", arg);
     	    exit(1);
     	    return;
     	}
@@ -483,9 +483,7 @@ static void opts_get(char *arg, opts_t *o)
 }
 
 
-/** ‚±‚±‚æ‚èn‚Ü‚é.
- */
-int main(int argc, char *argv[])
+static int Main(int argc, char *argv[])
 {
     int  i;
     char *p;
@@ -495,20 +493,34 @@ int main(int argc, char *argv[])
     memset(o, 0, sizeof *o);
     o->sjisSw = 1;
 
- #ifndef NO_USE_EXARGV
-    ExArgv_conv(&argc, &argv);
- #endif
-
     if (argc < 2)
     	usage();
 
     for (i = 1; i < argc; i++) {
     	p = argv[i];
-    	if (*p == '-') {    // ƒIƒvƒVƒ‡ƒ“‰ğÍ.
+    	if (*p == '-') {    // ã‚ªãƒ—ã‚·ãƒ§ãƒ³è§£æ.
     	    opts_get(p, o);
-    	} else {    	    // ƒtƒ@ƒCƒ‹Às.
+    	} else {    	    // ãƒ•ã‚¡ã‚¤ãƒ«å®Ÿè¡Œ.
     	    oneFile(p, o->outname, o->extname, o);
     	}
     }
     return 0;
+}
+
+
+int main(int argc, char* argv[])
+{
+	int rc;
+ #if defined(_WIN32)
+	int savCP = GetConsoleOutputCP();
+	SetConsoleOutputCP(65001);
+ #endif
+ #ifndef NO_USE_EXARGV
+    ExArgv_conv(&argc, &argv);
+ #endif
+    rc = Main(argc, argv);
+ #if defined(_WIN32)
+	SetConsoleOutputCP(savCP);
+ #endif
+    return rc;
 }

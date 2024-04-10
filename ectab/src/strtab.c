@@ -1,9 +1,9 @@
 /**
  *  @file   strtab.c
- *  @brief  •¶š—ñ’†‚Ì‹ó”’ƒ^ƒu•ÏŠ·‚ğs‚¤.
+ *  @brief  æ–‡å­—åˆ—ä¸­ã®ç©ºç™½ã‚¿ãƒ–å¤‰æ›ã‚’è¡Œã†.
  *
  *  @author Masashi Kitamura (tenka@6809.net)
- *  @date   2001`2004-01
+ *  @date   2001ï½2004-01
  */
 
 #include <stdlib.h>
@@ -14,48 +14,48 @@
 using namespace std;
 #endif
 
-#ifdef __cplusplus  // c++‚Ì‚Æ‚«‚ÍAnamespace CMISC ‚É•ú‚è‚Ş.
+#ifdef __cplusplus  // c++ã®ã¨ãã¯ã€namespace CMISC ã«æ”¾ã‚Šè¾¼ã‚€.
 namespace CMISC {
 #endif
 
 // --------------------------------------------------------------------------
 
 #undef	CHR_CODE_TYPE
-#define CHR_CODE_TYPE	    3	// mb, utf8‘Î‰.
+#define CHR_CODE_TYPE	    3	// mb, utf8å¯¾å¿œ.
 
 #undef MGET1
 #undef MGETC
 #undef MPUT1
 #undef MPUTC
 
-#if CHR_CODE_TYPE == 1	    	// ShiftJIS•¶š—ñ‚Æ‚µ‚Äˆ—.
+#if CHR_CODE_TYPE == 1	    	// ShiftJISæ–‡å­—åˆ—ã¨ã—ã¦å‡¦ç†.
 #define IsKANJI_(c) 	    	    ((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
 #define MGET1(ac, as)	    	    ((*(ac) = **(as)), ++*(as))
 #define MGETC(ac, as, asn, utf8)    do { MGET1((ac),(as)); ++*(asn); if (IsKANJI_(*(ac)) && **(as)) {int c_;MGET1(&c_,(as));*(ac)=(*(ac)<<8)|c_; ++*(asn);} } while (0)
 #define MPUT1(ad,e,c)	    	    do { if (*(ad) < (e)) {**(ad) = (c);} ; (*(ad))++; } while (0)
 #define MPUTC(ad,e,c, adn, utf8)    do { if ((c) <= 0xff) {MPUT1((ad),(e),(c)); ++*(adn);} else {MPUT1((ad),(e),(c)>>8); MPUT1((ad),(e),(c)); *(adn) += 2;} } while (0)
-#elif CHR_CODE_TYPE == 2    	    // EUC‚Æ‚µ‚Äˆ—(..–¢ƒ`ƒFƒbƒN)
+#elif CHR_CODE_TYPE == 2    	    // EUCã¨ã—ã¦å‡¦ç†(..æœªãƒã‚§ãƒƒã‚¯)
 #define IsKANJI_(c) 	    	    ((unsigned char)(c) >= 0x80)
 #define MGET1(ac, as)	    	    ((*(ac) = **(as)), ++*(as))
 #define MGETC(ac, as, asn, utf8)    do { MGET1((ac),(as)); ++*(asn); if (IsKANJI_(*(ac)) && **(as)) {int c_;if (*(ac) != 0x81) {++*(asn);} MGET1(&c_,(as));*(ac)=(*(ac)<<8)|c_;} } while (0)
 #define MPUT1(ad,e,c)	    	    do { if (*(ad) < (e)) {**(ad) = (c);} ; (*(ad))++; } while (0)
 #define MPUTC(ad,e,c, adn, utf8)    do { if ((c) <= 0xff) {MPUT1((ad),(e),(c)); ++*(adn);} else {MPUT1((ad),(e),(c)>>8); MPUT1((ad),(e),(c)); *(adn) += 2;} } while (0)
-#elif CHR_CODE_TYPE == 0    	    // ShiftJIS‚ğl—¶‚µ‚È‚¢.
+#elif CHR_CODE_TYPE == 0    	    // ShiftJISã‚’è€ƒæ…®ã—ãªã„.
 #define MGET1(ac, as)	    	    ((*(ac) = **(as)), ++*(as))
 #define MGETC(ac, as, asn, utf8)    do { MGET1(ac,as); ++*(asn); } while (0)
 #define MPUT1(ad,e,c)	    	    do { if (*(ad) < (e)) {**(ad) = (c);} ; (*(ad))++; } while (0)
 #define MPUTC(ad,e,c, adn, utf8)    do { MPUT1((ad),(e),(c)); ++*(adn); } while (0)
 #else
-// ‹­ˆø‚É UTF8 ‘Î‰.
-// ƒ^ƒuˆÊ’u‚ÌŒvZ‚Ì‚½‚ßA0x7FˆÈ‰º‚Æ”¼ŠpƒJƒi‚ğ”¼Šp1•¶šAˆÈŠO‚ğ,
-// ‘SŠp1•¶š(”¼Šp2•¶š)‚ÅŒvZ‚µ‚Ä‚¢‚Ü‚·B“ú–{ŒêŠÂ‹«‘O’ñ:-)
+// å¼·å¼•ã« UTF8 å¯¾å¿œ.
+// ã‚¿ãƒ–ä½ç½®ã®è¨ˆç®—ã®ãŸã‚ã€0x7Fä»¥ä¸‹ã¨åŠè§’ã‚«ãƒŠã‚’åŠè§’1æ–‡å­—ã€ä»¥å¤–ã‚’,
+// å…¨è§’1æ–‡å­—(åŠè§’2æ–‡å­—)ã§è¨ˆç®—ã—ã¦ã„ã¾ã™ã€‚æ—¥æœ¬èªç’°å¢ƒå‰æ:-)
 
-/// 1ƒoƒCƒgæ“¾.
+/// 1ãƒã‚¤ãƒˆå–å¾—.
 #define MGET1(ac, as)	    	    ((*(ac) = **(as)), ++*(as))
-/// 1ƒoƒCƒg‘.
+/// 1ãƒã‚¤ãƒˆæ›¸è¾¼.
 #define MPUT1(ad,e,c)	    	    do { if (*(ad) < (e)) {**(ad) = (c);} ; (*(ad))++; } while (0)
 
-/** 1•¶š“Ç‚İ‚İ.
+/** 1æ–‡å­—èª­ã¿è¾¼ã¿.
  */
 void MGETC(int *ac, const unsigned char **as, int *asn, int utf8)
 {
@@ -88,7 +88,7 @@ void MGETC(int *ac, const unsigned char **as, int *asn, int utf8)
     	    	c3 &= 0x3F;
     	    	if (c < 0xF0) {
     	    	    c = ((c & 0xF) << 12) | (c2 << 6) | c3;
-    	    	    // ”¼ŠpƒJƒi‚È‚çA”¼Šp•¶šˆµ‚¢.
+    	    	    // åŠè§’ã‚«ãƒŠãªã‚‰ã€åŠè§’æ–‡å­—æ‰±ã„.
     	    	    if (c >= 0xff60 && c <= 0xff9f) {
     	    	    	--(*asn);
     	    	    }
@@ -119,7 +119,7 @@ void MGETC(int *ac, const unsigned char **as, int *asn, int utf8)
 }
 
 
-/** 1•¶š‘.
+/** 1æ–‡å­—æ›¸è¾¼.
  */
 void MPUTC(unsigned char **ad, unsigned char *e, int c, int *adn, int utf8)
 {
@@ -146,7 +146,7 @@ void MPUTC(unsigned char **ad, unsigned char *e, int c, int *adn, int utf8)
     	    	MPUT1(ad, e, 0xE0|(c>>12));
     	    	MPUT1(ad, e, 0x80|(c>>6)&0x3f);
     	    	MPUT1(ad, e, 0x80|(c&0x3f));
-    	    	// ”¼ŠpƒJƒi‚È‚çA”¼Šp•¶šˆµ‚¢
+    	    	// åŠè§’ã‚«ãƒŠãªã‚‰ã€åŠè§’æ–‡å­—æ‰±ã„
     	    	if (c >= 0xff60 && c <= 0xff9f) {
     	    	    --(*adn);
     	    	}
@@ -177,20 +177,20 @@ void MPUTC(unsigned char **ad, unsigned char *e, int c, int *adn, int utf8)
 
 
 
-/** src•¶š—ñ’†‚Ìtab‚ğ‹ó”’‚É‚µ‚Ä‹ó”’‚ÌŒq‚ª‚è‚ğV‚½‚Ètab‚É•ÏŠ·‚µ‚½•¶š—ñ‚ğdst‚É“ü‚ê‚é.
- *  @param dst	  o—Íƒoƒbƒtƒ@. NULL‚Ì‚Æ‚«o—Í‚µ‚È‚¢...ƒTƒCƒYŒvZ‚ğs‚¤‚±‚Æ‚É‚È‚é.
- *  @param flags  bit0=1 ‹ó”’1•¶š‚Ítab‚É•ÏŠ·‚µ‚È‚¢ 	    	    	    <br>
- *  	    	  bit1=1 C‚Ì'"ƒyƒA‚ğl—¶.   	    	    	    	    <br>
- *  	    	  bit2=1 C‚ÌƒGƒXƒP[ƒv‚ğl—¶	    	    	    	    <br>
- *  	    	  bit3=1 C‚Ì'"î•ñ‚Æ‚µ‚Ä‘O‰ñ‚ÌŒ‹‰Ê‚Ì‘±‚«‚É‚·‚é	    	    <br>
- *  	    	  bit4=1 ƒ^ƒuƒTƒCƒY’š“x‚Ì‚Æ‚«‚Ì‚İƒ^ƒu‚É•ÏŠ·‚·‚é     	    <br>
- *  	    	  bit5=1 4ƒ^ƒu8ƒ^ƒu‚Ç‚¿‚ç‚Å‚àŒ©‚½–Ú‚ª•Ï‚í‚ç‚È‚¢‚æ‚¤‚É•ÏŠ·   <br>
- *  	    	  bit6=1 CR‚Ì‚İ‚à‰üs‚Æ‚µ‚Äˆµ‚¤     	    	    	    <br>
- *  	    	  bit7=1 ShiftJIS•¶š‚ğl—¶	    	    	    	        <br>
- *  	    	  bit8=1 s––‹ó”’‚ğíœ     	    	    	    	    <br>
- *  	    	  bit9=1 “ü—Í‚ª UTF8.
- *  @param dstSz  o—ÍæƒTƒCƒY. 0‚È‚çƒTƒCƒYƒ`ƒFƒbƒN–³‚µ.
- *  @return 	  •ÏŠ·Œã‚ÌƒTƒCƒY.
+/** srcæ–‡å­—åˆ—ä¸­ã®tabã‚’ç©ºç™½ã«ã—ã¦ç©ºç™½ã®ç¹‹ãŒã‚Šã‚’æ–°ãŸãªtabã«å¤‰æ›ã—ãŸæ–‡å­—åˆ—ã‚’dstã«å…¥ã‚Œã‚‹.
+ *  @param dst	  å‡ºåŠ›ãƒãƒƒãƒ•ã‚¡. NULLã®ã¨ãå‡ºåŠ›ã—ãªã„...ã‚µã‚¤ã‚ºè¨ˆç®—ã‚’è¡Œã†ã“ã¨ã«ãªã‚‹.
+ *  @param flags  bit0=1 ç©ºç™½1æ–‡å­—ã¯tabã«å¤‰æ›ã—ãªã„ 	    	    	    <br>
+ *  	    	  bit1=1 Cã®'"ãƒšã‚¢ã‚’è€ƒæ…®.   	    	    	    	    <br>
+ *  	    	  bit2=1 Cã®ï¿¥ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚’è€ƒæ…®	    	    	    	    <br>
+ *  	    	  bit3=1 Cã®'"æƒ…å ±ã¨ã—ã¦å‰å›ã®çµæœã®ç¶šãã«ã™ã‚‹	    	    <br>
+ *  	    	  bit4=1 ã‚¿ãƒ–ã‚µã‚¤ã‚ºä¸åº¦ã®ã¨ãã®ã¿ã‚¿ãƒ–ã«å¤‰æ›ã™ã‚‹     	    <br>
+ *  	    	  bit5=1 4ã‚¿ãƒ–8ã‚¿ãƒ–ã©ã¡ã‚‰ã§ã‚‚è¦‹ãŸç›®ãŒå¤‰ã‚ã‚‰ãªã„ã‚ˆã†ã«å¤‰æ›   <br>
+ *  	    	  bit6=1 CRã®ã¿ã‚‚æ”¹è¡Œã¨ã—ã¦æ‰±ã†     	    	    	    <br>
+ *  	    	  bit7=1 ShiftJISæ–‡å­—ã‚’è€ƒæ…®	    	    	    	        <br>
+ *  	    	  bit8=1 è¡Œæœ«ç©ºç™½ã‚’å‰Šé™¤     	    	    	    	    <br>
+ *  	    	  bit9=1 å…¥åŠ›ãŒ UTF8.
+ *  @param dstSz  å‡ºåŠ›å…ˆã‚µã‚¤ã‚º. 0ãªã‚‰ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯ç„¡ã—.
+ *  @return 	  å¤‰æ›å¾Œã®ã‚µã‚¤ã‚º.
  */
 size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, int dstSz)
 {
@@ -216,39 +216,39 @@ size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags,
     static int	cpairChr;
     static int	cmtMd;
 
-    // '"‚Ì‘±‚«‚ğ‚·‚éƒtƒ‰ƒO‚ª‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Í‰Šú‰».
+    // '"ã®ç¶šãã‚’ã™ã‚‹ãƒ•ãƒ©ã‚°ãŒãŸã£ã¦ã„ãªã„å ´åˆã¯åˆæœŸåŒ–.
     if ((flags & F_CPAIRCONT) == 0) {
     	cpairChr = 0;
     	cmtMd	 = 0;
     }
     k = cpairChr;
 
-    // src ‚ªNULL‚È‚çA‚½‚Ô‚ñAcpairChr‚Ì‰Šú‰»‚¾.
+    // src ãŒNULLãªã‚‰ã€ãŸã¶ã‚“ã€cpairChrã®åˆæœŸåŒ–ã .
     if (src == NULL)
     	return 0;
 
-    // ƒTƒCƒY‚ª0‚È‚çAƒ`ƒFƒbƒN‚È‚µ‚Æ‚µ‚ÄAI—¹‚ğ–Úˆê”t‘å‚«‚¢ƒAƒhƒŒƒX‚É‚·‚é.
+    // ã‚µã‚¤ã‚ºãŒ0ãªã‚‰ã€ãƒã‚§ãƒƒã‚¯ãªã—ã¨ã—ã¦ã€çµ‚äº†ã‚’ç›®ä¸€æ¯å¤§ãã„ã‚¢ãƒ‰ãƒ¬ã‚¹ã«ã™ã‚‹.
     if (dstSz == 0)
     	e = (CHAR_T*)(~0);
 
-    // o—Íæ‚ªNULL‚È‚çAƒoƒCƒg”‚ÌƒJƒEƒ“ƒg‚Ì‚İ‚É‚·‚é‚½‚ßAI—¹ƒAƒhƒŒƒX‚àNULL.
+    // å‡ºåŠ›å…ˆãŒNULLãªã‚‰ã€ãƒã‚¤ãƒˆæ•°ã®ã‚«ã‚¦ãƒ³ãƒˆã®ã¿ã«ã™ã‚‹ãŸã‚ã€çµ‚äº†ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚‚NULL.
     if (dst == NULL)
     	e = NULL;
 
-    // Œ³tabƒTƒCƒY‚ª0(ˆÈ‰º)‚È‚çAŠ„‚èZ‚Å”j’]‚µ‚È‚¢‚æ‚¤‚É‚Æ‚è‚ ‚¦‚¸1‚É‚µ‚Æ‚­.
+    // å…ƒtabã‚µã‚¤ã‚ºãŒ0(ä»¥ä¸‹)ãªã‚‰ã€å‰²ã‚Šç®—ã§ç ´ç¶»ã—ãªã„ã‚ˆã†ã«ã¨ã‚Šã‚ãˆãš1ã«ã—ã¨ã.
     if (srcTabSz <= 0)
     	srcTabSz = 1;
 
-    // 4tab,8tab—¼—p‚É‚·‚é‚È‚ç‚Æ‚è‚ ‚¦‚¸4tabˆµ‚¢.
+    // 4tab,8tabä¸¡ç”¨ã«ã™ã‚‹ãªã‚‰ã¨ã‚Šã‚ãˆãš4tabæ‰±ã„.
     if (flags & F_BOTH)
     	dstTabSz = 4;
 
-    // •¶š—ñ‚ªI‚í‚é‚Ü‚Åƒ‹[ƒv.
+    // æ–‡å­—åˆ—ãŒçµ‚ã‚ã‚‹ã¾ã§ãƒ«ãƒ¼ãƒ—.
     while (*s) {
-    	// 1•¶šæ“¾.
+    	// 1æ–‡å­—å–å¾—.
     	bsn = sn;
     	MGETC(&c, &s, &sn, utf8);
-    	if (c == ' ' && k == 0) {   	    // ‹ó”’‚È‚çA‚Æ‚è‚ ‚¦‚¸ƒJƒEƒ“ƒg.
+    	if (c == ' ' && k == 0) {   	    // ç©ºç™½ãªã‚‰ã€ã¨ã‚Šã‚ãˆãšã‚«ã‚¦ãƒ³ãƒˆ.
     	    if (tsn < 0)
     	    	tsn = bsn;
     	} else if (c == '\t' && k == 0) {   //
@@ -256,15 +256,15 @@ size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags,
     	    	tsn = bsn;
     	    sn = ((bsn+srcTabSz) / srcTabSz) * srcTabSz;
     	} else {
-    	    if (tsn >= 0) { 	    // ‹ó”’‚ª‚ ‚Á‚½.
-    	    	n = bsn - tsn;	    // c ‚Í•K‚¸ 1ˆÈã‚Ì’l.
+    	    if (tsn >= 0) { 	    // ç©ºç™½ãŒã‚ã£ãŸ.
+    	    	n = bsn - tsn;	    // c ã¯å¿…ãš 1ä»¥ä¸Šã®å€¤.
     	    	if (dstTabSz <= 0) {
-    	    	    //‹ó”’‚Ö‚Ì•ÏŠ·.
+    	    	    //ç©ºç™½ã¸ã®å¤‰æ›.
     	    	    do {
     	    	    	MPUT1(&d, e, ' ');
     	    	    } while (--n);
     	    	} else if (flags & F_BOTH) {
-    	    	    // 4tab,8tab—¼—p•ÏŠ·.
+    	    	    // 4tab,8tabä¸¡ç”¨å¤‰æ›.
     	    	    int m  = dn/dstTabSz;
     	    	    int tn = (m + 1) * dstTabSz;
     	    	    int l  = tn - dn;
@@ -299,14 +299,14 @@ size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags,
     	    	    	} while (--n);
     	    	    }
     	    	} else {
-    	    	    // ’Êí‚Ìƒ^ƒu•ÏŠ·.
+    	    	    // é€šå¸¸ã®ã‚¿ãƒ–å¤‰æ›.
     	    	    int tn = ((dn / dstTabSz) + 1) * dstTabSz;
     	    	    int l  = tn - dn;
     	    	    dn += n;
     	    	    if (dn >= tn) {
     	    	    	if (l <= jstab && jstab) {
-    	    	    	    // ƒtƒ‰ƒOw’è‚É‚æ‚ètab‚ª‹ó”’ˆêŒÂA‚Ü‚½‚Íƒ^ƒuƒTƒCƒY‚É–‚½‚È‚¢ê‡,
-    	    	    	    // ‹ó”’‚É‚·‚éw’è‚ª‚ ‚Á‚½‚ç‹ó”’.
+    	    	    	    // ãƒ•ãƒ©ã‚°æŒ‡å®šã«ã‚ˆã‚ŠtabãŒç©ºç™½ä¸€å€‹ã€ã¾ãŸã¯ã‚¿ãƒ–ã‚µã‚¤ã‚ºã«æº€ãŸãªã„å ´åˆ,
+    	    	    	    // ç©ºç™½ã«ã™ã‚‹æŒ‡å®šãŒã‚ã£ãŸã‚‰ç©ºç™½.
     	    	    	    do {
     	    	    	    	MPUT1(&d, e, ' ');
     	    	    	    } while (--l);
@@ -334,22 +334,22 @@ size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags,
 
     	    MPUTC(&d, e, c, &dn, utf8);
 
-    	    if (flags & (F_CPAIR|F_CESC)) { 	// C/C++‚Ì " ' ‚ğl—¶‚·‚é‚Æ‚«.
+    	    if (flags & (F_CPAIR|F_CESC)) { 	// C/C++ã® " ' ã‚’è€ƒæ…®ã™ã‚‹ã¨ã.
     	    	if (c == '\\' && *s && k != '`' && cmtMd == 0) {
     	    	    MGETC(&c2, &s, &sn, utf8);
     	    	    MPUTC(&d, e, c2, &dn, utf8);
-    	    	} else if (c == '"' || c == '\'' || c == '`') { // " ' ‚Ìƒ`ƒFƒbƒN.
+    	    	} else if (c == '"' || c == '\'' || c == '`') { // " ' ã®ãƒã‚§ãƒƒã‚¯.
     	    	    if (cmtMd == 0) {
     	    	    	if (k == 0)
     	    	    	    k = c;
     	    	    	else if (k == c)
     	    	    	    k = 0;
     	    	    }
-    	    	} else if (c == '/' && (*s == '/' || *s == '*') && k == 0 && cmtMd == 0) { // // /* ‚Ì‚Æ‚«.
+    	    	} else if (c == '/' && (*s == '/' || *s == '*') && k == 0 && cmtMd == 0) { // // /* ã®ã¨ã.
     	    	    cmtMd = *s;
     	    	    MGETC(&c2, &s, &sn, utf8);
     	    	    MPUTC(&d, e, c2, &dn, utf8);
-    	    	} else if (c == '*' && *s == '/' && k == 0 && cmtMd == '*') { // */‚Ì‚Æ‚«.
+    	    	} else if (c == '*' && *s == '/' && k == 0 && cmtMd == '*') { // */ã®ã¨ã.
     	    	    cmtMd = 0;
     	    	    MGETC(&c2, &s, &sn, utf8);
     	    	    MPUTC(&d, e, c2, &dn, utf8);
@@ -399,7 +399,7 @@ size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags,
     else if (dst && dstSz > 0)
     	dst[dstSz-1] = '\0';
 
-    // •¶š—ñ––‚Ì‹ó”’íœw’è‚ª‚ ‚Á‚ÄA"'’†‚Å‚È‚¢‚È‚çAÀs.
+    // æ–‡å­—åˆ—æœ«ã®ç©ºç™½å‰Šé™¤æŒ‡å®šãŒã‚ã£ã¦ã€"'ä¸­ã§ãªã„ãªã‚‰ã€å®Ÿè¡Œ.
     if (dst && (flags & F_TRIMR) && ((k == 0) || (flags & F_CPAIR))) {
     	int cf = 1;
     	cf |= ((flags & F_CPAIR) != 0) << 1;
@@ -419,10 +419,10 @@ size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags,
 
 // --------------------------------------------------------------------------
 
-/** •¶š—ñ––‚É‚ ‚é‹ó”’‚ğíœ‚·‚é.
- *  @param  str •¶š—ñ.‘‚«Š·‚¦‚ç‚ê‚é.
- *  @param  flags bit0=1:ÅŒã‚Ì'‚''‚’'‚Íc‚·   	    	    <br>
- *  	    	  bit1=1:C/C++ƒ\[ƒX‘Îô‚Å  ‚Ì’¼Œã‚Ì' '‚Í‚P‚Âc‚·.
+/** æ–‡å­—åˆ—æœ«ã«ã‚ã‚‹ç©ºç™½ã‚’å‰Šé™¤ã™ã‚‹.
+ *  @param  str æ–‡å­—åˆ—.æ›¸ãæ›ãˆã‚‰ã‚Œã‚‹.
+ *  @param  flags bit0=1:æœ€å¾Œã®'ï¿¥ï½''ï¿¥ï½’'ã¯æ®‹ã™   	    	    <br>
+ *  	    	  bit1=1:C/C++ã‚½ãƒ¼ã‚¹å¯¾ç­–ã§ ï¿¥ ã®ç›´å¾Œã®' 'ã¯ï¼‘ã¤æ®‹ã™.
  */
 char *strTrimSpcR(char str[], int flags)
 {
@@ -440,9 +440,9 @@ char *strTrimSpcR(char str[], int flags)
     	return str;
     p = s + n;
 
-    // ‰üs•¶š‚Ìó‘Ô‚ğİ’è.
+    // æ”¹è¡Œæ–‡å­—ã®çŠ¶æ…‹ã‚’è¨­å®š.
     cr = 0;
-    if (flags & 1) {	// ‰üs‚ğl—¶‚·‚é?
+    if (flags & 1) {	// æ”¹è¡Œã‚’è€ƒæ…®ã™ã‚‹?
     	c = *--p;
     	if (c == '\n') {
     	    if (p-1 >= s && p[-1] == '\r') {
@@ -461,7 +461,7 @@ char *strTrimSpcR(char str[], int flags)
     	    return str;
     	}
     }
-    // s––‚Ì‹ó”’•”•ª‚ğ”ò‚Î‚µ‚Ä‚»‚¤‚Å‚È‚¢•”•ª‚ªŒ»‚ê‚é‚Ü‚Å’T‚·.
+    // è¡Œæœ«ã®ç©ºç™½éƒ¨åˆ†ã‚’é£›ã°ã—ã¦ãã†ã§ãªã„éƒ¨åˆ†ãŒç¾ã‚Œã‚‹ã¾ã§æ¢ã™.
     n = 0;
     do {
     	c = *--p;
@@ -471,11 +471,11 @@ char *strTrimSpcR(char str[], int flags)
     	--n;
     	p++;
     }
-    // c/c++‚ğl—¶‚·‚é‚Æ‚«A1•¶šˆÈã‚Ì‹ó”’‚ª\ ‚Ì’¼Œã‚É‚ ‚éó‘Ô‚È‚çA‹ó”’‚ğ1•¶š‚¾‚¯–ß‚·.
+    // c/c++ã‚’è€ƒæ…®ã™ã‚‹ã¨ãã€1æ–‡å­—ä»¥ä¸Šã®ç©ºç™½ãŒ\ ã®ç›´å¾Œã«ã‚ã‚‹çŠ¶æ…‹ãªã‚‰ã€ç©ºç™½ã‚’1æ–‡å­—ã ã‘æˆ»ã™.
     if ((flags & 2) && n && p > s && p[-1] == '\\') {
     	*p++ = ' ';
     }
-    // •K—v‚È‚ç‰üsƒR[ƒh‚ğ•œŒ³‚·‚é.
+    // å¿…è¦ãªã‚‰æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã‚’å¾©å…ƒã™ã‚‹.
     if (cr) {
     	if (cr & 2) {
     	    *p++ = '\r';
@@ -491,17 +491,17 @@ char *strTrimSpcR(char str[], int flags)
 
 // --------------------------------------------------------------------------
 
-/** •¶š—ñ’†‚Ì”¼Šp‚Ì‘å•¶š‚Ì¬•¶š‰»,¬•¶š‚Ì‘å•¶š‰».
- *  @param str	 ‘ÎÛ•¶š—ñB‘‚«Š·‚¦‚é.
- *  @param flags bit0=1:¬•¶š‚Ì‘å•¶š‰»    <br>
- *  	    	 bit1=1:‘å•¶š‚Ì¬•¶š‰»    <br>
- *  	    	 bit7=1:ShiftJIS‚ğl—¶‚·‚é.
+/** æ–‡å­—åˆ—ä¸­ã®åŠè§’ã®å¤§æ–‡å­—ã®å°æ–‡å­—åŒ–,å°æ–‡å­—ã®å¤§æ–‡å­—åŒ–.
+ *  @param str	 å¯¾è±¡æ–‡å­—åˆ—ã€‚æ›¸ãæ›ãˆã‚‹.
+ *  @param flags bit0=1:å°æ–‡å­—ã®å¤§æ–‡å­—åŒ–    <br>
+ *  	    	 bit1=1:å¤§æ–‡å­—ã®å°æ–‡å­—åŒ–    <br>
+ *  	    	 bit7=1:ShiftJISã‚’è€ƒæ…®ã™ã‚‹.
  */
 char *strUpLow(char str[], unsigned flags)
 {
     unsigned char *p = (unsigned char *)str;
 
-    if ((flags&3) == 0 || str == NULL)	    // •ÏŠ·w’è‚ª‚È‚©‚Á‚½‚è•¶š—ñ‚ª–³‚©‚Á‚½‚ç‹A‚é.
+    if ((flags&3) == 0 || str == NULL)	    // å¤‰æ›æŒ‡å®šãŒãªã‹ã£ãŸã‚Šæ–‡å­—åˆ—ãŒç„¡ã‹ã£ãŸã‚‰å¸°ã‚‹.
     	return str;
     while (*p) {
     	int c = *p++;

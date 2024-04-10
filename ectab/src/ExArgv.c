@@ -1,43 +1,43 @@
 /**
  *  @file   ExArgv.cpp
- *  @brief  argc,argv‚МЉg’ЈЏ€—ќ(ѓЏѓCѓ‹ѓhѓJЃ[ѓh,ѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹).
+ *  @brief  argc,argvгЃ®ж‹Ўејµе‡¦зђ†(гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰,гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«).
  *  @author Masashi KITAMURA
  *  @date   2006-2010,2023
  *  @note
- *  -   main(int argc,char* argv[]) ‚Мargc,argv‚Й‘О‚µЃA
- *      ѓЏѓCѓ‹ѓhѓJЃ[ѓhЋw’и‚вѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹Ћw’и“™‚р“WЉJ‚µ‚Ѕargc,argv‚Й•ПЉ·.
- *      main()‚МЏ‰‚Б’[‚®‚з‚ў‚Е
+ *  -   main(int argc,char* argv[]) гЃ®argc,argvгЃ«еЇѕгЃ—гЂЃ
+ *      гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰жЊ‡е®љг‚„гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«жЊ‡е®љз­‰г‚’е±•й–‹гЃ—гЃџargc,argvгЃ«е¤‰жЏ›.
+ *      main()гЃ®е€ќгЃЈз«ЇгЃђг‚‰гЃ„гЃ§
  *          ExArgv_conv(&argc, &argv);
- *      ‚М‚ж‚¤‚ЙЊД‚СЏo‚·.
- *  -   WinMain() ‚ЕЋg‚¤ЏкЌ‡‚Н EXARGV_FOR_WINMAIN ‚р’и‹`‚µЃA
+ *      гЃ®г‚€гЃ†гЃ«е‘јгЃіе‡єгЃ™.
+ *  -   WinMain() гЃ§дЅїгЃ†е ґеђ€гЃЇ EXARGV_FOR_WINMAIN г‚’е®љзѕ©гЃ—гЂЃ
  *          ExArgv_forWinMain(cmdl, &argc, &argv);
- *      ‚М‚ж‚¤‚ЙЊД‚СЏo‚·.
+ *      гЃ®г‚€гЃ†гЃ«е‘јгЃіе‡єгЃ™.
  *
- *  -   Ће‚ЙWin/DosЊn(‚МѓRѓ}ѓ“ѓhѓ‰ѓCѓ“ѓcЃ[ѓ‹)‚Е‚М——p‚р‘z’и.
- *      €к‰ћ mac,linux gcc/clang ‚Е‚МѓRѓ“ѓpѓCѓ‹‰В.
- *      (unixЊn‚ѕ‚ЖѓЏѓCѓ‹ѓhѓJЃ[ѓh‚НѓVѓFѓ‹”C‚№‚ѕ‚л‚¤‚ЕЃAѓЃѓЉѓbѓgЏ­‚И‚­)
+ *  -   дё»гЃ«Win/Dosзі»(гЃ®г‚ігѓћгѓігѓ‰гѓ©г‚¤гѓігѓ„гѓјгѓ«)гЃ§гЃ®е€©з”Ёг‚’жѓіе®љ.
+ *      дёЂеїњ mac,linux gcc/clang гЃ§гЃ®г‚ігѓігѓ‘г‚¤гѓ«еЏЇ.
+ *      (unixзі»гЃ гЃЁгѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰гЃЇг‚·г‚§гѓ«д»»гЃ›гЃ г‚ЌгЃ†гЃ§гЂЃгѓЎгѓЄгѓѓгѓ€е°‘гЃЄгЃЏ)
  *
- *  -   ExArgv.h‚НЃA€к‰ћѓwѓbѓ_‚ѕ‚ЄЃAExArgv.c ‚МђЭ’иѓtѓ@ѓCѓ‹‚Е‚а‚ ‚й.
- *      ѓAѓvѓЉ‚І‚Ж‚Й ExArgv.h ExArgv.c ‚рѓRѓsЃ[‚µ‚ДЃAExArgv.h‚р
- *      ѓJѓXѓ^ѓЂ‚µ‚ДЋg‚¤‚М‚р‘z’и.
- *  -   ђЭ’и‚Е‚«‚й—v‘f‚НЃA
- *          - ѓЏѓCѓ‹ѓhѓJЃ[ѓh (on/off)
- *          - ѓЏѓCѓ‹ѓhѓJЃ[ѓhЋћ‚МЌД‹AЋw’и(**)‚М—L–і (on/off)
- *          - @ѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹ (on/off)
- *          - .exeA“® .cfg ѓtѓ@ѓCѓ‹ “ЗЌћ (on/off)
- *          - ѓIѓvѓVѓ‡ѓ“ЉВ‹«•Пђ”–ј‚М——p
- *          “™
+ *  -   ExArgv.hгЃЇгЂЃдёЂеїњгѓгѓѓгѓЂгЃ гЃЊгЂЃExArgv.c гЃ®иЁ­е®љгѓ•г‚Ўг‚¤гѓ«гЃ§г‚‚гЃ‚г‚‹.
+ *      г‚ўгѓ—гѓЄгЃ”гЃЁгЃ« ExArgv.h ExArgv.c г‚’г‚ігѓ”гѓјгЃ—гЃ¦гЂЃExArgv.hг‚’
+ *      г‚«г‚№г‚їгѓ гЃ—гЃ¦дЅїгЃ†гЃ®г‚’жѓіе®љ.
+ *  -   иЁ­е®љгЃ§гЃЌг‚‹и¦Ѓзґ гЃЇгЂЃ
+ *          - гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰ (on/off)
+ *          - гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰ж™‚гЃ®е†Ќеё°жЊ‡е®љ(**)гЃ®жњ‰з„Ў (on/off)
+ *          - @гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ« (on/off)
+ *          - .exeйЂЈе‹• .cfg гѓ•г‚Ўг‚¤гѓ« иЄ­иѕј (on/off)
+ *          - г‚Єгѓ—г‚·гѓ§гѓіз’°еўѓе¤‰ж•°еђЌгЃ®е€©з”Ё
+ *          з­‰
  *
- *  -   €шђ”•¶Ћљ—с‚Мђж“Є‚Є'-'‚И‚з‚ОѓIѓvѓVѓ‡ѓ“‚ѕ‚л‚¤‚ЕЃA‚»‚М•¶Ћљ—с’†‚Й
- *      ѓЏѓCѓ‹ѓhѓJЃ[ѓh•¶Ћљ‚Є‚ ‚Б‚Д‚а“WЉJ‚µ‚И‚ў.
- *  -   ѓ}ѓNѓЌ UNICODE ‚© EXARGV_USE_WCHAR ‚р’и‹`‚Е wchar_t—pЃA‚И‚Ї‚к‚Оchar—p.
- *  -   UTF8 ‚Є•Ѓ‹y‚µ‚Ѕ‚М‚ЕЃAEXARGV_USE_MBC ’и‹`Ћћ‚М‚ЭMBC‚М2ѓoѓCѓg–Ъ'\'‘ОЏ€.
- *  -   _WIN32 ‚Є’и‹`‚і‚к‚Д‚ў‚к‚О win—pЃA‚Е‚И‚Ї‚к‚О unixЊn‚р‘z’и.
+ *  -   еј•ж•°ж–‡е­—е€—гЃ®е…€й ­гЃЊ'-'гЃЄг‚‰гЃ°г‚Єгѓ—г‚·гѓ§гѓігЃ г‚ЌгЃ†гЃ§гЂЃгЃќгЃ®ж–‡е­—е€—дё­гЃ«
+ *      гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰ж–‡е­—гЃЊгЃ‚гЃЈгЃ¦г‚‚е±•й–‹гЃ—гЃЄгЃ„.
+ *  -   гѓћг‚Їгѓ­ UNICODE гЃ‹ EXARGV_USE_WCHAR г‚’е®љзѕ©гЃ§ wchar_tз”ЁгЂЃгЃЄгЃ‘г‚ЊгЃ°charз”Ё.
+ *  -   UTF8 гЃЊж™®еЏЉгЃ—гЃџгЃ®гЃ§гЂЃEXARGV_USE_MBC е®љзѕ©ж™‚гЃ®гЃїMBCгЃ®2гѓђг‚¤гѓ€з›®'\'еЇѕе‡¦.
+ *  -   _WIN32 гЃЊе®љзѕ©гЃ•г‚ЊгЃ¦гЃ„г‚ЊгЃ° winз”ЁгЂЃгЃ§гЃЄгЃ‘г‚ЊгЃ° unixзі»г‚’жѓіе®љ.
  *
  *  - Public Domain Software
  */
- // 2009 ЌД‹AЋw’и‚р**‚Й‚·‚й‚±‚Ж‚ЕЃAЋd—l‚р’PЏѓ‰».
- // 2023 UTF-8 ‘ОЏ€. vcpkg‚ЄWin—p‚Й•K‚ё_WINDOWS‚р’и‹`‚·‚й‚Ѕ‚ЯWinMainЋw’и•ПЌX.
+ // 2009 е†Ќеё°жЊ‡е®љг‚’**гЃ«гЃ™г‚‹гЃ“гЃЁгЃ§гЂЃд»•ж§г‚’еЌзґ”еЊ–.
+ // 2023 UTF-8 еЇѕе‡¦. vcpkgгЃЊWinз”ЁгЃ«еї…гЃљ_WINDOWSг‚’е®љзѕ©гЃ™г‚‹гЃџг‚ЃWinMainжЊ‡е®ље¤‰ж›ґ.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,68 +54,68 @@
 #include <wchar.h>
 #endif
 
-// ѓwѓbѓ_(‚Ж‚ў‚¤‚©ѓ†Ѓ[ѓUђЭ’и)‚М“ЗЌћ.
+// гѓгѓѓгѓЂ(гЃЁгЃ„гЃ†гЃ‹гѓ¦гѓјг‚¶иЁ­е®љ)гЃ®иЄ­иѕј.
 #ifndef EXARGV_INCLUDED
  #include "ExArgv.h"
 #endif
 
 #ifdef _MSC_VER
-#pragma warning(disable:4996)                   // MS‚М‚Ё”nЋ­‚ИѓZѓLѓ…ѓЉѓeѓBЉЦђ”Ћg‚¦‚р–іЋ‹.
+#pragma warning(disable:4996)                   // MSгЃ®гЃЉй¦¬й№їгЃЄг‚»г‚­гѓҐгѓЄгѓ†г‚Јй–ўж•°дЅїгЃ€г‚’з„Ўи¦–.
 #endif
 
-/// ’и‹`‚·‚й‚Ж‚±‚М–ј‘O‚МЉВ‹«•Пђ”‚М’†ђg‚рѓRѓ}ѓ“ѓhѓ‰ѓCѓ“•¶Ћљ—с‚Ж‚µ‚ДЋg‚¦‚й‚ж‚¤‚Й‚·‚й.
+/// е®љзѕ©гЃ™г‚‹гЃЁгЃ“гЃ®еђЌе‰ЌгЃ®з’°еўѓе¤‰ж•°гЃ®дё­иє«г‚’г‚ігѓћгѓігѓ‰гѓ©г‚¤гѓіж–‡е­—е€—гЃЁгЃ—гЃ¦дЅїгЃ€г‚‹г‚€гЃ†гЃ«гЃ™г‚‹.
 //#define EXARGV_ENVNAME    "your_app_env_name"
 
 #ifndef EXARGV_USE_WC
-#define EXARGV_USE_WC       1                   ///< ѓЏѓCѓ‹ѓhѓJЃ[ѓhЋw’и‚Є‚ ‚к‚Оѓtѓ@ѓCѓ‹–ј‚Й“WЉJ‚·‚й.
+#define EXARGV_USE_WC       1                   ///< гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰жЊ‡е®љгЃЊгЃ‚г‚ЊгЃ°гѓ•г‚Ўг‚¤гѓ«еђЌгЃ«е±•й–‹гЃ™г‚‹.
 #endif
 
 #ifndef EXARGV_USE_WC_REC
-#define EXARGV_USE_WC_REC   1                   ///< EXARGV_USE_WCЋћ‚ЙЃA**‚Є‚ ‚к‚ОЌД‹AѓЏѓCѓ‹ѓhѓJЃ[ѓh‚Й‚·‚й.
+#define EXARGV_USE_WC_REC   1                   ///< EXARGV_USE_WCж™‚гЃ«гЂЃ**гЃЊгЃ‚г‚ЊгЃ°е†Ќеё°гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰гЃ«гЃ™г‚‹.
 #endif
 
 #ifndef EXARGV_USE_RESFILE
-#define EXARGV_USE_RESFILE  0                   ///< @ѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹‚р—LЊш‚Й‚·‚й.
+#define EXARGV_USE_RESFILE  0                   ///< @гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«г‚’жњ‰еЉ№гЃ«гЃ™г‚‹.
 #endif
 
 #ifndef EXARGV_USE_CONFIG
-#define EXARGV_USE_CONFIG   0                   ///< .exe‚р.cfg‚Й’uЉ·‚µ‚ЅѓpѓX–ј‚©‚з“ЗЌћ.
+#define EXARGV_USE_CONFIG   0                   ///< .exeг‚’.cfgгЃ«зЅ®жЏ›гЃ—гЃџгѓ‘г‚№еђЌгЃ‹г‚‰иЄ­иѕј.
 #endif
 
 #ifndef EXARGV_CONFIG_EXT
-#define EXARGV_CONFIG_EXT   ".cfg"              ///< ѓRѓ“ѓtѓBѓOѓtѓ@ѓCѓ‹“ь—Н—L‚МЋћ‚МЉg’ЈЋq. Љg’ЈЋq‚Н4•¶Ћљ€И“а‚М‚±‚Ж.
+#define EXARGV_CONFIG_EXT   ".cfg"              ///< г‚ігѓігѓ•г‚Јг‚°гѓ•г‚Ўг‚¤гѓ«е…ҐеЉ›жњ‰гЃ®ж™‚гЃ®ж‹Ўејµе­ђ. ж‹Ўејµе­ђгЃЇ4ж–‡е­—д»Ґе†…гЃ®гЃ“гЃЁ.
 #endif
 
 #if 0 //ndef EXARGV_USE_FULLPATH_ARGV0
-#define EXARGV_USE_FULLPATH_ARGV0   1           ///< argv[0] ‚МЋАЌsѓtѓ@ѓCѓ‹–ј‚рѓtѓ‹ѓpѓX‚Й‚·‚й/‚µ‚И‚ў. winЉВ‹«‚М‚Э.
+#define EXARGV_USE_FULLPATH_ARGV0   1           ///< argv[0] гЃ®е®џиЎЊгѓ•г‚Ўг‚¤гѓ«еђЌг‚’гѓ•гѓ«гѓ‘г‚№гЃ«гЃ™г‚‹/гЃ—гЃЄгЃ„. winз’°еўѓгЃ®гЃї.
 #endif
 
-//#define EXARGV_TOSLASH                        ///< ’и‹`‚·‚к‚ОЃAfilePath’†‚М \ ‚р / ‚Й’uЉ·.
-//#define EXARGV_TOBACKSLASH                    ///< ’и‹`‚·‚к‚ОЃAfilePath’†‚М / ‚р \ ‚Й’uЉ·.
-//#define EXARGV_USE_SLASH_OPT                  ///< ’и‹`‚·‚к‚ОЃA/ ‚аѓIѓvѓVѓ‡ѓ“ЉJЋn•¶Ћљ‚Ж‚Э‚И‚·.
-//#define EXARGV_USE_SETARGV                    ///< ЋАЊ±. ’и‹`‚·‚й‚ЖЃAsetargv‚М‘г—p•i‚Ж‚µ‚ДѓRѓ“ѓpѓCѓ‹(ExArgv_get“™–і‚µ)
+//#define EXARGV_TOSLASH                        ///< е®љзѕ©гЃ™г‚ЊгЃ°гЂЃfilePathдё­гЃ® \ г‚’ / гЃ«зЅ®жЏ›.
+//#define EXARGV_TOBACKSLASH                    ///< е®љзѕ©гЃ™г‚ЊгЃ°гЂЃfilePathдё­гЃ® / г‚’ \ гЃ«зЅ®жЏ›.
+//#define EXARGV_USE_SLASH_OPT                  ///< е®љзѕ©гЃ™г‚ЊгЃ°гЂЃ/ г‚‚г‚Єгѓ—г‚·гѓ§гѓій–‹е§‹ж–‡е­—гЃЁгЃїгЃЄгЃ™.
+//#define EXARGV_USE_SETARGV                    ///< е®џйЁ“. е®љзѕ©гЃ™г‚‹гЃЁгЂЃsetargvгЃ®д»Јз”Ёе“ЃгЃЁгЃ—гЃ¦г‚ігѓігѓ‘г‚¤гѓ«(ExArgv_getз­‰з„ЎгЃ—)
 
 
 
 // ===========================================================================
-// ’Тел‚ ‚н‚№.
+// иѕ»и¤„гЃ‚г‚ЏгЃ›.
 
 /*
 #if defined _MSDOS || defined __DOS__
  #ifndef MSODS
-  #define MSDOS     1                           // DOSЊn’и‹`. Ѓ¦‚Ж‚ў‚Б‚Д‚а16ѓrѓbѓgDOS‚Й‚Н–ў‘О‰ћ.
+  #define MSDOS     1                           // DOSзі»е®љзѕ©. вЂ»гЃЁгЃ„гЃЈгЃ¦г‚‚16гѓ“гѓѓгѓ€DOSгЃ«гЃЇжњЄеЇѕеїњ.
  #endif
 #endif
 */
 
 #if defined _WIN32 || defined MSODS
- #define DOSWIN32   1                           // DOS/WINЊn‚И‚з’и‹`.
+ #define DOSWIN32   1                           // DOS/WINзі»гЃЄг‚‰е®љзѕ©.
 #endif
 
 
 #if defined _WIN32
  #include <windows.h>
- #if defined _MSC_VER && defined EXARGV_USE_MBC // CharNext()‚Е•K—v.
+ #if defined _MSC_VER && defined EXARGV_USE_MBC // CharNext()гЃ§еї…и¦Ѓ.
   #pragma comment(lib, "User32.lib")
  #endif
 #elif defined MSDOS
@@ -157,7 +157,7 @@
 
 
 // ===========================================================================
-// char,wchar_t ђШ‚и‘Ц‚¦‚М’ТелЌ‡‚н‚№ЉЦЊW.
+// char,wchar_t е€‡г‚Љж›їгЃ€гЃ®иѕ»и¤„еђ€г‚ЏгЃ›й–ўдї‚.
 
 #ifdef EXARGV_USE_WCHAR
 #undef  _pgmptr
@@ -213,7 +213,7 @@ enum { EXARGV_VECTOR_CAPA_BASE  = 4096 };
 
 
 #if EXARGV_USE_WC
-static unsigned char        s_wildMode;         ///< ѓЏѓCѓ‹ѓhѓJЃ[ѓh•¶Ћљ—с‚ЄђЭ’и‚і‚к‚Д‚ў‚Ѕ‚зon.
+static unsigned char        s_wildMode;         ///< гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰ж–‡е­—е€—гЃЊиЁ­е®љгЃ•г‚ЊгЃ¦гЃ„гЃџг‚‰on.
 #endif
 
 #if (EXARGV_USE_WC || EXARGV_USE_RESFILE) && !EXARGV_USE_CONFIG && !defined(EXARGV_ENVNAME) \
@@ -290,7 +290,7 @@ static int          ExArgv_fname_isWildCard(const char_t* s);
 
 #if defined EXARGV_USE_WCHAR
 _CRTIMP EXTERN_C wchar_t *_wcmdln;
-/** vc++ ‚ЕЃAmain()‚Й“n‚і‚к‚й argc,argv ‚рђ¶ђ¬‚·‚йЏ€—ќ(‚р‚±‚к‚Й’u‚«Љ·‚¦‚й)
+/** vc++ гЃ§гЂЃmain()гЃ«жёЎгЃ•г‚Њг‚‹ argc,argv г‚’з”џж€ђгЃ™г‚‹е‡¦зђ†(г‚’гЃ“г‚ЊгЃ«зЅ®гЃЌжЏ›гЃ€г‚‹)
  */
 EXTERN_C int __cdecl __wsetargv (void)
 {
@@ -298,7 +298,7 @@ EXTERN_C int __cdecl __wsetargv (void)
 }
 #else
 _CRTIMP EXTERN_C char *_acmdln;
-/** vc++ ‚ЕЃAmain()‚Й“n‚і‚к‚й argc,argv ‚рђ¶ђ¬‚·‚йЏ€—ќ(‚р‚±‚к‚Й’u‚«Љ·‚¦‚й)
+/** vc++ гЃ§гЂЃmain()гЃ«жёЎгЃ•г‚Њг‚‹ argc,argv г‚’з”џж€ђгЃ™г‚‹е‡¦зђ†(г‚’гЃ“г‚ЊгЃ«зЅ®гЃЌжЏ›гЃ€г‚‹)
  */
 EXTERN_C int __cdecl __setargv (void)
 {
@@ -310,7 +310,7 @@ EXTERN_C int __cdecl __setargv (void)
 
 #elif defined EXARGV_FOR_WINMAIN
 
-/** winѓAѓvѓЉ‚ЕЃAWinMainЏ‰‚Б’[‚ЕЃAargc,argv‚рЌм‚и‚Ѕ‚ў‚Ж‚«‚ЙЋg‚¤‚М‚р‘z’и.
+/** winг‚ўгѓ—гѓЄгЃ§гЂЃWinMainе€ќгЃЈз«ЇгЃ§гЂЃargc,argvг‚’дЅњг‚ЉгЃџгЃ„гЃЁгЃЌгЃ«дЅїгЃ†гЃ®г‚’жѓіе®љ.
  */
 void ExArgv_forWinMain(const char_t* pCmdLine, int* pArgc, char_t*** pppArgv)
 {
@@ -322,7 +322,7 @@ void ExArgv_forWinMain(const char_t* pCmdLine, int* pArgc, char_t*** pppArgv)
 
 
 #if defined EXARGV_FOR_WINMAIN || defined EXARGV_USE_SETARGV
-/** 1Ќs‚М•¶Ћљ—сpCmdLine ‚©‚зargc,argv‚рђ¶ђ¬. (ђж‚ЙЉВ‹«•Пђ”‚в.cfgѓtѓ@ѓCѓ‹‚рЏ€—ќ)
+/** 1иЎЊгЃ®ж–‡е­—е€—pCmdLine гЃ‹г‚‰argc,argvг‚’з”џж€ђ. (е…€гЃ«з’°еўѓе¤‰ж•°г‚„.cfgгѓ•г‚Ўг‚¤гѓ«г‚’е‡¦зђ†)
  */
 #if defined(EXARGV_USE_WCHAR_TO_UTF8)
 static int ExArgv_to_utf8_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppArgv, char*** pppUtf8s)
@@ -339,11 +339,11 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
     if (pArgc == 0 || pppArgv == 0)
         return -1;
 
-    pVec = ExArgv_Vector_create(1);                 // Ќм‹Ж—p‚МѓЉѓXѓg‚р—p€У.
+    pVec = ExArgv_Vector_create(1);                 // дЅњжҐ­з”ЁгЃ®гѓЄг‚№гѓ€г‚’з”Ёж„Џ.
     if (pVec == 0)
         return -1;
 
-    // ЋАЌsѓtѓ@ѓCѓ‹–ј‚р“ѕ‚ДЃA‚»‚к‚рЏ‰‚Б’[‚Й“o^.
+    // е®џиЎЊгѓ•г‚Ўг‚¤гѓ«еђЌг‚’еѕ—гЃ¦гЂЃгЃќг‚Њг‚’е€ќгЃЈз«ЇгЃ«з™»йЊІ.
     n = GetModuleFileName(NULL, arg, FILEPATH_SZ);
     if (n > 0) {
         ExArgv_Vector_push(pVec, arg);
@@ -356,13 +356,13 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
     if (pVec->size == 0)
         return -1;
 
-    // ЉВ‹«•Пђ”‚МЋж“ѕ.
+    // з’°еўѓе¤‰ж•°гЃ®еЏ–еѕ—.
   #ifdef EXARGV_ENVNAME
     assert(STR_LEN(EXARGV_ENVNAME) > 0);
     ExArgv_getEnv(EXARGV_ENVNAME, pVec);
   #endif
 
-    // ѓRѓ“ѓtѓBѓOѓtѓ@ѓCѓ‹‚М“ЗЌћ.
+    // г‚ігѓігѓ•г‚Јг‚°гѓ•г‚Ўг‚¤гѓ«гЃ®иЄ­иѕј.
   #if EXARGV_USE_CONFIG
     ExArgv_getCfgFile(pVec->buf[0], pVec );
   #endif
@@ -371,7 +371,7 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
     s_wildMode  = 0;
   #endif
 
-    // 1Ќs‚Е“n‚і‚к‚йѓRѓ}ѓ“ѓhѓ‰ѓCѓ“‚р•ЄЉ„.
+    // 1иЎЊгЃ§жёЎгЃ•г‚Њг‚‹г‚ігѓћгѓігѓ‰гѓ©г‚¤гѓіг‚’е€†е‰І.
     s = pCmdLine;
     while ( (s = ExArgv_fname_scanArgStr(s, arg, FILEPATH_SZ)) != NULL ) {
         const char_t* p = arg;
@@ -390,16 +390,16 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
 
   #if EXARGV_USE_WC
     if (s_wildMode)
-        ExArgv_wildCard(pVec);                      // ѓЏѓCѓ‹ѓhѓJЃ[ѓh‚вѓfѓBѓЊѓNѓgѓЉЌД‹A‚µ‚ДѓpѓX‚рЋж“ѕ.
+        ExArgv_wildCard(pVec);                      // гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰г‚„гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄе†Ќеё°гЃ—гЃ¦гѓ‘г‚№г‚’еЏ–еѕ—.
   #endif
   #if (defined EXARGV_TOSLASH) || (defined EXARGV_TOBACKSLASH)
-    ExArgv_convBackSlash(pVec);                     // defineђЭ’и‚ЙЏ]‚Б‚ДЃA\ ‚Ж / ‚М•ПЉ·. (Љо–{“I‚Й‚Н‰Ѕ‚а‚µ‚И‚ў)
+    ExArgv_convBackSlash(pVec);                     // defineиЁ­е®љгЃ«еѕ“гЃЈгЃ¦гЂЃ\ гЃЁ / гЃ®е¤‰жЏ›. (еџєжњ¬зљ„гЃ«гЃЇдЅ•г‚‚гЃ—гЃЄгЃ„)
   #endif
 
  #if defined(EXARGV_USE_WCHAR_TO_UTF8)
-	*pppUtf8s = (char**)ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );  // Ќм‹ЖѓЉѓXѓg‚р argc,argv ‚Й•ПЉ·. Ћg—pЌП‚ЭЉJ•ъ.
+	*pppUtf8s = (char**)ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );  // дЅњжҐ­гѓЄг‚№гѓ€г‚’ argc,argv гЃ«е¤‰жЏ›. дЅїз”Ёжё€гЃїй–‹ж”ѕ.
  #else
-    ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // Ќм‹ЖѓЉѓXѓg‚р argc,argv ‚Й•ПЉ·‚µЃAЌм‹ЖѓЉѓXѓgЋ©‘М‚НЉJ•ъ.
+    ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // дЅњжҐ­гѓЄг‚№гѓ€г‚’ argc,argv гЃ«е¤‰жЏ›гЃ—гЂЃдЅњжҐ­гѓЄг‚№гѓ€и‡ЄдЅ“гЃЇй–‹ж”ѕ.
  #endif
 
     return 0;
@@ -412,9 +412,9 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
 
 #if (defined EXARGV_FOR_WINMAIN) == 0 || (defined EXARGV_USE_SETARGV) == 0
 
-/** argc,argv ‚рѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹‚вѓЏѓCѓ‹ѓhѓJЃ[ѓh“WЉJ‚µ‚ДЃAargc, argv‚рЌXђV‚µ‚Д•Ф‚·.
- *  @param  pArgc       argc‚МѓAѓhѓЊѓX.(argv‚Мђ”)
- *  @param  pppArgv     argv‚МѓAѓhѓЊѓX.
+/** argc,argv г‚’гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«г‚„гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰е±•й–‹гЃ—гЃ¦гЂЃargc, argvг‚’ж›ґж–°гЃ—гЃ¦иї”гЃ™.
+ *  @param  pArgc       argcгЃ®г‚ўгѓ‰гѓ¬г‚№.(argvгЃ®ж•°)
+ *  @param  pppArgv     argvгЃ®г‚ўгѓ‰гѓ¬г‚№.
  */
 #if defined(EXARGV_USE_WCHAR_TO_UTF8)
 char** ExArgv_conv_to_utf8(int* pArgc, char_t*** pppArgv)
@@ -437,10 +437,10 @@ void** ExArgv_conv(int* pArgc, char_t*** pppArgv)
     if (argc == 0 || ppArgv == 0)
         return NULL;
 
-  #if defined EXARGV_USE_FULLPATH_ARGV0 && defined _WIN32       // ЊГ‚ўѓ\Ѓ[ѓX—p‚ЙЃAexe‚Мѓtѓ‹ѓpѓX‚рђЭ’и.
-   #if defined _MSC_VER     // vc‚И‚з‚·‚Е‚Й‚ ‚й‚М‚Е‚»‚к‚р—¬—p.
+  #if defined EXARGV_USE_FULLPATH_ARGV0 && defined _WIN32       // еЏ¤гЃ„г‚Ѕгѓјг‚№з”ЁгЃ«гЂЃexeгЃ®гѓ•гѓ«гѓ‘г‚№г‚’иЁ­е®љ.
+   #if defined _MSC_VER     // vcгЃЄг‚‰гЃ™гЃ§гЃ«гЃ‚г‚‹гЃ®гЃ§гЃќг‚Њг‚’жµЃз”Ё.
     ppArgv[0] = _pgmptr;
-   #elif defined __GNUC__   // ‚н‚©‚з‚И‚ў‚М‚Еѓ‚ѓWѓ…Ѓ[ѓ‹–јЋж“ѕ.
+   #elif defined __GNUC__   // г‚ЏгЃ‹г‚‰гЃЄгЃ„гЃ®гЃ§гѓўг‚ёгѓҐгѓјгѓ«еђЌеЏ–еѕ—.
     {
         static char_t nm[MAX_PATH];
         if (GetModuleFileName(NULL, nm, MAX_PATH) > 0)
@@ -456,29 +456,29 @@ void** ExArgv_conv(int* pArgc, char_t*** pppArgv)
 
   #if !EXARGV_USE_CONFIG && !defined(EXARGV_ENVNAME) && !defined(EXARGV_TOSLASH) && !defined(EXARGV_TOBACKSLASH) && !defined(EXARGV_USE_WCHAR_TO_UTF8)
    #if !EXARGV_USE_WC && !EXARGV_USE_RESFILE
-    return NULL; //(void**)*ppArgv;     // ‚Щ‚Ъ•ПЉ·–і‚µ...
+    return NULL; //(void**)*ppArgv;     // гЃ»гЃје¤‰жЏ›з„ЎгЃ—...
    #elif defined EXARGV_USE_CHK_CHR
-    if (ExArgv_checkWcResfile(argc, ppArgv) == 0)   // Њ»Џу‚Мargc,argv‚рM‚й•K—v‚Є‚ ‚й‚©?
+    if (ExArgv_checkWcResfile(argc, ppArgv) == 0)   // зЏѕзЉ¶гЃ®argc,argvг‚’еј„г‚‹еї…и¦ЃгЃЊгЃ‚г‚‹гЃ‹?
         return NULL; //(void**)ppArgv;
    #endif
   #endif
 
-    pVec = ExArgv_Vector_create(argc+1);            // argv‚Є‘ќЊё‚·‚й‚М‚ЕЃAЌм‹Ж—p‚МѓЉѓXѓg‚р—p€У.
+    pVec = ExArgv_Vector_create(argc+1);            // argvгЃЊеў—жё›гЃ™г‚‹гЃ®гЃ§гЂЃдЅњжҐ­з”ЁгЃ®гѓЄг‚№гѓ€г‚’з”Ёж„Џ.
 
     //x printf("@4 %d %p(%p)\n", argc, ppArgv, *ppArgv);
     //x printf("   %p: %p %d %d\n", pVec, pVec->buf, pVec->capa, pVec->size);
 
-    // ЋАЌsѓtѓ@ѓCѓ‹–ј‚МЋж“ѕ.
+    // е®џиЎЊгѓ•г‚Ўг‚¤гѓ«еђЌгЃ®еЏ–еѕ—.
     if (argc > 0)
-        ExArgv_Vector_push( pVec, ppArgv[0] );      // Vec‚Й“o^.
+        ExArgv_Vector_push( pVec, ppArgv[0] );      // VecгЃ«з™»йЊІ.
 
-    // ЉВ‹«•Пђ”‚МЋж“ѕ.
+    // з’°еўѓе¤‰ж•°гЃ®еЏ–еѕ—.
   #ifdef EXARGV_ENVNAME
     assert(STR_LEN(EXARGV_ENVNAME) > 0);
     ExArgv_getEnv(EXARGV_ENVNAME, pVec);
   #endif
 
-    // ѓRѓ“ѓtѓBѓOѓtѓ@ѓCѓ‹‚М“ЗЌћ.
+    // г‚ігѓігѓ•г‚Јг‚°гѓ•г‚Ўг‚¤гѓ«гЃ®иЄ­иѕј.
   #if EXARGV_USE_CONFIG
     ExArgv_getCfgFile( ppArgv[0], pVec );
   #endif
@@ -489,34 +489,34 @@ void** ExArgv_conv(int* pArgc, char_t*** pppArgv)
     s_wildMode  = 0;
   #endif
 
-    // €шђ”‚МЏ€—ќ.
+    // еј•ж•°гЃ®е‡¦зђ†.
     for (i = 1; i < argc; ++i) {
         const char_t* p = ppArgv[i];
       #if EXARGV_USE_RESFILE
         if (i > 0 && *p == T('@')) {
-            ExArgv_getResFile(p+1, pVec, 0);        // ѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹“ЗЌћ.
+            ExArgv_getResFile(p+1, pVec, 0);        // гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«иЄ­иѕј.
         } else
       #endif
         {
           #if EXARGV_USE_WC
             s_wildMode |= ExArgv_fname_isWildCard(p);
           #endif
-            ExArgv_Vector_push( pVec, p );          // Vec‚Й“o^.
+            ExArgv_Vector_push( pVec, p );          // VecгЃ«з™»йЊІ.
         }
     }
 
   #if EXARGV_USE_WC
     if (s_wildMode)
-        ExArgv_wildCard(pVec);                      // ѓЏѓCѓ‹ѓhѓJЃ[ѓh‚вѓfѓBѓЊѓNѓgѓЉЌД‹A‚µ‚ДѓpѓX‚рЋж“ѕ.
+        ExArgv_wildCard(pVec);                      // гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰г‚„гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄе†Ќеё°гЃ—гЃ¦гѓ‘г‚№г‚’еЏ–еѕ—.
   #endif
   #if (defined EXARGV_TOSLASH) || (defined EXARGV_TOBACKSLASH)
-    ExArgv_convBackSlash(pVec);                     // defineђЭ’и‚ЙЏ]‚Б‚ДЃA\ ‚Ж / ‚М•ПЉ·. (Љо–{“I‚Й‚Н‰Ѕ‚а‚µ‚И‚ў)
+    ExArgv_convBackSlash(pVec);                     // defineиЁ­е®љгЃ«еѕ“гЃЈгЃ¦гЂЃ\ гЃЁ / гЃ®е¤‰жЏ›. (еџєжњ¬зљ„гЃ«гЃЇдЅ•г‚‚гЃ—гЃЄгЃ„)
   #endif
 
  #if defined(EXARGV_USE_WCHAR_TO_UTF8)
-    return (char**)ExArgv_VectorToArgv( &pVec, pArgc, pppArgv ); // Ќм‹ЖѓЉѓXѓg‚р argc,argv ‚Й•ПЉ·.
+    return (char**)ExArgv_VectorToArgv( &pVec, pArgc, pppArgv ); // дЅњжҐ­гѓЄг‚№гѓ€г‚’ argc,argv гЃ«е¤‰жЏ›.
  #else
-    return ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // Ќм‹ЖѓЉѓXѓg‚р argc,argv ‚Й•ПЉ·‚µЃAЌм‹ЖѓЉѓXѓgЋ©‘М‚НЉJ•ъ.
+    return ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // дЅњжҐ­гѓЄг‚№гѓ€г‚’ argc,argv гЃ«е¤‰жЏ›гЃ—гЂЃдЅњжҐ­гѓЄг‚№гѓ€и‡ЄдЅ“гЃЇй–‹ж”ѕ.
  #endif
 }
 
@@ -575,7 +575,7 @@ static inline void str_l_cat(char_t* d, const char_t* s, size_t l)
 
 #if EXARGV_USE_WC
 
-/// ѓЏѓCѓ‹ѓhѓJЃ[ѓh•¶Ћљ‚ЄЌ¬‚¶‚Б‚Д‚ў‚й‚©?
+/// гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰ж–‡е­—гЃЊж··гЃгЃЈгЃ¦гЃ„г‚‹гЃ‹?
 static int  ExArgv_fname_isWildCard(const char_t* s) {
   #if defined DOSWIN32
     unsigned    rc = 0;
@@ -626,7 +626,7 @@ static int  ExArgv_fname_isWildCard(const char_t* s) {
 
 
 
-/// ѓЉѓJЃ[ѓVѓuЋw’и‚М**‚Є‚ ‚к‚ОЃA*€к‚В‚Й‚·‚й.
+/// гѓЄг‚«гѓјг‚·гѓ–жЊ‡е®љгЃ®**гЃЊгЃ‚г‚ЊгЃ°гЂЃ*дёЂгЃ¤гЃ«гЃ™г‚‹.
 static inline void  ExArgv_fname_removeRecChr(char_t* d, const char_t* s)
 {
     char_t  c;
@@ -644,7 +644,7 @@ static inline void  ExArgv_fname_removeRecChr(char_t* d, const char_t* s)
 
 
 #if defined EXARGV_USE_CHK_CHR
-/// €шђ”•¶Ћљ—с”z—с‚ЙЃAѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹Ћw’иЃAѓЏѓCѓ‹ѓhѓJЃ[ѓhЋw’иЃAѓЉѓJЃ[ѓVѓuЋw’и‚Є‚ ‚й‚©ѓ`ѓFѓbѓN.
+/// еј•ж•°ж–‡е­—е€—й…Ќе€—гЃ«гЂЃгѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«жЊ‡е®љгЂЃгѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰жЊ‡е®љгЂЃгѓЄг‚«гѓјг‚·гѓ–жЊ‡е®љгЃЊгЃ‚г‚‹гЃ‹гѓЃг‚§гѓѓг‚Ї.
 static unsigned ExArgv_checkWcResfile(int argc, char_t** argv)
 {
     int         i;
@@ -654,7 +654,7 @@ static unsigned ExArgv_checkWcResfile(int argc, char_t** argv)
         const char_t* p = argv[i];
       #if EXARGV_USE_RESFILE
         if (*p == T('@')) {
-            rc |= 4;    // ѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹Ћw’и.
+            rc |= 4;    // гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«жЊ‡е®љ.
         } else
       #endif
         {
@@ -663,7 +663,7 @@ static unsigned ExArgv_checkWcResfile(int argc, char_t** argv)
                 int mode = ExArgv_fname_isWildCard(p);
                 s_wildMode |= mode;
                 if (mode > 0) {
-                    rc |= 1;    // ѓЏѓCѓ‹ѓhѓJЃ[ѓhЋw’и.
+                    rc |= 1;    // гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰жЊ‡е®љ.
                     if (mode == 2)
                         rc |= 2;
                 }
@@ -678,7 +678,7 @@ static unsigned ExArgv_checkWcResfile(int argc, char_t** argv)
 
 
 #ifdef EXARGV_ENVNAME
-/// ЉВ‹«•Пђ”‚Є‚ ‚к‚ОЃA“o^.
+/// з’°еўѓе¤‰ж•°гЃЊгЃ‚г‚ЊгЃ°гЂЃз™»йЊІ.
 static void ExArgv_getEnv(const char_t* envName, ExArgv_Vector* pVec)
 {
     const char_t* env;
@@ -701,13 +701,13 @@ static void ExArgv_getEnv(const char_t* envName, ExArgv_Vector* pVec)
 
 
 #if EXARGV_USE_CONFIG
-/// ѓRѓ“ѓtѓBѓOѓtѓ@ѓCѓ‹‚М“З‚ЭЌћ‚Э.
+/// г‚ігѓігѓ•г‚Јг‚°гѓ•г‚Ўг‚¤гѓ«гЃ®иЄ­гЃїиѕјгЃї.
 static void ExArgv_getCfgFile(const char_t* exeName, ExArgv_Vector* pVec)
 {
     char_t  name[ FILEPATH_SZ+4 ];
     char_t* p = name;
 
-    // ЋАЌsѓtѓ@ѓCѓ‹–ј‚©‚зѓRѓ“ѓtѓBѓOѓpѓX–ј‚рђ¶ђ¬.
+    // е®џиЎЊгѓ•г‚Ўг‚¤гѓ«еђЌгЃ‹г‚‰г‚ігѓігѓ•г‚Јг‚°гѓ‘г‚№еђЌг‚’з”џж€ђ.
   #ifdef DOSWIN32
     str_l_cpy(p, exeName, FILEPATH_SZ-10);
   #else
@@ -727,8 +727,8 @@ static void ExArgv_getCfgFile(const char_t* exeName, ExArgv_Vector* pVec)
 
 
 #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG
-/** ѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹‚р(argc,argv)‚р pVec ‚Й•ПЉ·.
- * ѓЊѓXѓ|ѓ“ѓXѓtѓ@ѓCѓ‹‚вѓЏѓCѓ‹ѓhѓJЃ[ѓhЃAѓЉѓJЃ[ѓVѓu“™‚МЏ€—ќ‚аЌs‚¤.
+/** гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«г‚’(argc,argv)г‚’ pVec гЃ«е¤‰жЏ›.
+ * гѓ¬г‚№гѓќгѓіг‚№гѓ•г‚Ўг‚¤гѓ«г‚„гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰гЂЃгѓЄг‚«гѓјг‚·гѓ–з­‰гЃ®е‡¦зђ†г‚‚иЎЊгЃ†.
  */
 static void ExArgv_getResFile(const char_t* fname, ExArgv_Vector* pVec, BOOL notFoundOk)
 {
@@ -748,10 +748,10 @@ static void ExArgv_getResFile(const char_t* fname, ExArgv_Vector* pVec, BOOL not
         char_t* s = buf;
         while ( (s = ExArgv_fname_scanArgStr(s, arg, FILEPATH_SZ)) != NULL ) {
             int c = ((uchar_t*)arg)[0];
-            if (c == T(';') || c == T('#') || c == T('\0')) {   // ‹уЌs‚вѓRѓЃѓ“ѓg‚МЋћ.
+            if (c == T(';') || c == T('#') || c == T('\0')) {   // з©єиЎЊг‚„г‚ігѓЎгѓігѓ€гЃ®ж™‚.
                 break;
             }
-            // ЌД‹AЊџЌхЋw’и,ѓЏѓCѓ‹ѓhѓJЃ[ѓh‚М—L–і‚рѓ`ѓFѓbѓN.
+            // е†Ќеё°ж¤њзґўжЊ‡е®љ,гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰гЃ®жњ‰з„Ўг‚’гѓЃг‚§гѓѓг‚Ї.
           #if EXARGV_USE_WC
             s_wildMode |= ExArgv_fname_isWildCard(arg);
           #endif
@@ -769,7 +769,7 @@ static void ExArgv_getResFile(const char_t* fname, ExArgv_Vector* pVec, BOOL not
 
 
 #if EXARGV_USE_WC
-/** ѓЏѓCѓ‹ѓhѓJЃ[ѓhЃAЌД‹AЏ€—ќ.
+/** гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰гЂЃе†Ќеё°е‡¦зђ†.
  */
 static void ExArgv_wildCard(ExArgv_Vector* pVec)
 {
@@ -778,15 +778,15 @@ static void ExArgv_wildCard(ExArgv_Vector* pVec)
     ExArgv_Vector*  wk;
     int             mode;
 
-    // ЌДЌ\’z.
+    // е†Ќж§‹зЇ‰.
     wk = ExArgv_Vector_create( pVec->size+1 );
     ee = pVec->buf + pVec->size;
     for (pp = pVec->buf; pp != ee; ++pp) {
         const char_t* s = *pp;
       #if EXARGV_USE_WC
-        if (   ExArgv_isOpt(*s) == 0                    // ѓIѓvѓVѓ‡ѓ“€ИЉO‚М•¶Ћљ—с‚Е,
-            && (pp != pVec->buf)                        // Џ‰‚Б’[€ИЉO([0]‚НЋАЌsѓtѓ@ѓCѓ‹–ј‚И‚М‚ЕЊџЌх‚і‚№‚И‚ў)‚М‚Ж‚«‚Е,
-            && ((mode = ExArgv_fname_isWildCard( s )) != 0) // ѓЏѓCѓ‹ѓhѓJЃ[ѓhЋw’и‚М‚ ‚и‚М‚Ж‚«.
+        if (   ExArgv_isOpt(*s) == 0                    // г‚Єгѓ—г‚·гѓ§гѓід»Ґе¤–гЃ®ж–‡е­—е€—гЃ§,
+            && (pp != pVec->buf)                        // е€ќгЃЈз«Їд»Ґе¤–([0]гЃЇе®џиЎЊгѓ•г‚Ўг‚¤гѓ«еђЌгЃЄгЃ®гЃ§ж¤њзґўгЃ•гЃ›гЃЄгЃ„)гЃ®гЃЁгЃЌгЃ§,
+            && ((mode = ExArgv_fname_isWildCard( s )) != 0) // гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰жЊ‡е®љгЃ®гЃ‚г‚ЉгЃ®гЃЁгЃЌ.
          ){
             char_t  name[FILEPATH_SZ+4];
             int recFlag = (mode >> 1) & 1;
@@ -810,7 +810,7 @@ static void ExArgv_wildCard(ExArgv_Vector* pVec)
       #endif
     }
 
-    // Њі‚МѓЉѓXѓg‚рЉJ•ъ.
+    // е…ѓгЃ®гѓЄг‚№гѓ€г‚’й–‹ж”ѕ.
     for (pp = pVec->buf; pp != ee; ++pp) {
         char_t* p = *pp;
         if (p)
@@ -818,12 +818,12 @@ static void ExArgv_wildCard(ExArgv_Vector* pVec)
     }
     ExArgv_free(pVec->buf);
 
-    // ЌЎ‰сђ¶ђ¬‚µ‚Ѕ‚а‚М‚рЃApVec‚ЙђЭ’и.
+    // д»Ље›ћз”џж€ђгЃ—гЃџг‚‚гЃ®г‚’гЂЃpVecгЃ«иЁ­е®љ.
     pVec->buf  = wk->buf;
     pVec->size = wk->size;
     pVec->capa = wk->capa;
 
-    // Ќм‹Ж‚ЙЋg‚Б‚ЅѓЃѓ‚ѓЉ‚рЉJ•ъ.
+    // дЅњжҐ­гЃ«дЅїгЃЈгЃџгѓЎгѓўгѓЄг‚’й–‹ж”ѕ.
     ExArgv_free(wk);
 }
 #endif
@@ -831,9 +831,9 @@ static void ExArgv_wildCard(ExArgv_Vector* pVec)
 
 
 #if (defined EXARGV_TOSLASH) || (defined EXARGV_TOBACKSLASH)
-/** ѓtѓ@ѓCѓ‹(ѓpѓX)–ј’†‚М \ / ‚М•ПЉ·. -‚ЕЋn‚Ь‚йѓIѓvѓVѓ‡ѓ“•¶Ћљ—с‚Н‘ОЏЫЉO.
- *  ЌЕ‹Я‚МwinЉВ‹«‚Е‚Н‚З‚ї‚з‚МЋw’и‚Е‚аok‚И‚М‚ЕЃA–і—ќ‚Й•ПЉ·‚·‚й•K—v‚И‚µ.
- *  (ѓIѓvѓVѓ‡ѓ“’†‚Йѓtѓ@ѓCѓ‹–ј‚Є‚ ‚й‚ЖЊ‹‹ЗЋ©‘O‚Е•ПЉ·‚№‚ґ‚й‚¦‚И‚ў‚М‚ЕЃA‚±‚±‚Е‚в‚з‚И‚ў‚Щ‚¤‚Є–і“п‚©‚а)
+/** гѓ•г‚Ўг‚¤гѓ«(гѓ‘г‚№)еђЌдё­гЃ® \ / гЃ®е¤‰жЏ›. -гЃ§е§‹гЃѕг‚‹г‚Єгѓ—г‚·гѓ§гѓіж–‡е­—е€—гЃЇеЇѕи±Ўе¤–.
+ *  жњЂиї‘гЃ®winз’°еўѓгЃ§гЃЇгЃ©гЃЎг‚‰гЃ®жЊ‡е®љгЃ§г‚‚okгЃЄгЃ®гЃ§гЂЃз„Ўзђ†гЃ«е¤‰жЏ›гЃ™г‚‹еї…и¦ЃгЃЄгЃ—.
+ *  (г‚Єгѓ—г‚·гѓ§гѓідё­гЃ«гѓ•г‚Ўг‚¤гѓ«еђЌгЃЊгЃ‚г‚‹гЃЁзµђе±Ђи‡Єе‰ЌгЃ§е¤‰жЏ›гЃ›гЃ–г‚‹гЃ€гЃЄгЃ„гЃ®гЃ§гЂЃгЃ“гЃ“гЃ§г‚„г‚‰гЃЄгЃ„гЃ»гЃ†гЃЊз„Ўй›ЈгЃ‹г‚‚)
  */
 static void ExArgv_convBackSlash(ExArgv_Vector* pVec)
 {
@@ -842,13 +842,13 @@ static void ExArgv_convBackSlash(ExArgv_Vector* pVec)
 
     for (pp = pVec->buf; pp != ee; ++pp) {
         char_t* s = *pp;
-        if (ExArgv_isOpt(*s) == 0) {        // ѓIѓvѓVѓ‡ѓ“€ИЉO‚М•¶Ћљ—с‚ЕЃA
+        if (ExArgv_isOpt(*s) == 0) {        // г‚Єгѓ—г‚·гѓ§гѓід»Ґе¤–гЃ®ж–‡е­—е€—гЃ§гЂЃ
           #if (defined EXARGV_TOSLASH)
-            ExArgv_fname_backslashToSlash(s);       // \ ‚р / ‚Й’uЉ·.
+            ExArgv_fname_backslashToSlash(s);       // \ г‚’ / гЃ«зЅ®жЏ›.
           #else
-            ExArgv_fname_slashToBackslash(s);       // / ‚р \ ‚Й’uЉ·.
+            ExArgv_fname_slashToBackslash(s);       // / г‚’ \ гЃ«зЅ®жЏ›.
           #endif
-        } else {                            // ѓIѓvѓVѓ‡ѓ“‚И‚зЃA‰єЋи‚Й•ПЉ·‚µ‚И‚ў‚Е‚Ё‚­.
+        } else {                            // г‚Єгѓ—г‚·гѓ§гѓігЃЄг‚‰гЂЃдё‹ж‰‹гЃ«е¤‰жЏ›гЃ—гЃЄгЃ„гЃ§гЃЉгЃЏ.
             ;
         }
     }
@@ -874,7 +874,7 @@ static char*  ExArgv_strdupFromWcs(wchar_t const* wcs) {
 	return u8s;
 }
 
-/** pVec‚©‚зЃA(argc,argv)‚рђ¶ђ¬. ppVec‚НЉJ•ъ‚·‚й.
+/** pVecгЃ‹г‚‰гЂЃ(argc,argv)г‚’з”џж€ђ. ppVecгЃЇй–‹ж”ѕгЃ™г‚‹.
  */
 static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** pppArgv)
 {
@@ -896,7 +896,7 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
     if (ac == 0)
         return NULL;
 
-    // char_t*”z—с‚М‚Ѕ‚Я‚МѓЃѓ‚ѓЉ‚рЋж“ѕ.
+    // char_t*й…Ќе€—гЃ®гЃџг‚ЃгЃ®гѓЎгѓўгѓЄг‚’еЏ–еѕ—.
     *pArgc   = ac;
     av       = (char**) ExArgv_alloc(sizeof(char*) * (ac + 2));
     // *pppArgv = av;
@@ -911,7 +911,7 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
     av[ac]   = NULL;
     av[ac+1] = NULL;
 
-    // Ќм‹Ж‚ЙЋg‚Б‚ЅѓЃѓ‚ѓЉ‚рЉJ•ъ.
+    // дЅњжҐ­гЃ«дЅїгЃЈгЃџгѓЎгѓўгѓЄг‚’й–‹ж”ѕ.
     ExArgv_free(pVec->buf);
     ExArgv_free(pVec);
     *ppVec   = NULL;
@@ -919,7 +919,7 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
     return (void**)av;
 }
 #else
-/** pVec‚©‚зЃA(argc,argv)‚рђ¶ђ¬. ppVec‚НЉJ•ъ‚·‚й.
+/** pVecгЃ‹г‚‰гЂЃ(argc,argv)г‚’з”џж€ђ. ppVecгЃЇй–‹ж”ѕгЃ™г‚‹.
  */
 static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** pppArgv)
 {
@@ -940,7 +940,7 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
     if (ac == 0)
         return NULL;
 
-    // char_t*”z—с‚М‚Ѕ‚Я‚МѓЃѓ‚ѓЉ‚рЋж“ѕ.
+    // char_t*й…Ќе€—гЃ®гЃџг‚ЃгЃ®гѓЎгѓўгѓЄг‚’еЏ–еѕ—.
     *pArgc   = ac;
     av       = (char_t**) ExArgv_alloc(sizeof(char_t*) * (ac + 2));
     *pppArgv = av;
@@ -950,7 +950,7 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
     av[ac]   = NULL;
     av[ac+1] = NULL;
 
-    // Ќм‹Ж‚ЙЋg‚Б‚ЅѓЃѓ‚ѓЉ‚рЉJ•ъ.
+    // дЅњжҐ­гЃ«дЅїгЃЈгЃџгѓЎгѓўгѓЄг‚’й–‹ж”ѕ.
     ExArgv_free(pVec->buf);
     ExArgv_free(pVec);
     *ppVec   = NULL;
@@ -984,7 +984,7 @@ void ExArgv_FreeW(wchar_t*** pppArgv)
 
 // ===========================================================================
 
-#if defined DOSWIN32 == 0 && defined EXARGV_USE_WCHAR == 0   // ЉВ‹«•Пђ” LANG=ja_JP.SJIS ‚М‚ж‚¤‚ИЏу‘Ф‚р‘O’с.
+#if defined DOSWIN32 == 0 && defined EXARGV_USE_WCHAR == 0   // з’°еўѓе¤‰ж•° LANG=ja_JP.SJIS гЃ®г‚€гЃ†гЃЄзЉ¶ж…‹г‚’е‰ЌжЏђ.
 
 static unsigned char        s_shift_char_type = 0;
 
@@ -993,11 +993,11 @@ static void  ExArgv_fname_check_locale()
     const char*         lang = getenv("LANG");
     s_shift_char_type  = 1;
     if (lang) {
-        // ja_JP.SJIS ‚М‚ж‚¤‚ИЊ`Ћ®‚Е‚ ‚й‚±‚Ж‚р‘O’с‚ЙSJIS,big5,gbk‚©‚рѓ`ѓFѓbѓN.
+        // ja_JP.SJIS гЃ®г‚€гЃ†гЃЄеЅўејЏгЃ§гЃ‚г‚‹гЃ“гЃЁг‚’е‰ЌжЏђгЃ«SJIS,big5,gbkгЃ‹г‚’гѓЃг‚§гѓѓг‚Ї.
         const char*     p    = strrchr(lang, '.');
         if (p) {
             ++p;
-            // 0x5c‘ОЌф‚Є•K—v‚Иencoding‚©‚рѓ`ѓFѓbѓN. (sjis€ИЉO‚Н–ўЉm”F)
+            // 0x5cеЇѕз­–гЃЊеї…и¦ЃгЃЄencodingгЃ‹г‚’гѓЃг‚§гѓѓг‚Ї. (sjisд»Ґе¤–гЃЇжњЄзўєиЄЌ)
             if (strncasecmp(p, "sjis", 4) == 0) {
                 s_shift_char_type   = 2;
             } else if (strncasecmp(p, "big5", 4) == 0) {
@@ -1023,7 +1023,7 @@ static int ExArgv_fname_is_mbblead(unsigned c) {
 #endif
 
 
-/// •¶Ћљ C ‚Є MS‘SЉp‚М‚PѓoѓCѓg–Ъ‚©”Ы‚©. (utf8‚вeuc‚Н \ –в‘и‚Н–і‚ў‚М‚Е 0‚Є‹A‚к‚Оok)
+/// ж–‡е­— C гЃЊ MSе…Ёи§’гЃ®пј‘гѓђг‚¤гѓ€з›®гЃ‹еђ¦гЃ‹. (utf8г‚„eucгЃЇ \ е•ЏйЎЊгЃЇз„ЎгЃ„гЃ®гЃ§ 0гЃЊеё°г‚ЊгЃ°ok)
 #if defined EXARGV_USE_WCHAR || defined EXARGV_USE_MBC == 0
 //#define ExArgv_FNAME_ISMBBLEAD(c)     (0)
 #elif defined _WIN32
@@ -1035,7 +1035,7 @@ static int ExArgv_fname_is_mbblead(unsigned c) {
 #endif
 
 
-/// Ћџ‚М•¶Ћљ‚Цѓ|ѓCѓ“ѓ^‚рђi‚Я‚й. Ѓ¦CharNext()‚ЄѓTѓЌѓQЃ[ѓgѓyѓA‚вutf8‘О‰ћ‚µ‚Д‚­‚к‚Д‚Ѕ‚з‚ў‚ў‚И‚ЖЉъ‘Т(‘К–Ъ‚©‚а‚ѕ‚Ї‚З)
+/// ж¬ЎгЃ®ж–‡е­—гЃёгѓќг‚¤гѓіг‚їг‚’йЂІг‚Ѓг‚‹. вЂ»CharNext()гЃЊг‚µгѓ­г‚Ігѓјгѓ€гѓљг‚ўг‚„utf8еЇѕеїњгЃ—гЃ¦гЃЏг‚ЊгЃ¦гЃџг‚‰гЃ„гЃ„гЃЄгЃЁжњџеѕ…(й§„з›®гЃ‹г‚‚гЃ гЃ‘гЃ©)
 #if defined EXARGV_USE_WCHAR || defined EXARGV_USE_MBC == 0
 #define ExArgv_FNAME_CHARNEXT(p)        ((p) + 1)
 #elif  defined _WIN32
@@ -1047,7 +1047,7 @@ static int ExArgv_fname_is_mbblead(unsigned c) {
 
 
 #if defined EXARGV_TOSLASH
-/** filePath’†‚М \ ‚р / ‚Й’uЉ·.
+/** filePathдё­гЃ® \ г‚’ / гЃ«зЅ®жЏ›.
  */
 static char_t   *ExArgv_fname_backslashToSlash(char_t filePath[])
 {
@@ -1065,7 +1065,7 @@ static char_t   *ExArgv_fname_backslashToSlash(char_t filePath[])
 
 
 #if defined EXARGV_TOBACKSLASH
-/** filePath’†‚М / ‚р \ ‚Й’uЉ·.
+/** filePathдё­гЃ® / г‚’ \ гЃ«зЅ®жЏ›.
  */
 static char_t   *ExArgv_fname_slashToBackslash(char_t filePath[])
 {
@@ -1083,9 +1083,9 @@ static char_t   *ExArgv_fname_slashToBackslash(char_t filePath[])
 
 #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG || defined EXARGV_ENVNAME \
     || defined EXARGV_FOR_WINMAIN || defined EXARGV_USE_SETARGV
-/** ѓRѓ}ѓ“ѓhѓ‰ѓCѓ“‚ЕЋw’и‚і‚к‚Ѕѓtѓ@ѓCѓ‹–ј‚Ж‚µ‚ДЃA""‚рЌl—¶‚µ‚Д,
- *  ‹у”’‚Е‹жђШ‚з‚к‚Ѕ•¶Ћљ—с(ѓtѓ@ѓCѓ‹–ј)‚рЋж“ѕ.
- *  @return ѓXѓLѓѓѓ“ЌXђVЊг‚МѓAѓhѓЊѓX‚р•Ф‚·ЃBstr‚ЄEOS‚ѕ‚Б‚Ѕ‚зNULL‚р•Ф‚·.
+/** г‚ігѓћгѓігѓ‰гѓ©г‚¤гѓігЃ§жЊ‡е®љгЃ•г‚ЊгЃџгѓ•г‚Ўг‚¤гѓ«еђЌгЃЁгЃ—гЃ¦гЂЃ""г‚’иЂѓж…®гЃ—гЃ¦,
+ *  з©єз™ЅгЃ§еЊєе€‡г‚‰г‚ЊгЃџж–‡е­—е€—(гѓ•г‚Ўг‚¤гѓ«еђЌ)г‚’еЏ–еѕ—.
+ *  @return г‚№г‚­гѓЈгѓіж›ґж–°еѕЊгЃ®г‚ўгѓ‰гѓ¬г‚№г‚’иї”гЃ™гЂ‚strгЃЊEOSгЃ гЃЈгЃџг‚‰NULLг‚’иї”гЃ™.
  */
 static char_t *ExArgv_fname_scanArgStr(const char_t *str, char_t arg[], int argSz)
 {
@@ -1100,25 +1100,25 @@ static char_t *ExArgv_fname_scanArgStr(const char_t *str, char_t arg[], int argS
 
     assert( str != 0 && arg != 0 && argSz > 1 );
 
-    // ‹у”’‚рѓXѓLѓbѓv.
+    // з©єз™Ѕг‚’г‚№г‚­гѓѓгѓ—.
     // while ( *s < 0x7f && isspace(*s) )
-    while ((0 < *s && *s <= 0x20) || *s == 0x7f)    // ascii,sjis,utf8,utf16 ‚И‚з‚±‚к‚Е‚ў‚ў...
+    while ((0 < *s && *s <= 0x20) || *s == 0x7f)    // ascii,sjis,utf8,utf16 гЃЄг‚‰гЃ“г‚ЊгЃ§гЃ„гЃ„...
         ++s;
 
-    if (*s == T('\0'))  // EOS‚ѕ‚Б‚Ѕ‚зЃAЊ©‚В‚©‚з‚И‚©‚Б‚Ѕ‚Ж‚µ‚ДNULL‚р•Ф‚·.
+    if (*s == T('\0'))  // EOSгЃ гЃЈгЃџг‚‰гЂЃи¦‹гЃ¤гЃ‹г‚‰гЃЄгЃ‹гЃЈгЃџгЃЁгЃ—гЃ¦NULLг‚’иї”гЃ™.
         return NULL;
 
     do {
         c = *s++;
         if (c == T('"')) {
-            f ^= 1;                     // "‚М‘О‚МЉФ‚Н‹у”’‚рѓtѓ@ѓCѓ‹–ј‚Й‹–‚·.‚Ѕ‚Я‚Мѓtѓ‰ѓO.
+            f ^= 1;                     // "гЃ®еЇѕгЃ®й–“гЃЇз©єз™Ѕг‚’гѓ•г‚Ўг‚¤гѓ«еђЌгЃ«иЁ±гЃ™.гЃџг‚ЃгЃ®гѓ•гѓ©г‚°.
 
-            // ‚ї‚е‚Б‚Ж‹CЋќ‚ї€«‚ў‚ЄЃAWin(XP)‚Мcmd.exe‚М‹““®‚ЙЌ‡‚н‚№‚Д‚Э‚й.
-            // (‚Щ‚с‚Ж‚Й‚ ‚Б‚Д‚й‚©ЃAЏ\•Є‚Й‚Н’І‚Ч‚Д‚И‚ў)
-            if (*s == T('"') && f == 0) // •В‚¶"‚М’јЊг‚Й‚і‚з‚Й"‚Є‚ ‚к‚ОЃA‚»‚к‚Н‚»‚М‚Ь‚Ь•\Ћ¦‚·‚й.
+            // гЃЎг‚‡гЃЈгЃЁж°—жЊЃгЃЎж‚ЄгЃ„гЃЊгЂЃWin(XP)гЃ®cmd.exeгЃ®жЊ™е‹•гЃ«еђ€г‚ЏгЃ›гЃ¦гЃїг‚‹.
+            // (гЃ»г‚“гЃЁгЃ«гЃ‚гЃЈгЃ¦г‚‹гЃ‹гЂЃеЌЃе€†гЃ«гЃЇиЄїгЃ№гЃ¦гЃЄгЃ„)
+            if (*s == T('"') && f == 0) // й–‰гЃ"гЃ®з›ґеѕЊгЃ«гЃ•г‚‰гЃ«"гЃЊгЃ‚г‚ЊгЃ°гЂЃгЃќг‚ЊгЃЇгЃќгЃ®гЃѕгЃѕиЎЁз¤єгЃ™г‚‹.
                 ++s;
             else
-                continue;               // ’КЏн‚Н " ‚НЏИ‚ў‚Д‚µ‚Ь‚¤.
+                continue;               // йЂљеёёгЃЇ " гЃЇзњЃгЃ„гЃ¦гЃ—гЃѕгЃ†.
         }
         if (d < e) {
             *d++ = (char_t)c;
@@ -1133,7 +1133,7 @@ static char_t *ExArgv_fname_scanArgStr(const char_t *str, char_t arg[], int argS
 
 
 #if EXARGV_USE_WC || (EXARGV_USE_CONFIG && defined DOSWIN32 == 0)
-/** ѓtѓ@ѓCѓ‹ѓpѓX–ј’†‚МѓfѓBѓЊѓNѓgѓЉ‚рЏњ‚ў‚Ѕѓtѓ@ѓCѓ‹–ј‚М€К’u‚р•Ф‚·.
+/** гѓ•г‚Ўг‚¤гѓ«гѓ‘г‚№еђЌдё­гЃ®гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄг‚’й™¤гЃ„гЃџгѓ•г‚Ўг‚¤гѓ«еђЌгЃ®дЅЌзЅ®г‚’иї”гЃ™.
  */
 static char_t*  ExArgv_fname_baseName(const char_t* adr)
 {
@@ -1152,12 +1152,12 @@ static char_t*  ExArgv_fname_baseName(const char_t* adr)
 
 #if EXARGV_USE_WC
 
-/** srchName‚ЕЋw’и‚і‚к‚ЅѓpѓX–ј(ѓЏѓCѓ‹ѓhѓJЃ[ѓh•¶Ћљ‘О‰ћ) ‚Йѓ}ѓbѓ`‚·‚йѓpѓX–ј‚р‘S‚Д pVec ‚Й“ь‚к‚Д•Ф‚·.
- *  recFlag ‚Єђ^‚И‚зЌД‹AЊџЌх‚рЌs‚¤.
+/** srchNameгЃ§жЊ‡е®љгЃ•г‚ЊгЃџгѓ‘г‚№еђЌ(гѓЇг‚¤гѓ«гѓ‰г‚«гѓјгѓ‰ж–‡е­—еЇѕеїњ) гЃ«гѓћгѓѓгѓЃгЃ™г‚‹гѓ‘г‚№еђЌг‚’е…ЁгЃ¦ pVec гЃ«е…Ґг‚ЊгЃ¦иї”гЃ™.
+ *  recFlag гЃЊзњџгЃЄг‚‰е†Ќеё°ж¤њзґўг‚’иЎЊгЃ†.
  */
 static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName, int recFlag)
 {
-  #if defined _WIN32        // Ѓ¦dos–ў‘О‰ћ(“Ї—l‚ЙЌмђ¬‰В”\‚ѕ‚Ї‚З)
+  #if defined _WIN32        // вЂ»dosжњЄеЇѕеїњ(еђЊж§гЃ«дЅњж€ђеЏЇиѓЅгЃ гЃ‘гЃ©)
     unsigned            num         = 0;
     WIN32_FIND_DATA*    pFindData   = (WIN32_FIND_DATA*)ExArgv_alloc(sizeof(WIN32_FIND_DATA));
     HANDLE              hdl         = FindFirstFile(srchName, pFindData);
@@ -1174,7 +1174,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
     assert(baseNameSz >= MAX_PATH);
 
     if (hdl != INVALID_HANDLE_VALUE) {
-        // ѓtѓ@ѓCѓ‹–ј‚рЋж“ѕ. Ѓ¦ ‰B‚µѓtѓ@ѓCѓ‹‚Н‘ОЏЫЉO‚Й‚µ‚Д‚Ё‚­.
+        // гѓ•г‚Ўг‚¤гѓ«еђЌг‚’еЏ–еѕ—. вЂ» йљ гЃ—гѓ•г‚Ўг‚¤гѓ«гЃЇеЇѕи±Ўе¤–гЃ«гЃ—гЃ¦гЃЉгЃЏ.
         do {
             str_l_cpy(baseName, pFindData->cFileName, baseNameSz);
             if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
@@ -1186,7 +1186,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
     }
 
    #if EXARGV_USE_WC_REC
-    // ѓfѓBѓЊѓNѓgѓЉЌД‹A‚Еѓtѓ@ѓCѓ‹–ј‚рЋж“ѕ.
+    // гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄе†Ќеё°гЃ§гѓ•г‚Ўг‚¤гѓ«еђЌг‚’еЏ–еѕ—.
     if (recFlag && baseNameSz >= 16) {
         const char_t* srch = ExArgv_fname_baseName(srchName);
         str_l_cpy(baseName, T("*.*"), 4);
@@ -1196,7 +1196,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
                 str_l_cpy(baseName, pFindData->cFileName, baseNameSz);
                 if ((pFindData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
                     if (STR_CMP(baseName, T(".")) == 0 || STR_CMP(baseName, T("..")) == 0
-                        || (pFindData->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))           // ‰B‚µѓtѓHѓ‹ѓ_‚Н‘ОЏЫЉO.
+                        || (pFindData->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))           // йљ гЃ—гѓ•г‚©гѓ«гѓЂгЃЇеЇѕи±Ўе¤–.
                     {
                         ;
                     } else {
@@ -1217,7 +1217,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
     ExArgv_free(pFindData);
     return num;
 
-  #else // linux/unixЊn...
+  #else // linux/unixзі»...
     struct dirent** namelist = 0;
     unsigned        num      = 0;
     char_t*         pathBuf  = (char_t*)ExArgv_alloc(FILEPATH_SZ);
@@ -1231,8 +1231,8 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
 
     baseName    = ExArgv_fname_baseName(pathBuf);
 
-    if (baseName == pathBuf) {          // ѓfѓBѓЊѓNѓgѓЉ•”‚Є–і‚ўЏкЌ‡.
-        str_l_cpy(pathBuf, T("./"), 3); // ѓJѓЊѓ“ѓgЋw’и‚р€кЋћ“I‚ЙђЭ’и.
+    if (baseName == pathBuf) {          // гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄйѓЁгЃЊз„ЎгЃ„е ґеђ€.
+        str_l_cpy(pathBuf, T("./"), 3); // г‚«гѓ¬гѓігѓ€жЊ‡е®љг‚’дёЂж™‚зљ„гЃ«иЁ­е®љ.
         baseName = pathBuf+2;
         flag     = 1;
     }
@@ -1240,12 +1240,12 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
     baseNameSz  = FILEPATH_SZ - STR_LEN(pathBuf);
     assert(baseNameSz >= MAX_PATH);
 
-    // ѓfѓBѓЊѓNѓgѓЉѓGѓ“ѓgѓЉ‚МЋж“ѕ.
+    // гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄг‚Ёгѓігѓ€гѓЄгЃ®еЏ–еѕ—.
     baseName[-1] = 0;
     dirNum = scandir(pathBuf, &namelist, 0, alphasort);
     baseName[-1] = T('/');
 
-    if (flag) { // €кЋћ“I‚ИѓJѓЊѓ“ѓgЋw’и‚ѕ‚Б‚Ѕ‚И‚з‚ОЃAЋМ‚Д‚й.
+    if (flag) { // дёЂж™‚зљ„гЃЄг‚«гѓ¬гѓігѓ€жЊ‡е®љгЃ гЃЈгЃџгЃЄг‚‰гЃ°гЂЃжЌЁгЃ¦г‚‹.
         baseName  = pathBuf;
         *baseName = T('\0');
     }
@@ -1254,7 +1254,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
         struct stat statBuf;
         int         i;
 
-        // ѓtѓ@ѓCѓ‹–ј‚рЋж“ѕ.
+        // гѓ•г‚Ўг‚¤гѓ«еђЌг‚’еЏ–еѕ—.
         for (i = 0; i < dirNum; ++i) {
             struct dirent* d = namelist[i];
             if (fnmatch(srchBase, d->d_name, FNM_NOESCAPE) == 0) {
@@ -1269,7 +1269,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
         }
 
        #if EXARGV_USE_WC_REC
-        // ѓfѓBѓЊѓNѓgѓЉ‚Є‚ ‚к‚ОЌД‹A.
+        // гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄгЃЊгЃ‚г‚ЊгЃ°е†Ќеё°.
         if (recFlag && baseNameSz >= 16) {
             const char_t* srch = ExArgv_fname_baseName(srchName);
             for (i = 0; i < dirNum; ++i) {
@@ -1286,7 +1286,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
         }
       #endif
 
-        // Ћg‚Б‚ЅѓЃѓ‚ѓЉ‚рЉJ•ъ.
+        // дЅїгЃЈгЃџгѓЎгѓўгѓЄг‚’й–‹ж”ѕ.
         for (i = 0; i < dirNum; ++i) {
             free( namelist[i] );
         }
@@ -1306,7 +1306,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, const char_t* srchName,
 // ===========================================================================
 
 
-/** €шђ”•¶Ћљ—сѓЉѓXѓg‚рЉЗ—ќ‚·‚йЌЄЊі‚рЌмђ¬.
+/** еј•ж•°ж–‡е­—е€—гѓЄг‚№гѓ€г‚’з®Ўзђ†гЃ™г‚‹ж №е…ѓг‚’дЅњж€ђ.
  */
 static ExArgv_Vector* ExArgv_Vector_create(unsigned size)
 {
@@ -1320,7 +1320,7 @@ static ExArgv_Vector* ExArgv_Vector_create(unsigned size)
 
 
 
-/** €шђ”•¶Ћљ—сѓЉѓXѓg‚ЙЃA•¶Ћљ—с‚р’З‰Б.
+/** еј•ж•°ж–‡е­—е€—гѓЄг‚№гѓ€гЃ«гЂЃж–‡е­—е€—г‚’иїЅеЉ .
  */
 static void ExArgv_Vector_push(ExArgv_Vector* pVec, const char_t* pStr)
 {
@@ -1329,11 +1329,11 @@ static void ExArgv_Vector_push(ExArgv_Vector* pVec, const char_t* pStr)
     if (pStr && pVec) {
         unsigned    capa = pVec->capa;
         assert(pVec->buf != 0);
-        if (pVec->size >= capa) {   // ѓLѓѓѓp‚р’ґ‚¦‚Д‚ў‚Ѕ‚зЃAѓЃѓ‚ѓЉ‚рЉm•Ы‚µ‚И‚Ё‚·.
+        if (pVec->size >= capa) {   // г‚­гѓЈгѓ‘г‚’и¶…гЃ€гЃ¦гЃ„гЃџг‚‰гЂЃгѓЎгѓўгѓЄг‚’зўєдїќгЃ—гЃЄгЃЉгЃ™.
             char_t**        buf;
             unsigned        newCapa = capa + EXARGV_VECTOR_CAPA_BASE;
-          #if 1 // •Ѓ’К‚НѓRѓЊ€И‘O‚ЙѓЃѓ‚ѓЉ•s‘«‚Й‚И‚й‚ѕ‚л‚¤‚Є€к‰ћ.
-            if (newCapa < capa) {   // €м‚к‚Ѕ‚зѓGѓ‰Ѓ[...
+          #if 1 // ж™®йЂљгЃЇг‚ігѓ¬д»Ґе‰ЌгЃ«гѓЎгѓўгѓЄдёЌи¶ігЃ«гЃЄг‚‹гЃ г‚ЌгЃ†гЃЊдёЂеїњ.
+            if (newCapa < capa) {   // жєўг‚ЊгЃџг‚‰г‚Ёгѓ©гѓј...
                 if (capa < 0xFFFFFFFF) {
                     newCapa = 0xFFFFFFFF;
                 } else {

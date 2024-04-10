@@ -13,7 +13,6 @@ my_*
 *.opensdf
 *.tlog
 *.dep
-*.manifest
 *.manifest.res
 BuildLog.htm
 err.txt
