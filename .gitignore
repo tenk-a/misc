@@ -16,3 +16,4 @@ my_*
 *.manifest
 *.manifest.res
 BuildLog.htm
+err.txt

@@ -1,8 +1,8 @@
 /**
  *  @file   strtab.c
- *  @brief  文字列中の空白タブ変換を行う
+ *  @brief  文字列中の空白タブ変換を行う.
  *
- *  @author 北村雅史<NBB00541@nifty.com>
+ *  @author Masashi Kitamura (tenka@6809.net)
  *  @date   2001～2004-01
  */
 
@@ -14,21 +14,21 @@
 using namespace std;
 #endif
 
-#ifdef __cplusplus  // c++のときは、ネームスペースCMISC に放り込む
+#ifdef __cplusplus  // c++のときは、namespace CMISC に放り込む.
 namespace CMISC {
 #endif
 
 // --------------------------------------------------------------------------
 
 #undef	CHR_CODE_TYPE
-#define CHR_CODE_TYPE	    3	// mb, utf8対応
+#define CHR_CODE_TYPE	    3	// mb, utf8対応.
 
 #undef MGET1
 #undef MGETC
 #undef MPUT1
 #undef MPUTC
 
-#if CHR_CODE_TYPE == 1	    	// シフトJIS文字列として処理
+#if CHR_CODE_TYPE == 1	    	// ShiftJIS文字列として処理.
 #define IsKANJI_(c) 	    	    ((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
 #define MGET1(ac, as)	    	    ((*(ac) = **(as)), ++*(as))
 #define MGETC(ac, as, asn, utf8)    do { MGET1((ac),(as)); ++*(asn); if (IsKANJI_(*(ac)) && **(as)) {int c_;MGET1(&c_,(as));*(ac)=(*(ac)<<8)|c_; ++*(asn);} } while (0)
@@ -40,22 +40,23 @@ namespace CMISC {
 #define MGETC(ac, as, asn, utf8)    do { MGET1((ac),(as)); ++*(asn); if (IsKANJI_(*(ac)) && **(as)) {int c_;if (*(ac) != 0x81) {++*(asn);} MGET1(&c_,(as));*(ac)=(*(ac)<<8)|c_;} } while (0)
 #define MPUT1(ad,e,c)	    	    do { if (*(ad) < (e)) {**(ad) = (c);} ; (*(ad))++; } while (0)
 #define MPUTC(ad,e,c, adn, utf8)    do { if ((c) <= 0xff) {MPUT1((ad),(e),(c)); ++*(adn);} else {MPUT1((ad),(e),(c)>>8); MPUT1((ad),(e),(c)); *(adn) += 2;} } while (0)
-#elif CHR_CODE_TYPE == 0    	    // シフトJISを考慮しない
+#elif CHR_CODE_TYPE == 0    	    // ShiftJISを考慮しない.
 #define MGET1(ac, as)	    	    ((*(ac) = **(as)), ++*(as))
 #define MGETC(ac, as, asn, utf8)    do { MGET1(ac,as); ++*(asn); } while (0)
 #define MPUT1(ad,e,c)	    	    do { if (*(ad) < (e)) {**(ad) = (c);} ; (*(ad))++; } while (0)
 #define MPUTC(ad,e,c, adn, utf8)    do { MPUT1((ad),(e),(c)); ++*(adn); } while (0)
 #else
 // 強引に UTF8 対応.
-// タブ位置の計算のため、0x7F以下と半角カナを半角1文字、以外を
+// タブ位置の計算のため、0x7F以下と半角カナを半角1文字、以外を,
 // 全角1文字(半角2文字)で計算しています。日本語環境前提:-)
 
-/// 1バイト取得
+/// 1バイト取得.
 #define MGET1(ac, as)	    	    ((*(ac) = **(as)), ++*(as))
-/// 1バイト書込
+/// 1バイト書込.
 #define MPUT1(ad,e,c)	    	    do { if (*(ad) < (e)) {**(ad) = (c);} ; (*(ad))++; } while (0)
 
-/** 1文字読み込み */
+/** 1文字読み込み.
+ */
 void MGETC(int *ac, const unsigned char **as, int *asn, int utf8)
 {
     if (utf8 == 0) {
@@ -87,7 +88,7 @@ void MGETC(int *ac, const unsigned char **as, int *asn, int utf8)
     	    	c3 &= 0x3F;
     	    	if (c < 0xF0) {
     	    	    c = ((c & 0xF) << 12) | (c2 << 6) | c3;
-    	    	    // 半角カナなら、半角文字扱い
+    	    	    // 半角カナなら、半角文字扱い.
     	    	    if (c >= 0xff60 && c <= 0xff9f) {
     	    	    	--(*asn);
     	    	    }
@@ -118,7 +119,8 @@ void MGETC(int *ac, const unsigned char **as, int *asn, int utf8)
 }
 
 
-/** 1文字書込 */
+/** 1文字書込.
+ */
 void MPUTC(unsigned char **ad, unsigned char *e, int c, int *adn, int utf8)
 {
     if (utf8 == 0) {
@@ -175,8 +177,8 @@ void MPUTC(unsigned char **ad, unsigned char *e, int c, int *adn, int utf8)
 
 
 
-/** src文字列中のtabを空白にして空白の繋がりを新たなtabに変換した文字列をdstに入れる
- *  @param dst	  出力バッファ. NULLのとき出力しない...サイズ計算を行うことになる
+/** src文字列中のtabを空白にして空白の繋がりを新たなtabに変換した文字列をdstに入れる.
+ *  @param dst	  出力バッファ. NULLのとき出力しない...サイズ計算を行うことになる.
  *  @param flags  bit0=1 空白1文字はtabに変換しない 	    	    	    <br>
  *  	    	  bit1=1 Cの'"ペアを考慮.   	    	    	    	    <br>
  *  	    	  bit2=1 Cの￥エスケープを考慮	    	    	    	    <br>
@@ -184,13 +186,13 @@ void MPUTC(unsigned char **ad, unsigned char *e, int c, int *adn, int utf8)
  *  	    	  bit4=1 タブサイズ丁度のときのみタブに変換する     	    <br>
  *  	    	  bit5=1 4タブ8タブどちらでも見た目が変わらないように変換   <br>
  *  	    	  bit6=1 CRのみも改行として扱う     	    	    	    <br>
- *  	    	  bit7=1 シフトJIS文字を考慮	    	    	    	    <br>
+ *  	    	  bit7=1 ShiftJIS文字を考慮	    	    	    	        <br>
  *  	    	  bit8=1 行末空白を削除     	    	    	    	    <br>
- *  	    	  bit9=1 入力が UTF8 だ
- *  @param dstSz  出力先サイズ. 0ならサイズチェック無し
- *  @return 	  変換後のサイズ
+ *  	    	  bit9=1 入力が UTF8.
+ *  @param dstSz  出力先サイズ. 0ならサイズチェック無し.
+ *  @return 	  変換後のサイズ.
  */
-int strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, int dstSz)
+size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, int dstSz)
 {
     enum {
     	F_SP1NTB = 0x01, F_CPAIR = 0x02, F_CESC = 0x04, F_CPAIRCONT = 0x08,
@@ -214,39 +216,39 @@ int strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, in
     static int	cpairChr;
     static int	cmtMd;
 
-    // '"の続きをするフラグがたっていない場合は初期化
+    // '"の続きをするフラグがたっていない場合は初期化.
     if ((flags & F_CPAIRCONT) == 0) {
     	cpairChr = 0;
     	cmtMd	 = 0;
     }
     k = cpairChr;
 
-    // src がNULLなら、たぶん、cpairChrの初期化だ
+    // src がNULLなら、たぶん、cpairChrの初期化だ.
     if (src == NULL)
     	return 0;
 
-    // サイズが0なら、チェックなしとして、終了を目一杯大きいアドレスにする
+    // サイズが0なら、チェックなしとして、終了を目一杯大きいアドレスにする.
     if (dstSz == 0)
     	e = (CHAR_T*)(~0);
 
-    // 出力先がNULLなら、バイト数のカウントのみにするため、終了アドレスもNULL
+    // 出力先がNULLなら、バイト数のカウントのみにするため、終了アドレスもNULL.
     if (dst == NULL)
     	e = NULL;
 
-    // 元tabサイズが0(以下)なら、割り算で破綻しないようにとりあえず1にしとく
+    // 元tabサイズが0(以下)なら、割り算で破綻しないようにとりあえず1にしとく.
     if (srcTabSz <= 0)
     	srcTabSz = 1;
 
-    // 4tab,8tab両用にするならとりあえず4tab扱い
+    // 4tab,8tab両用にするならとりあえず4tab扱い.
     if (flags & F_BOTH)
     	dstTabSz = 4;
 
-    // 文字列が終わるまでループ
+    // 文字列が終わるまでループ.
     while (*s) {
-    	// 1文字取得
+    	// 1文字取得.
     	bsn = sn;
     	MGETC(&c, &s, &sn, utf8);
-    	if (c == ' ' && k == 0) {   	    // 空白なら、とりあえずカウント
+    	if (c == ' ' && k == 0) {   	    // 空白なら、とりあえずカウント.
     	    if (tsn < 0)
     	    	tsn = bsn;
     	} else if (c == '\t' && k == 0) {   //
@@ -254,15 +256,15 @@ int strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, in
     	    	tsn = bsn;
     	    sn = ((bsn+srcTabSz) / srcTabSz) * srcTabSz;
     	} else {
-    	    if (tsn >= 0) { 	    // 空白があった
-    	    	n = bsn - tsn;	    // c は必ず 1以上の値
+    	    if (tsn >= 0) { 	    // 空白があった.
+    	    	n = bsn - tsn;	    // c は必ず 1以上の値.
     	    	if (dstTabSz <= 0) {
-    	    	    //空白への変換
+    	    	    //空白への変換.
     	    	    do {
     	    	    	MPUT1(&d, e, ' ');
     	    	    } while (--n);
     	    	} else if (flags & F_BOTH) {
-    	    	    // 4tab,8tab両用変換
+    	    	    // 4tab,8tab両用変換.
     	    	    int m  = dn/dstTabSz;
     	    	    int tn = (m + 1) * dstTabSz;
     	    	    int l  = tn - dn;
@@ -297,14 +299,14 @@ int strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, in
     	    	    	} while (--n);
     	    	    }
     	    	} else {
-    	    	    // 通常のタブ変換
+    	    	    // 通常のタブ変換.
     	    	    int tn = ((dn / dstTabSz) + 1) * dstTabSz;
     	    	    int l  = tn - dn;
     	    	    dn += n;
     	    	    if (dn >= tn) {
     	    	    	if (l <= jstab && jstab) {
-    	    	    	    // フラグ指定によりtabが空白一個、またはタブサイズに満たない場合、
-    	    	    	    // 空白にする指定があったら空白
+    	    	    	    // フラグ指定によりtabが空白一個、またはタブサイズに満たない場合,
+    	    	    	    // 空白にする指定があったら空白.
     	    	    	    do {
     	    	    	    	MPUT1(&d, e, ' ');
     	    	    	    } while (--l);
@@ -332,22 +334,22 @@ int strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, in
 
     	    MPUTC(&d, e, c, &dn, utf8);
 
-    	    if (flags & (F_CPAIR|F_CESC)) { 	// C/C++の " ' を考慮するとき
+    	    if (flags & (F_CPAIR|F_CESC)) { 	// C/C++の " ' を考慮するとき.
     	    	if (c == '\\' && *s && k != '`' && cmtMd == 0) {
     	    	    MGETC(&c2, &s, &sn, utf8);
     	    	    MPUTC(&d, e, c2, &dn, utf8);
-    	    	} else if (c == '"' || c == '\'' || c == '`') { // " ' のチェック
+    	    	} else if (c == '"' || c == '\'' || c == '`') { // " ' のチェック.
     	    	    if (cmtMd == 0) {
     	    	    	if (k == 0)
     	    	    	    k = c;
     	    	    	else if (k == c)
     	    	    	    k = 0;
     	    	    }
-    	    	} else if (c == '/' && (*s == '/' || *s == '*') && k == 0 && cmtMd == 0) { // // /* のとき
+    	    	} else if (c == '/' && (*s == '/' || *s == '*') && k == 0 && cmtMd == 0) { // // /* のとき.
     	    	    cmtMd = *s;
     	    	    MGETC(&c2, &s, &sn, utf8);
     	    	    MPUTC(&d, e, c2, &dn, utf8);
-    	    	} else if (c == '*' && *s == '/' && k == 0 && cmtMd == '*') { // */のとき
+    	    	} else if (c == '*' && *s == '/' && k == 0 && cmtMd == '*') { // */のとき.
     	    	    cmtMd = 0;
     	    	    MGETC(&c2, &s, &sn, utf8);
     	    	    MPUTC(&d, e, c2, &dn, utf8);
@@ -397,7 +399,7 @@ int strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, in
     else if (dst && dstSz > 0)
     	dst[dstSz-1] = '\0';
 
-    // 文字列末の空白削除指定があって、"'中でないなら、実行
+    // 文字列末の空白削除指定があって、"'中でないなら、実行.
     if (dst && (flags & F_TRIMR) && ((k == 0) || (flags & F_CPAIR))) {
     	int cf = 1;
     	cf |= ((flags & F_CPAIR) != 0) << 1;
@@ -417,10 +419,10 @@ int strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, in
 
 // --------------------------------------------------------------------------
 
-/** 文字列末にある空白を削除する
- *  @param  str 文字列.書き換えられる
+/** 文字列末にある空白を削除する.
+ *  @param  str 文字列.書き換えられる.
  *  @param  flags bit0=1:最後の'￥ｎ''￥ｒ'は残す   	    	    <br>
- *  	    	  bit1=1:C/C++ソース対策で ￥ の直後の' 'は１つ残す
+ *  	    	  bit1=1:C/C++ソース対策で ￥ の直後の' 'は１つ残す.
  */
 char *strTrimSpcR(char str[], int flags)
 {
@@ -438,9 +440,9 @@ char *strTrimSpcR(char str[], int flags)
     	return str;
     p = s + n;
 
-    // 改行文字の状態を設定
+    // 改行文字の状態を設定.
     cr = 0;
-    if (flags & 1) {	// 改行を考慮する？
+    if (flags & 1) {	// 改行を考慮する?
     	c = *--p;
     	if (c == '\n') {
     	    if (p-1 >= s && p[-1] == '\r') {
@@ -459,7 +461,7 @@ char *strTrimSpcR(char str[], int flags)
     	    return str;
     	}
     }
-    // 行末の空白部分を飛ばしてそうでない部分が現れるまで探す
+    // 行末の空白部分を飛ばしてそうでない部分が現れるまで探す.
     n = 0;
     do {
     	c = *--p;
@@ -469,11 +471,11 @@ char *strTrimSpcR(char str[], int flags)
     	--n;
     	p++;
     }
-    // c/c++を考慮するとき、1文字以上の空白が\ の直後にある状態なら、空白を1文字だけ戻す
+    // c/c++を考慮するとき、1文字以上の空白が\ の直後にある状態なら、空白を1文字だけ戻す.
     if ((flags & 2) && n && p > s && p[-1] == '\\') {
     	*p++ = ' ';
     }
-    // 必要なら改行コードを復元する
+    // 必要なら改行コードを復元する.
     if (cr) {
     	if (cr & 2) {
     	    *p++ = '\r';
@@ -489,21 +491,21 @@ char *strTrimSpcR(char str[], int flags)
 
 // --------------------------------------------------------------------------
 
-/** 文字列中の半角の大文字の小文字化,小文字の大文字化
- *  @param str	 対象文字列。書き換える
+/** 文字列中の半角の大文字の小文字化,小文字の大文字化.
+ *  @param str	 対象文字列。書き換える.
  *  @param flags bit0=1:小文字の大文字化    <br>
  *  	    	 bit1=1:大文字の小文字化    <br>
- *  	    	 bit7=1:シフトJISを考慮する
+ *  	    	 bit7=1:ShiftJISを考慮する.
  */
 char *strUpLow(char str[], unsigned flags)
 {
     unsigned char *p = (unsigned char *)str;
 
-    if ((flags&3) == 0 || str == NULL)	    // 変換指定がなかったり文字列が無かったら帰る
+    if ((flags&3) == 0 || str == NULL)	    // 変換指定がなかったり文字列が無かったら帰る.
     	return str;
     while (*p) {
     	int c = *p++;
-    	if (ISKANJI(c) && *p && (flags & 0x80)) {
+    	if ((flags & 0x80) && ISKANJI(c) && *p) {
     	    p++;
     	} else {
     	    if (c < 'A') {
@@ -525,7 +527,7 @@ char *strUpLow(char str[], unsigned flags)
 
 // --------------------------------------------------------------------------
 
-#ifdef __cplusplus  // c++のときは、ネームスペースCMISC に放り込む
-};
+#ifdef __cplusplus
+}
 #endif
 
