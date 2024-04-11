@@ -11,6 +11,7 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 
 if(WIN32 AND MSVC)
   add_compile_options(-Zc:wchar_t -Zc:forScope -D_ANSI)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
   set(ADD_SRCS "${SRC_DIR}/win/ActiveCodePageUTF8.manifest")
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
