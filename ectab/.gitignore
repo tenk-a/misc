@@ -17,4 +17,5 @@ my_*
 BuildLog.htm
 err.txt
 
-bld/vc*
+bld/*
+!bld/gen_bld.bat

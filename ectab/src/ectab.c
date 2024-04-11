@@ -33,7 +33,7 @@
  */
 static void usage(void)
 {
-    printf("usage> ectab [-opts] file(s)    // v2.12 " __DATE__ "  writen by M.Kitamura\n"
+    printf("usage> ectab [-opts] file(s)    // v2.13 " __DATE__ "  writen by M.Kitamura\n"
     	   "            https://github.com/tenk-a/misc/tree/master/ectab\n"
     	   "  タブ変換,行末空白削除等を行う. デフォルトでは標準出力.\n"
     	   "  改行として LF(\\n un*x) CR(\\r mac) CRLF(\\r\\n win/dos) を認識.\n"
