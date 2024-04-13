@@ -2,12 +2,21 @@ cmake_minimum_required(VERSION 3.18)
 
 project(ectab)
 
-# set(CMAKE_CXX_STANDARD 11)
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(ROOT_DIR "${CMAKE_SOURCE_DIR}")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 # set(THIRDPARTY_DIR "${ROOT_DIR}/thirdparty")
+
+set(SRCS
+  ${SRC_DIR}/ectab.c
+  ${SRC_DIR}/strtab.c
+  ${SRC_DIR}/cmisc.h
+  ${SRC_DIR}/ExArgv.c
+  ${SRC_DIR}/ExArgv.h
+)
+
+# set(CMAKE_CXX_STANDARD 11)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 if(WIN32)
   set(ADD_SRCS "${SRC_DIR}/win/ActiveCodePageUTF8.manifest")
@@ -40,14 +49,6 @@ else()
     add_compile_options(-finput-charset=utf-8 -fexec-charset=utf-8 -fwide-exec-charset=utf-32LE)
   endif()
 endif()
-
-set(SRCS
-  ${SRC_DIR}/ectab.c
-  ${SRC_DIR}/strtab.c
-  ${SRC_DIR}/cmisc.h
-  ${SRC_DIR}/ExArgv.c
-  ${SRC_DIR}/ExArgv.h
-)
 
 add_executable(${PROJECT_NAME}
   ${SRCS}
