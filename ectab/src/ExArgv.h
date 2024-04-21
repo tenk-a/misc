@@ -65,6 +65,7 @@
 //[] @レスポンスファイルを
 //      1=有効   0=無効  未定義=デフォルト設定(0)
 //#define EXARGV_USE_RESFILE    0
+#define EXARGV_USE_RESFILE    1
 
 
 //[] 簡易コンフィグ(レスポンス)ファイル入力を
