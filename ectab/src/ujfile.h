@@ -11,6 +11,10 @@
 #include <stddef.h>
 #include <string.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct ujfile_opts_t {
 	int				src_cp;			// > 0 win codepage  0=auto
 	int				dst_cp;			// > 0 win codepage  0=auto
@@ -46,7 +50,7 @@ size_t		ujfile_currentLineSize(ujfile_t* uj, size_t* crlfSize);
 
 static inline int   ujfile_get1(ujfile_t* uj) { return (uj->curpos < uj->end) ? *uj->curpos++ : -1; }
 static inline void	ujfile_unget1(ujfile_t* uj) { if (uj->curpos > uj->malloc_buf) --uj->curpos; }
-static inline int   ujfile_eof(ujfile_t* uj) { return (uj->curpos >= uj->malloc_buf); }
+static inline int   ujfile_eof(ujfile_t* uj) { return (uj->curpos >= uj->end); }
 
 static inline size_t 	ujfile_size(  ujfile_t* uj) { return uj->end - uj->malloc_buf; }
 static inline char*   	ujfile_buffer(ujfile_t* uj) { return uj->malloc_buf; }
@@ -55,5 +59,9 @@ static inline int		ujfile_srcCP( ujfile_t* uj) { return uj->src_cp; }	// code pa
 static inline int   	ujfile_hasBOM(ujfile_t* uj) { return uj->has_bom > 0; }
 static inline int   	ujfile_unkownEnc(ujfile_t* uj) { return uj->unkown_enc != 0; }
 static inline ujfile_opts_t*	ujfile_opts(  ujfile_t* uj) { return &uj->opts; }
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif	// CMISC_H

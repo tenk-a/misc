@@ -112,7 +112,7 @@ static ujfile_t* 	ujfile_set(ujfile_t* uj, char* malloc_buf, size_t size, char c
 	if (opts)
 		uj->opts = *opts;
 	dstCP 		= opts->dst_cp;
-	curEnc		= (opts->src_cp) ? mbc_cpToEnc(opts->src_cp)
+	curEnc		= (opts->src_cp) ? mbc_cpToEnc((mbc_cp_t)opts->src_cp)
 		            : mbc_autoEncodeCheck(src, size, 0, NULL, 0);
 	if (curEnc == NULL) {
 		curEnc  = mbc_cpToEnc(MBC_CP_UTF8);

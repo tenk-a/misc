@@ -20,9 +20,9 @@
 extern "C" {
 #endif
 
-// code page
-#ifdef _WIN32
+// code page (win)
 typedef enum mbc_cp_t {
+	MBC_CP_NONE		=     0,
 	MBC_CP_UTF8 	= 65001,
 	MBC_CP_UTF16LE	=  1200,
 	MBC_CP_UTF16BE	=  1201,
@@ -32,18 +32,6 @@ typedef enum mbc_cp_t {
 	MBC_CP_SJIS 	=   932,
 	MBC_CP_EUCJP	= 51932/*20932*/
 } mbc_cp_t;
-#else   // kari
-typedef enum mbc_cp_t {
-	MBC_CP_UTF8 	= 65001,
-	MBC_CP_UTF16LE	=  1200,
-	MBC_CP_UTF16BE	=  1201,
-	MBC_CP_UTF32LE	= 12000,
-	MBC_CP_UTF32BE	= 12001,
-	MBC_CP_1BYTE 	=   437/*kari*/,
-	MBC_CP_SJIS 	=   932,
-	MBC_CP_EUCJP	= 51932/*20932*/
-} mbc_cp_t;
-#endif
 
 typedef struct mbc_enc_st {
     mbc_cp_t  cp;
