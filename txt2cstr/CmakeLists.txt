@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(ectab)
+project(txt2cstr)
 
 set(ROOT_DIR "${CMAKE_SOURCE_DIR}")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -8,9 +8,12 @@ set(THIRDPARTY_DIR "${ROOT_DIR}/thirdparty")
 
 set(SRCS
   ${SRC_DIR}/txt2cstr.cpp
-  ${SRC_DIR}/cmisc.cpp
-  ${SRC_DIR}/cmisc.h
-  ${SRC_DIR}/strtab.cpp
+  ${SRC_DIR}/ujfile.cpp
+  ${SRC_DIR}/ujfile.h
+  ${SRC_DIR}/mbc.cpp
+  ${SRC_DIR}/mbc.h
+  ${SRC_DIR}/ExArgv.cpp
+  ${SRC_DIR}/ExArgv.h
 )
 
 # set(CMAKE_CXX_STANDARD 11)
@@ -19,15 +22,17 @@ set(SRCS
 
 if(WIN32)
   set(ADD_SRCS "${SRC_DIR}/win/ActiveCodePageUTF8.manifest")
-  # add_compile_options(-D_ANSI)
-  add_compile_options(-D_MBCS)
+  add_compile_options(-D_ANSI)
   if(MSVC)
     add_compile_options(-Zc:wchar_t -Zc:forScope)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+    if(CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "19.0.24215.1")
+      add_compile_options(-utf-8)
+    endif()
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.0.24215.1")
-      add_compile_options(-Zc:rvalueCast)
+      add_compile_options(-utf-8 -Zc:rvalueCast)
     endif()
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.14.26428.1")
       add_compile_options(-Zc:__cplusplus)
@@ -38,7 +43,7 @@ if(WIN32)
       endif()
       set(ADD_INC_DIRS "${THIRDPARTY_DIR}/ccwrap/vc/" "${THIRDPARTY_DIR}/ccwrap/ccwrap/")
       add_compile_options(-FIccwrap_header.h)
-      add_compile_options(-D_UNICODE)
+      # add_compile_options(-D_UNICODE)
     endif()
     set(ADD_LIBS kernel32.lib user32.lib shell32.lib advapi32.lib)
   endif()

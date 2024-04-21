@@ -1,8 +1,8 @@
 /**
  *  @file   txt2cstr.cpp
- *  @brief  ƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚ğc/c++‚Ì•¶š—ñ‚É•ÏŠ·‚·‚éƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒc[ƒ‹
+ *  @brief  ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’c/c++ã®æ–‡å­—åˆ—ã«å¤‰æ›ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ãƒ„ãƒ¼ãƒ«
  *
- *  @author –k‘º‰ëj<NBB00541@nifty.com>
+ *  @author åŒ—æ‘é›…å²<NBB00541@nifty.com>
  *  @date   2003-07-26
  */
 
@@ -10,56 +10,84 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <fstream>
-#include <iostream>
+//#include <fstream>
+//#include <iostream>
 #include <string>
 #include <vector>
-#include <set>
+//#include <set>
+#if defined _WIN32
+#include <windows.h>
+#endif
 
-#include "cmisc.h"
+#include "ujfile.h"
+#include "mbc.h"
+#include "ExArgv.h"
+
 
 using namespace std;
-using namespace CMISC;
 
-//#define CERR	cerr
-#define CERR	cout
+// ---------------------------------------------------------------------------
 
+#if _WIN32
+static int s_console_codepage = 0;
 
-/// à–¾•\¦•I—¹
-void usage(void)
+void setConsoleCodePage(int cp)
 {
-    CERR<< "txt2cstr [-opts] file(s)\n"
-    	   " SJISƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚ğc/c++ƒ\[ƒX—p‚Ì\"•¶š—ñ\"‚É•ÏŠ·‚·‚é\n"
-    	   "  -o[FILE]  o—Íƒtƒ@ƒCƒ‹–¼\n"
-    	   "  -s        “ü—Íƒtƒ@ƒCƒ‹‚ª‚È‚¯‚ê‚Î•W€“ü—Í‚ÉAo—Íw’è‚ª–³‚¯‚ê‚Î•W€o—Í‚É‚·‚é\n"
-    	   "  -c        s–ˆ‚ÌÅŒã‚É , ‚ğ’u‚­\n"
-    	   "  -fSTR     o—Í•¶š—ñ‚ğprintfŒ`®‚Åw’èB%s‚ª“ü—Ís‚É’u‚«Š·‚í‚éB\n"
-    	   "            —á‚¦‚Î -fputs(%s); ‚Ì‚æ‚¤‚Éw’è\n"
-    ;
-    exit(1);
+	if (cp != s_console_codepage) {
+		SetConsoleOutputCP(cp);
+		s_console_codepage = cp;
+	}
+}
+#endif
+
+int err_printf(char const* fmt, ...)
+{
+    va_list ap;
+ #if _WIN32
+	setConsoleCodePage(65001);
+ #endif
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    va_end(ap);
+    return 0;
+}
+
+
+// ---------------------------------------------------------------------------
+/// èª¬æ˜è¡¨ç¤ºï¼†çµ‚äº†.
+int usage(void)
+{
+	err_printf("%s",
+       "txt2cstr [-opts] file(s)\n"
+       " UTF8,SJIS,EUCJPms ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’c/c++ã‚½ãƒ¼ã‚¹ç”¨ã®\"æ–‡å­—åˆ—\"ã«å¤‰æ›ã™ã‚‹.\n"
+       "  -o[FILE]  å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«å.\n"
+       "  -s        å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã‘ã‚Œã°æ¨™æº–å…¥åŠ›ã«ã€å‡ºåŠ›æŒ‡å®šãŒç„¡ã‘ã‚Œã°æ¨™æº–å‡ºåŠ›ã«ã™ã‚‹.\n"
+       "  -c        è¡Œæ¯ã®æœ€å¾Œã« , ã‚’ç½®ã.\n"
+       "  -fSTR     å‡ºåŠ›æ–‡å­—åˆ—ã‚’printfå½¢å¼ã§æŒ‡å®šã€‚%sãŒå…¥åŠ›è¡Œã«ç½®ãæ›ã‚ã‚‹.\n"
+       "            ä¾‹ãˆã° -fputs(%s); ã®ã‚ˆã†ã«æŒ‡å®š.\n"
+    );
+    return 1;
 }
 
 
 // ---------------------------------------------------------------------------
 
-/// ƒIƒvƒVƒ‡ƒ“—v‘f‚ÌŠÇ—
+/// ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¦ç´ ã®ç®¡ç†.
 class Opts {
   public:
-    string  outName_;	    ///< o—Í–¼(1‰ñ‚«‚è)
-    string  appName_;	    ///< ƒAƒvƒŠƒP[ƒVƒ‡ƒ“–¼
-    string  fmt_;   	    ///< o—ÍƒtƒH[ƒ}ƒbƒg‚Ìw’è
-    int     stdio_; 	    ///< 1:"-s"‚Å•W€“üo—Í‰Â”\‚É‚·‚é. 0:•W€“üo—Í‚µ‚È‚¢
+    string  outName_;	    ///< å‡ºåŠ›å(1å›ãã‚Š)
+    string  fmt_;   	    ///< å‡ºåŠ›ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®æŒ‡å®š.
+    int     stdio_; 	    ///< 1:"-s"ã§æ¨™æº–å…¥å‡ºåŠ›å¯èƒ½ã«ã™ã‚‹. 0:æ¨™æº–å…¥å‡ºåŠ›ã—ãªã„.
 
-    Opts() : outName_(""), appName_(""), fmt_("%s"), stdio_(0) {}
+    Opts() : outName_(""), fmt_("%s"), stdio_(0) {}
     ~Opts() {}
-    /// ‚±‚ÌƒvƒƒOƒ‰ƒ€–¼‚ğ
-    void setAppName(const char *appNm) {appName_ = string(appNm);}
-    void get(const char *p);
+    /// ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ åã‚’.
+    int get(const char *p);
 };
 
 
-/// -‚Ån‚Ü‚éƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒIƒvƒVƒ‡ƒ“‚Ì‰ğÍ
-void Opts::get(const char *arg)
+/// -ã§å§‹ã¾ã‚‹ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è§£æ.
+int Opts::get(const char *arg)
 {
     const char *p = arg + 1;
     int c = *p++;
@@ -78,72 +106,79 @@ void Opts::get(const char *arg)
     	fmt_ = p;
     	break;
     case '?':
-    	::usage();
-    	break;
+    	return ::usage();
     default:
-    	CERR << arg << " ‚Í’m‚ç‚È‚¢ƒIƒvƒVƒ‡ƒ“‚Å‚·\n";
-    	exit(1);
+    	err_printf("%s : çŸ¥ã‚‰ãªã„ã‚ªãƒ—ã‚·ãƒ§ãƒ³.\n", arg);
+    	return 1;
     }
+	return 0;
 }
 
 
 
 // ---------------------------------------------------------------------------
 
-/// ƒeƒLƒXƒg -> cƒ\[ƒX •ÏŠ·
+/// ãƒ†ã‚­ã‚¹ãƒˆ -> cã‚½ãƒ¼ã‚¹ å¤‰æ›.
 class Conv {
     string fmt_;
+    bool   dbc_;
     static char *chTbl[256];
-    int  convLine(vector<char> &st, const char *src);
+	int  convLine(vector<char> &st, const char *src, mbc_enc_t enc);
   public:
     Conv() {
     	fmt_ = "%s";
+    	dbc_ = false;
     }
     ~Conv() {}
-    /// o—ÍƒtƒH[ƒ}ƒbƒg‚ğİ’è‚·‚é
+    /// å‡ºåŠ›ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®šã™ã‚‹.
     bool setFmt(string &fmt);
-    /// •ÏŠ·‚ğÀs‚·‚é
+    /// å¤‰æ›ã‚’å®Ÿè¡Œã™ã‚‹.
     int  run(const char *name, const char *outName);
 };
 
 
-/// •ÏŠ·–{‘Ì
+/// å¤‰æ›æœ¬ä½“.
 ///
 int Conv::run(const char *name, const char *outName)
 {
-    FILE *ifp;
+	ujfile_opts_t opts = { MBC_CP_NONE, MBC_CP_NONE, 0, 1, 0 };
+	ujfile_t* ifp;
     if (name && name[0]) {
-    	ifp = fopen(name, "rt");
+    	ifp = ujfile_open(name, &opts);
     	if (ifp == NULL) {
-    	    CERR << name << " ‚ğopen‚Å‚«‚È‚¢\n";
+    	    err_printf("%s : èª­ã¿è¾¼ã‚ãªã‹ã£ãŸ.\n", name);
     	    return false;
     	}
     } else {
-    	ifp = stdin;
+    	ifp = ujfile_open(NULL, &opts);
     }
+
+	mbc_cp_t  cp  = (mbc_cp_t)ujfile_srcCP(ifp);
+	mbc_enc_t enc = mbc_cpToEnc(cp);
 
     FILE *ofp;
     if (outName && outName[0]) {
     	ofp = fopen(outName, "wt");
     	if (ofp == NULL) {
-    	    CERR << outName << " ‚ğopen‚Å‚«‚È‚¢\n";
+    	    err_printf("%s : æ›¸ãè¾¼ã¿ã‚ªãƒ¼ãƒ—ãƒ³ã§ããªã„.\n", outName);
     	    return false;
     	}
     } else {
     	ofp = stdout;
     }
 
-    vector<char> st(0x10000);	// ‚È‚ñ‚Æ‚È‚­Astring‚Å‚È‚­vector<char>‚Å‚¨‚µ
+    vector<char> st;
+    st.reserve(0x10000);
     //int lineNum = 0;
-    while (feof(ifp) == 0) {
+    while (ujfile_eof(ifp) == 0) {
     	//lineNum++;
     	char buf[0x10000];
-    	if (fgets(buf, sizeof buf, ifp) == NULL)
+    	if (ujfile_fgets(buf, sizeof buf, ifp) == NULL)
     	    break;
 
     	st.clear();
     	st.push_back('"');
-    	convLine(st, buf);
+    	convLine(st, buf, enc);
     	st.push_back('"');
     	st.push_back('\0');
     	fprintf(ofp, "\t");
@@ -153,14 +188,13 @@ int Conv::run(const char *name, const char *outName)
 
     if (ofp != stdout)
     	fclose(ofp);
-    if (ifp != stdin)
-    	fclose(ifp);
+   	ujfile_close(&ifp);
 
     return true;
 }
 
 
-/// “Áê‚È•¶šƒR[ƒh‚ğ•ÏŠ·‚·‚é‚½‚ß‚Ìƒe[ƒuƒ‹
+/// ç‰¹æ®Šãªæ–‡å­—ã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã®ãƒ†ãƒ¼ãƒ–ãƒ«
 char *Conv::chTbl[256] = {  	    	// a:0x07,b:0x08,t:0x09,n:0x0a,v:0x0b,f:0x0c,r:0x0d,
     "\\x00", "\\x01", "\\x02", "\\x03", "\\x04", "\\x05", "\\x06", "\\a"  ,
     "\\b"  , "\\t"  , "\\n"  , "\\v"  , "\\f"  , "\\r"	, "\\x0e", "\\x0f",
@@ -178,20 +212,23 @@ char *Conv::chTbl[256] = {  	    	// a:0x07,b:0x08,t:0x09,n:0x0a,v:0x0b,f:0x0c,r
     0/*h*/ , 0/*i*/ , 0/*j*/ , 0/*k*/ , 0/*l*/ , 0/*m*/ , 0/*n*/ , 0/*o*/ ,
     0/*p*/ , 0/*q*/ , 0/*r*/ , 0/*s*/ , 0/*t*/ , 0/*u*/ , 0/*v*/ , 0/*w*/ ,
     0/*x*/ , 0/*y*/ , 0/*z*/ , 0/*{*/ , 0/*|*/ , 0/*}*/ , 0/*~*/ , "\\x7f",
-    // 0x80`0xFF ‚Í‚Æ‚è‚ ‚¦‚¸A‘S‚Ä0
+    // 0x80ï½0xFF ã¯ã¨ã‚Šã‚ãˆãšã€å…¨ã¦0
 };
 
 
-/// ‚Ps•ÏŠ·
-int Conv::convLine(vector<char> &st, const char *src)
+/// ï¼‘è¡Œå¤‰æ›.
+///
+int Conv::convLine(vector<char> &st, const char *src, mbc_enc_t enc)
 {
-    const unsigned char *s = (const unsigned char *)src;
+	char buf[16];
+    char const *s = src;
     while (*s) {
-    	int c = *s++;
-    	if (ISKANJI(c) && *s) {
-    	    st.push_back(c);
-    	    st.push_back(*s);
-    	    s++;
+		int c = enc->getChr(&s);
+		if (c > 0xff) {
+			char* p = buf;
+			char* e = enc->setChr(p, p+16, c);
+   	    	while (p < e)
+   	    	    st.push_back(*p++);
     	} else {
     	    const char *p = chTbl[c];
     	    if (p) {
@@ -206,13 +243,14 @@ int Conv::convLine(vector<char> &st, const char *src)
 }
 
 
-/// o—ÍƒtƒH[ƒ}ƒbƒg‚ğİ’è‚·‚é
+/// å‡ºåŠ›ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®šã™ã‚‹.
+///
 bool Conv::setFmt(string &fmt)
 {
     int n  = 0;
     int sf = 0;
 
-    // ƒ`ƒFƒbƒN
+    // ãƒã‚§ãƒƒã‚¯.
     for (;;) {
     	n = fmt.find_first_of('%', n);
     	if (size_t(n) == string::npos)
@@ -224,11 +262,11 @@ bool Conv::setFmt(string &fmt)
     	    ++n;
     	    ++sf;
     	    if (sf > 1) {
-    	    	CERR << "-fw’è’† %s ‚ª•¡”‚ ‚é\n";
+    	    	err_printf("-fæŒ‡å®šä¸­ %%s ãŒè¤‡æ•°ã‚ã‚‹.\n");
     	    	return false;
     	    }
     	} else {
-    	    CERR << "%% %s ˆÈŠO‚Ì%w’è‚ª‚ ‚é‚æ‚¤‚¾\n";
+    	    err_printf("%%%% %%s ä»¥å¤–ã®%æŒ‡å®šãŒã‚ã‚‹ã‚ˆã†ã .\n");
     	    return false;
     	}
     }
@@ -254,9 +292,8 @@ class App {
 int App::main(int argc, char *argv[])
 {
     if (argc < 2)
-    	::usage();
+    	return ::usage();
 
-    opts_.setAppName(argv[0]);
     int rc = 0, n = 0;
     for (int i = 1; i < argc; i++) {
     	char *p = argv[i];
@@ -270,7 +307,7 @@ int App::main(int argc, char *argv[])
     if (n == 0 && opts_.stdio_) {
     	rc = oneFile("");
     }
-    rc = !rc;	    // main()‚Ì•œ‹A’l‚Í 0:³í 0ˆÈŠO:ƒGƒ‰[ ‚È‚ñ‚ÅA‚»‚Ì‚æ‚¤‚É•ÏŠ·
+    rc = !rc;	    // main()ã®å¾©å¸°å€¤ã¯ 0:æ­£å¸¸ 0ä»¥å¤–:ã‚¨ãƒ©ãƒ¼ ãªã‚“ã§ã€ãã®ã‚ˆã†ã«å¤‰æ›.
     return rc;
 }
 
@@ -280,14 +317,14 @@ int App::oneFile(const char *name)
     string inm(name);
     string onm(name);
 
-    if (opts_.outName_.empty()) {   // ƒIƒvƒVƒ‡ƒ“-o ‚ª‚È‚¢ê‡
-    	if (opts_.stdio_)   	    // •W€o—Íw’è‚ª‚ ‚ê‚ÎAƒtƒ@ƒCƒ‹–¼‚ğ–³‚­‚·
+    if (opts_.outName_.empty()) {   // ã‚ªãƒ—ã‚·ãƒ§ãƒ³-o ãŒãªã„å ´åˆ.
+    	if (opts_.stdio_)   	    // æ¨™æº–å‡ºåŠ›æŒ‡å®šãŒã‚ã‚Œã°ã€ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ç„¡ãã™.
     	    onm = "";
-    	else	    	    	    // ’Êí‚Í .c ‚É‚µ‚½ƒtƒ@ƒCƒ‹‚Éo—Í
+    	else	    	    	    // é€šå¸¸ã¯ .c ã«ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã«å‡ºåŠ›.
     	    onm += ".c";
-    } else {	    	    	    // ƒIƒvƒVƒ‡ƒ“-o‚ª‚ ‚Á‚½ê‡
+    } else {	    	    	    // ã‚ªãƒ—ã‚·ãƒ§ãƒ³-oãŒã‚ã£ãŸå ´åˆ.
     	onm = opts_.outName_;
-    	opts_.outName_ = "";	    // -o‚Íˆê‰ñ‚±‚Á‚«‚è‚È‚ñ‚ÅAŸ‰ñŒü‚¯‚É‰Šú‰»
+    	opts_.outName_ = "";	    // -oã¯ä¸€å›ã“ã£ãã‚Šãªã‚“ã§ã€æ¬¡å›å‘ã‘ã«åˆæœŸåŒ–.
     }
     if (conv_.setFmt(opts_.fmt_) == false)
     	return 0;
@@ -298,25 +335,26 @@ int App::oneFile(const char *name)
 
 // ---------------------------------------------------------------------------
 
-/// ‚±‚±‚æ‚èn‚Ü‚é
-int main(int argc, char *argv[])
+/// ã“ã“ã‚ˆã‚Šå§‹ã¾ã‚‹.
+int main(int argc, char* argv[])
 {
-    int rc;
-    App app;
+	int rc;
+ #if defined(_WIN32)
+	int savCP = GetConsoleOutputCP();
+	setConsoleCodePage(65001);
+ #endif
+ #ifndef NO_USE_EXARGV
+    ExArgv_conv(&argc, &argv);
+ #endif
+	App app;
     try {
-      #ifdef _MSC_VER
-    	// VC(7)‚ÅƒRƒ“ƒpƒCƒ‹‚µ‚½‚çAargv[0]‚Éƒtƒ‹ƒpƒX‰»‚µ‚Ä‚¢‚È‚¢AƒRƒ}ƒ“ƒhƒ‰ƒCƒ“
-    	// ‚Åƒ^ƒCƒv‚µ‚½ƒvƒƒOƒ‰ƒ€–¼‚ª“ü‚Á‚Ä‚½‚è‚·‚é‚Ì‚ÅA‹­ˆø‘Îˆ
-    	argv[0] = _pgmptr;
-      #endif
     	rc = app.main(argc, argv);
-    }
-    catch (const exception &ex) {
-    	CERR << ex.what() << endl;
+    } catch (const exception &ex) {
+		err_printf("%s\n", ex.what());
     	rc = 1;
     }
+ #if defined(_WIN32)
+	SetConsoleOutputCP(savCP);
+ #endif
     return rc;
 }
-
-
-
