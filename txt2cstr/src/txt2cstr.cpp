@@ -33,10 +33,10 @@ static int s_console_codepage = 0;
 
 void setConsoleCodePage(int cp)
 {
-	if (cp != s_console_codepage) {
-		SetConsoleOutputCP(cp);
-		s_console_codepage = cp;
-	}
+    if (cp != s_console_codepage) {
+        SetConsoleOutputCP(cp);
+        s_console_codepage = cp;
+    }
 }
 #endif
 
@@ -44,7 +44,7 @@ int err_printf(char const* fmt, ...)
 {
     va_list ap;
  #if _WIN32
-	setConsoleCodePage(65001);
+    setConsoleCodePage(65001);
  #endif
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
@@ -57,7 +57,7 @@ int err_printf(char const* fmt, ...)
 /// 説明表示＆終了.
 int usage(void)
 {
-	err_printf("%s",
+    err_printf("%s",
        "txt2cstr [-opts] file(s)\n"
        " UTF8,SJIS,EUCJPms テキストファイルをc/c++ソース用の\"文字列\"に変換する.\n"
        "  -o[FILE]  出力ファイル名.\n"
@@ -75,9 +75,9 @@ int usage(void)
 /// オプション要素の管理.
 class Opts {
   public:
-    string  outName_;	    ///< 出力名(1回きり)
-    string  fmt_;   	    ///< 出力フォーマットの指定.
-    int     stdio_; 	    ///< 1:"-s"で標準入出力可能にする. 0:標準入出力しない.
+    string  outName_;       ///< 出力名(1回きり)
+    string  fmt_;           ///< 出力フォーマットの指定.
+    int     stdio_;         ///< 1:"-s"で標準入出力可能にする. 0:標準入出力しない.
 
     Opts() : outName_(""), fmt_("%s"), stdio_(0) {}
     ~Opts() {}
@@ -94,24 +94,24 @@ int Opts::get(const char *arg)
     c = toupper(c);
     switch (c) {
     case 'O':
-    	outName_ = string(p);
-    	break;
+        outName_ = string(p);
+        break;
     case 'S':
-    	stdio_	 = (*p != '-');
-    	break;
+        stdio_   = (*p != '-');
+        break;
     case 'C':
-    	fmt_ = "%s,";
-    	break;
+        fmt_ = "%s,";
+        break;
     case 'F':
-    	fmt_ = p;
-    	break;
+        fmt_ = p;
+        break;
     case '?':
-    	return ::usage();
+        return ::usage();
     default:
-    	err_printf("%s : 知らないオプション.\n", arg);
-    	return 1;
+        err_printf("%s : 知らないオプション.\n", arg);
+        return 1;
     }
-	return 0;
+    return 0;
 }
 
 
@@ -123,11 +123,11 @@ class Conv {
     string fmt_;
     bool   dbc_;
     static char *chTbl[256];
-	int  convLine(vector<char> &st, const char *src, mbc_enc_t enc);
+    int  convLine(vector<char> &st, const char *src, mbc_enc_t enc);
   public:
     Conv() {
-    	fmt_ = "%s";
-    	dbc_ = false;
+        fmt_ = "%s";
+        dbc_ = false;
     }
     ~Conv() {}
     /// 出力フォーマットを設定する.
@@ -141,63 +141,63 @@ class Conv {
 ///
 int Conv::run(const char *name, const char *outName)
 {
-	ujfile_opts_t opts = { MBC_CP_NONE, MBC_CP_NONE, 0, 1, 0 };
-	ujfile_t* ifp;
+    ujfile_opts_t opts = { MBC_CP_NONE, MBC_CP_NONE, 0, 1, 0 };
+    ujfile_t* ifp;
     if (name && name[0]) {
-    	ifp = ujfile_open(name, &opts);
-    	if (ifp == NULL) {
-    	    err_printf("%s : 読み込めなかった.\n", name);
-    	    return false;
-    	}
+        ifp = ujfile_open(name, &opts);
+        if (ifp == NULL) {
+            err_printf("%s : 読み込めなかった.\n", name);
+            return false;
+        }
     } else {
-    	ifp = ujfile_open(NULL, &opts);
+        ifp = ujfile_open(NULL, &opts);
     }
 
-	mbc_cp_t  cp  = (mbc_cp_t)ujfile_srcCP(ifp);
-	mbc_enc_t enc = mbc_cpToEnc(cp);
+    mbc_cp_t  cp  = (mbc_cp_t)ujfile_srcCP(ifp);
+    mbc_enc_t enc = mbc_cpToEnc(cp);
 
     FILE *ofp;
     if (outName && outName[0]) {
-    	ofp = fopen(outName, "wt");
-    	if (ofp == NULL) {
-    	    err_printf("%s : 書き込みオープンできない.\n", outName);
-    	    return false;
-    	}
+        ofp = fopen(outName, "wt");
+        if (ofp == NULL) {
+            err_printf("%s : 書き込みオープンできない.\n", outName);
+            return false;
+        }
     } else {
-    	ofp = stdout;
+        ofp = stdout;
     }
 
     vector<char> st;
     st.reserve(0x10000);
     //int lineNum = 0;
     while (ujfile_eof(ifp) == 0) {
-    	//lineNum++;
-    	char buf[0x10000];
-    	if (ujfile_fgets(buf, sizeof buf, ifp) == NULL)
-    	    break;
+        //lineNum++;
+        char buf[0x10000];
+        if (ujfile_fgets(buf, sizeof buf, ifp) == NULL)
+            break;
 
-    	st.clear();
-    	st.push_back('"');
-    	convLine(st, buf, enc);
-    	st.push_back('"');
-    	st.push_back('\0');
-    	fprintf(ofp, "\t");
-    	fprintf(ofp, fmt_.c_str(), &st[0]);
-    	fprintf(ofp, "\n");
+        st.clear();
+        st.push_back('"');
+        convLine(st, buf, enc);
+        st.push_back('"');
+        st.push_back('\0');
+        fprintf(ofp, "\t");
+        fprintf(ofp, fmt_.c_str(), &st[0]);
+        fprintf(ofp, "\n");
     }
 
     if (ofp != stdout)
-    	fclose(ofp);
-   	ujfile_close(&ifp);
+        fclose(ofp);
+    ujfile_close(&ifp);
 
     return true;
 }
 
 
 /// 特殊な文字コードを変換するためのテーブル
-char *Conv::chTbl[256] = {  	    	// a:0x07,b:0x08,t:0x09,n:0x0a,v:0x0b,f:0x0c,r:0x0d,
+char *Conv::chTbl[256] = {              // a:0x07,b:0x08,t:0x09,n:0x0a,v:0x0b,f:0x0c,r:0x0d,
     "\\x00", "\\x01", "\\x02", "\\x03", "\\x04", "\\x05", "\\x06", "\\a"  ,
-    "\\b"  , "\\t"  , "\\n"  , "\\v"  , "\\f"  , "\\r"	, "\\x0e", "\\x0f",
+    "\\b"  , "\\t"  , "\\n"  , "\\v"  , "\\f"  , "\\r"  , "\\x0e", "\\x0f",
     "\\x10", "\\x11", "\\x12", "\\x13", "\\x14", "\\x15", "\\x16", "\\x17",
     "\\x18", "\\x19", "\\x1a", "\\x1b", "\\x1c", "\\x1d", "\\x1e", "\\x1f",
     0/* */ , 0/*!*/ , "\\\"" , 0/*#*/ , 0/*$*/ , 0/*%*/ , 0/*&*/ , 0/*'*/ ,
@@ -220,24 +220,24 @@ char *Conv::chTbl[256] = {  	    	// a:0x07,b:0x08,t:0x09,n:0x0a,v:0x0b,f:0x0c,r
 ///
 int Conv::convLine(vector<char> &st, const char *src, mbc_enc_t enc)
 {
-	char buf[16];
+    char buf[16];
     char const *s = src;
     while (*s) {
-		int c = enc->getChr(&s);
-		if (c > 0xff) {
-			char* p = buf;
-			char* e = enc->setChr(p, p+16, c);
-   	    	while (p < e)
-   	    	    st.push_back(*p++);
-    	} else {
-    	    const char *p = chTbl[c];
-    	    if (p) {
-    	    	while (*p)
-    	    	    st.push_back(*p++);
-    	    } else {
-    	    	st.push_back(c);
-    	    }
-    	}
+        int c = enc->getChr(&s);
+        if (c > 0xff) {
+            char* p = buf;
+            char* e = enc->setChr(p, p+16, c);
+            while (p < e)
+                st.push_back(*p++);
+        } else {
+            const char *p = chTbl[c];
+            if (p) {
+                while (*p)
+                    st.push_back(*p++);
+            } else {
+                st.push_back(c);
+            }
+        }
     }
     return 1;
 }
@@ -252,23 +252,23 @@ bool Conv::setFmt(string &fmt)
 
     // チェック.
     for (;;) {
-    	n = fmt.find_first_of('%', n);
-    	if (size_t(n) == string::npos)
-    	    break;
-    	++n;
-    	if (fmt[n] == '%') {
-    	    ++n;
-    	} else if (fmt[n] == 's') {
-    	    ++n;
-    	    ++sf;
-    	    if (sf > 1) {
-    	    	err_printf("-f指定中 %%s が複数ある.\n");
-    	    	return false;
-    	    }
-    	} else {
-    	    err_printf("%%%% %%s 以外の%指定があるようだ.\n");
-    	    return false;
-    	}
+        n = fmt.find_first_of('%', n);
+        if (size_t(n) == string::npos)
+            break;
+        ++n;
+        if (fmt[n] == '%') {
+            ++n;
+        } else if (fmt[n] == 's') {
+            ++n;
+            ++sf;
+            if (sf > 1) {
+                err_printf("-f指定中 %%s が複数ある.\n");
+                return false;
+            }
+        } else {
+            err_printf("%%%% %%s 以外の%指定があるようだ.\n");
+            return false;
+        }
     }
     fmt_ = fmt;
     return true;
@@ -292,22 +292,22 @@ class App {
 int App::main(int argc, char *argv[])
 {
     if (argc < 2)
-    	return ::usage();
+        return ::usage();
 
     int rc = 0, n = 0;
     for (int i = 1; i < argc; i++) {
-    	char *p = argv[i];
-    	if (*p == '-') {
-    	    opts_.get(p);
-    	} else {
-    	    rc = oneFile(p);
-    	    n++;
-    	}
+        char *p = argv[i];
+        if (*p == '-') {
+            opts_.get(p);
+        } else {
+            rc = oneFile(p);
+            n++;
+        }
     }
     if (n == 0 && opts_.stdio_) {
-    	rc = oneFile("");
+        rc = oneFile("");
     }
-    rc = !rc;	    // main()の復帰値は 0:正常 0以外:エラー なんで、そのように変換.
+    rc = !rc;       // main()の復帰値は 0:正常 0以外:エラー なんで、そのように変換.
     return rc;
 }
 
@@ -318,16 +318,16 @@ int App::oneFile(const char *name)
     string onm(name);
 
     if (opts_.outName_.empty()) {   // オプション-o がない場合.
-    	if (opts_.stdio_)   	    // 標準出力指定があれば、ファイル名を無くす.
-    	    onm = "";
-    	else	    	    	    // 通常は .c にしたファイルに出力.
-    	    onm += ".c";
-    } else {	    	    	    // オプション-oがあった場合.
-    	onm = opts_.outName_;
-    	opts_.outName_ = "";	    // -oは一回こっきりなんで、次回向けに初期化.
+        if (opts_.stdio_)           // 標準出力指定があれば、ファイル名を無くす.
+            onm = "";
+        else                        // 通常は .c にしたファイルに出力.
+            onm += ".c";
+    } else {                        // オプション-oがあった場合.
+        onm = opts_.outName_;
+        opts_.outName_ = "";        // -oは一回こっきりなんで、次回向けに初期化.
     }
     if (conv_.setFmt(opts_.fmt_) == false)
-    	return 0;
+        return 0;
     return conv_.run(inm.c_str(), onm.c_str());
 }
 
@@ -338,23 +338,23 @@ int App::oneFile(const char *name)
 /// ここより始まる.
 int main(int argc, char* argv[])
 {
-	int rc;
+    int rc;
  #if defined(_WIN32)
-	int savCP = GetConsoleOutputCP();
-	setConsoleCodePage(65001);
+    int savCP = GetConsoleOutputCP();
+    setConsoleCodePage(65001);
  #endif
  #ifndef NO_USE_EXARGV
     ExArgv_conv(&argc, &argv);
  #endif
-	App app;
+    App app;
     try {
-    	rc = app.main(argc, argv);
+        rc = app.main(argc, argv);
     } catch (const exception &ex) {
-		err_printf("%s\n", ex.what());
-    	rc = 1;
+        err_printf("%s\n", ex.what());
+        rc = 1;
     }
  #if defined(_WIN32)
-	SetConsoleOutputCP(savCP);
+    SetConsoleOutputCP(savCP);
  #endif
     return rc;
 }

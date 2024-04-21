@@ -145,7 +145,7 @@
  #ifdef _MAX_PATH
   #define MAX_PATH      _MAX_PATH
  #else
-  #if defined MSDOS	//DOSWIN32
+  #if defined MSDOS //DOSWIN32
    #define MAX_PATH     260
   #else
    #define MAX_PATH     1024
@@ -396,7 +396,7 @@ static int ExArgv_forCmdLine1(const char_t* pCmdLine, int* pArgc, char_t*** pppA
   #endif
 
  #if defined(EXARGV_USE_WCHAR_TO_UTF8)
-	*pppUtf8s = (char**)ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );  // 作業リストを argc,argv に変換. 使用済み開放.
+    *pppUtf8s = (char**)ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );  // 作業リストを argc,argv に変換. 使用済み開放.
  #else
     ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // 作業リストを argc,argv に変換し、作業リスト自体は開放.
  #endif
@@ -861,16 +861,16 @@ static void ExArgv_convBackSlash(ExArgv_Vector* pVec)
 #define U8F_MBS_FROM_WCS(d,dl,s,sl) WideCharToMultiByte(65001,0,(s),(int)(sl),(d),(int)(dl),0,0)
 
 static char*  ExArgv_strdupFromWcs(wchar_t const* wcs) {
-	size_t  len, wlen;
-	char* u8s;
-	if (!wcs)
-		wcs = L"";
-	wlen = wcslen(wcs);
-	len  = U8F_MBS_FROM_WCS(NULL,0, wcs, wlen);
-	u8s  = (char*)ExArgv_alloc(len + 1);
-	if (u8s)
-		U8F_MBS_FROM_WCS(u8s, len + 1, wcs, wlen + 1);
-	return u8s;
+    size_t  len, wlen;
+    char* u8s;
+    if (!wcs)
+        wcs = L"";
+    wlen = wcslen(wcs);
+    len  = U8F_MBS_FROM_WCS(NULL,0, wcs, wlen);
+    u8s  = (char*)ExArgv_alloc(len + 1);
+    if (u8s)
+        U8F_MBS_FROM_WCS(u8s, len + 1, wcs, wlen + 1);
+    return u8s;
 }
 
 /** pVecから、(argc,argv)を生成. ppVecは開放する.
@@ -880,7 +880,7 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
     ExArgv_Vector*  pVec;
     char**          av;
     int             ac;
-	int				i;
+    int             i;
 
     assert( pppArgv != 0 && pArgc != 0 && ppVec != 0 );
 
@@ -900,12 +900,12 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
     av       = (char**) ExArgv_alloc(sizeof(char*) * (ac + 2));
     // *pppArgv = av;
 
-	for (i = 0; i < ac; ++i) {
-		char_t* s  = pVec->buf[i];
-		av[i] = ExArgv_strdupFromWcs(s);
-		ExArgv_free(s);
-		pVec->buf[i] = NULL;
-	}
+    for (i = 0; i < ac; ++i) {
+        char_t* s  = pVec->buf[i];
+        av[i] = ExArgv_strdupFromWcs(s);
+        ExArgv_free(s);
+        pVec->buf[i] = NULL;
+    }
 
     av[ac]   = NULL;
     av[ac+1] = NULL;
@@ -960,25 +960,25 @@ static void** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t*** p
 
 void ExArgv_Free(void*** pppArgv)
 {
-	void** pp = *pppArgv;
-	while (*pp) {
-		void* p = *pp;
-		if (p)
-			free(p);
-		++pp;
-	}
-	free(pp);
-	*pppArgv = 0;
+    void** pp = *pppArgv;
+    while (*pp) {
+        void* p = *pp;
+        if (p)
+            free(p);
+        ++pp;
+    }
+    free(pp);
+    *pppArgv = 0;
 }
 
 void ExArgv_FreeA(char*** pppArgv)
 {
-	ExArgv_free((void***)pppArgv);
+    ExArgv_free((void***)pppArgv);
 }
 
 void ExArgv_FreeW(wchar_t*** pppArgv)
 {
-	ExArgv_free((void***)pppArgv);
+    ExArgv_free((void***)pppArgv);
 }
 
 // ===========================================================================
