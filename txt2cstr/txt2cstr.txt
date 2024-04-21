@@ -1,10 +1,8 @@
 txt2cstr
 
- SJISテキストファイルを、\や"'タブやコントロール文字等を考慮して、
+UTF8,SJIS テキストファイルを、\や"'タブやコントロール文字等を考慮して、
 c/c++ソース用の"文字列"に変換するコマンドライン・ツール。
 
-
-■使い方
 usage>txt2cstr [-opts] file(s)
   -o[FILE]  出力ファイル名
   -s        入力ファイルがなければ標準入力に、出力指定が無ければ標準出力にする
@@ -13,13 +11,6 @@ usage>txt2cstr [-opts] file(s)
             例えば -fputs(%s); のように指定
 
 
-■その他
-
-c2htm作成で、急遽でっち上げた代物です...前にも似たようなもん作った
-はずだが見当たらんので。
-
-
 ライセンスは Boost software license Version 1.0
-
 
                                              Masashi KITAMURA (tenka@6809.net)
