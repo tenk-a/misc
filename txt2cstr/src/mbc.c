@@ -875,6 +875,7 @@ static char*  utf8_setChr(char*  dst, char* e, unsigned c) {
             d[0] = 0xEF;
             d[1] = 0xBF;
             d[2] = 0xBD;
+            d += 3;
             return d;
         }
       #endif
