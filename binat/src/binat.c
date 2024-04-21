@@ -25,7 +25,7 @@
 
 /*------------------------------------------------*/
 
-#ifdef OS9
+#ifdef OS9 /* */
   /* OS9/6809 MicrowareC */
   typedef  char     UCHAR;
   typedef  unsigned USHORT;
@@ -33,7 +33,7 @@
   #define  REG	    register
   #define  WRTMODE  "r"
 /*#define  LONG_MAX 0x7fffffffL */
-    	    	/*<limits.h>ÇÃÇ»Ç¢Ç©ÇΩÇÕLONG_MAXÇê›íËÇµÇƒÇÀ*/
+    	    	/*<limits.h>ÇÃÇ»Ç¢èÍçáÇÕLONG_MAXÇê›íËÇÃÇ±Ç∆ */
   #define  EP(p)    fprintf(stderr,p)
   #define  NCNT_MAX 512
 #else
@@ -66,7 +66,7 @@
 #define isdigit(c)  (((unsigned)(c) - '0') < 10)
 #define islower(c)  (((unsigned)(c)-'a') < 26)
 #define toupper(c)  (islower(c) ? (c) - 0x20 : (c) )
-#define iskanji(c)  ((unsigned)((c)^0x20) - (unsigned)0xa1 < (unsigned)0x3c)
+//#define iskanji(c)  ((unsigned)((c)^0x20) - (unsigned)0xa1 < (unsigned)0x3c)
 #define iskanji2(c) ((UCHAR)(c) >= (UCHAR)0x40 && (UCHAR)(c) <= (UCHAR)0xfc && (UCHAR)(c) != (UCHAR)0x7f)
 /*#define iskanji2(c) (((c)&0xff) >= 0x40 && ((c)&0xff) <= 0xfc && ((c)&0xff) != 0x7f)*/
 
@@ -527,8 +527,8 @@ int main(argc,argv)
     	    case '?':
     	    	Usage();
     	    default:
-    	      OPTS_ERR:
-    	    	EP("Bad option!\n");
+    	  OPTS_ERR:
+    	    	EP("Unkown option!\n");
     	    	exit(1);
     	    }
     	}
