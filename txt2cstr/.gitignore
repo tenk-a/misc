@@ -21,6 +21,5 @@ build
 bld/*
 !bld/gen_bld.bat
 smp/*
-!smp/base
-!smp/smp.bat
+!smp/*.txt
 thirdparty/ccwrap
