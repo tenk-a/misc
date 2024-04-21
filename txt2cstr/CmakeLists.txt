@@ -8,11 +8,11 @@ set(THIRDPARTY_DIR "${ROOT_DIR}/thirdparty")
 
 set(SRCS
   ${SRC_DIR}/txt2cstr.cpp
-  ${SRC_DIR}/ujfile.cpp
+  ${SRC_DIR}/ujfile.c
   ${SRC_DIR}/ujfile.h
-  ${SRC_DIR}/mbc.cpp
+  ${SRC_DIR}/mbc.c
   ${SRC_DIR}/mbc.h
-  ${SRC_DIR}/ExArgv.cpp
+  ${SRC_DIR}/ExArgv.c
   ${SRC_DIR}/ExArgv.h
 )
 
