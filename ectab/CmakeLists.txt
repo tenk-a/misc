@@ -4,12 +4,16 @@ project(ectab)
 
 set(ROOT_DIR "${CMAKE_SOURCE_DIR}")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
-# set(THIRDPARTY_DIR "${ROOT_DIR}/thirdparty")
+set(THIRDPARTY_DIR "${ROOT_DIR}/thirdparty")
 
 set(SRCS
   ${SRC_DIR}/ectab.c
-  ${SRC_DIR}/strtab.c
+  ${SRC_DIR}/cmisc.c
   ${SRC_DIR}/cmisc.h
+  ${SRC_DIR}/ujfile.c
+  ${SRC_DIR}/ujfile.h
+  ${SRC_DIR}/mbc.c
+  ${SRC_DIR}/mbc.h
   ${SRC_DIR}/ExArgv.c
   ${SRC_DIR}/ExArgv.h
 )
@@ -26,19 +30,24 @@ if(WIN32)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+    if(CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "19.0.24215.1")
+      add_compile_options(-utf-8)
+    endif()
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.0.24215.1")
       add_compile_options(-utf-8 -Zc:rvalueCast)
     endif()
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.14.26428.1")
       add_compile_options(-Zc:__cplusplus)
     endif()
-    #if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.0")
-    #  if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ccwrap")
-    #    message(FATAL_ERROR "thirdparty/ccwrap directory is missing. For vc12 and earlier, run thirdparty/install_ccwap.bat")
-    #  endif()
-    #  set(ADD_INC_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ccwrap/vc/" "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ccwrap/ccwrap/")
-    #  add_compile_options(-FIccwrap_header.h)
-    #endif()
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.0")
+      if(NOT EXISTS "${THIRDPARTY_DIR}/ccwrap")
+        message(FATAL_ERROR "thirdparty/ccwrap directory is missing. For vc12 and earlier, run thirdparty/install_ccwap.bat")
+      endif()
+      set(ADD_INC_DIRS "${THIRDPARTY_DIR}/ccwrap/vc/" "${THIRDPARTY_DIR}/ccwrap/ccwrap/")
+      add_compile_options(-FIccwrap_header.h)
+      add_compile_options(-D_UNICODE)
+    endif()
+    set(ADD_LIBS kernel32.lib user32.lib shell32.lib advapi32.lib)
   endif()
   if(CMAKE_C_COMPILER_ID MATCHES "Watcom" OR CMAKE_CXX_COMPILER_ID MATCHES "Watcom")
     # message(STATUS "Using Watcom C/C++ Compiler!!!")
@@ -61,4 +70,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
+  ${ADD_LIBS}
 )

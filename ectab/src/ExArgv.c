@@ -3,6 +3,7 @@
  *  @brief  argc,argvの拡張処理(ワイルドカード,レスポンスファイル).
  *  @author Masashi KITAMURA
  *  @date   2006-2010,2023
+ *  @license Boost Software Lisence Version 1.0
  *  @note
  *  -   main(int argc,char* argv[]) のargc,argvに対し、
  *      ワイルドカード指定やレスポンスファイル指定等を展開したargc,argvに変換.
@@ -33,8 +34,6 @@
  *  -   マクロ UNICODE か EXARGV_USE_WCHAR を定義で wchar_t用、なければchar用.
  *  -   UTF8 が普及したので、EXARGV_USE_MBC 定義時のみMBCの2バイト目'\'対処.
  *  -   _WIN32 が定義されていれば win用、でなければ unix系を想定.
- *
- *  - Public Domain Software
  */
  // 2009 再帰指定を**にすることで、仕様を単純化.
  // 2023 UTF-8 対処. vcpkgがWin用に必ず_WINDOWSを定義するためWinMain指定変更.

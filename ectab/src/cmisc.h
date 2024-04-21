@@ -1,53 +1,47 @@
 /**
  *  @file   cmisc.h
- *  @brief  基本的にC言語で書かれた雑多なルーチン郡.
- *
+ *  @brief  misc for c
  *  @author Masashi Kitamura (tenka@6809.net)
+ *  @license Boost Software Lisence Version 1.0
  */
 
-
-#ifndef CMISC_H
-#define CMISC_H
+#ifndef CMISC_H_INCLUDE__
+#define CMISC_H_INCLUDE__
 
 #include <stddef.h>
+#include <string.h>
 
-#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__BORLANDC__)
-#  include <mbstring.h>
-#else	    // シフトJIS専用.
-#  define _ismbblead(c)     ((unsigned char)(c) >= 0x81 && ((unsigned char)(c) <= 0x9F || ((unsigned char)(c) >= 0xE0 && (unsigned char)(c) <= 0xFC)))
-#  define _ismbbtrail(c)    ((unsigned char)(c) >= 0x40 && (unsigned char)(c) <= 0xfc && (c) != 0x7f)
-#endif
-#define ISKANJI(c)  	_ismbblead(c)
-#define ISKANJI2(c) 	_ismbbtrail(c)
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
-#ifdef __cplusplus
-#include <string>
-#endif
-
-#ifdef __cplusplus
-namespace CMISC {
-#endif
-
-//-------------------------------------------------------------------------
-// C文字列関係.
-
-/// 文字列末にある空白を削除する.
-char *strTrimSpcR(char str[], int flags);
-
-/// 文字列中の半角の大文字の小文字化,小文字の大文字化.
-char *strUpLow(char str[], unsigned flags);
-
-/// @fn strTab src文字列中のtabを空白に,空白の繋がりを新たなtabに変換して文字列dstを作成.
-#ifdef __cplusplus
-size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags=0, int dstSz=0);
+#if defined(_WIN32) || defined(_DOS)
+#define FILE_DIR_SEP		'\\'
+#define FILE_IS_DIR_SEP(c)	((c) == '/' || (c) == '\\')
 #else
-size_t strTab(char *dst, const char *src, int dstTabSz, int srcTabSz, int flags, int dstSz);
+#define FILE_DIR_SEP	'/'
+#define FILE_IS_DIR_SEP(c)	((c) == '/')
 #endif
 
-#if __cplusplus
-};  	// CMISC
-#endif
+void 		str_replace(char str[], char old_c, char new_c);
+char*		str_trimSpcR(char str[], unsigned flags);
+//char*		strUpLow(char str[], unsigned flags);
 
-//-------------------------------------------------------------------------
+char*   	fname_base(char const* p);
+char const* fname_ext( char const* p);
+char*		fname_removeDirSep(char path[]);
+char*		fname_addDirSep(char path[], size_t size);
+
+size_t 		file_size( char const* fpath);
+int 		file_exist(char const* fpath);
+size_t 		file_load( char const* fname, void* dst, size_t bytes, size_t max_bytes);
+void* 		file_loadMalloc(char const* fname, size_t* pSize, size_t max_size);
+
+int 		file_recursive_mkdir(char const* fpath, int pmode);
+
+struct mbc_enc_st;
+size_t 		strConvTab(struct mbc_enc_st const* mbc, char *dst, size_t dstSz
+				, const char *src, int dstTabSz, int srcTabSz, unsigned flags);
+
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
 
 #endif	// CMISC_H
