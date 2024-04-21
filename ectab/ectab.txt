@@ -117,6 +117,17 @@ ectab   ver. 3.00
   -pUTF8N はBOM無、-pUTF8BOM は BOM 付となる。
 
 
+■  ビルド.
+  cmake で。
+  utf8 対応の c コンパイラを使用のこと。
+  vc の場合 -utf8 オプションのある vc14.1 以降。
+  それ以前の場合ヘルプメッセージが文字化けする。
+  （それ以外は動作のはず）
+  vc14.0 未満でビルドをする場合は、言語仕様の辻褄合わせに
+    thirdparty/install_ccwrap.bat
+  を実行して ccwrap を取得のこと。
+
+
 ■  その他
 
 ライセンスは Boost software license Version 1.0
