@@ -22,15 +22,15 @@ extern "C" {
 
 // code page (win)
 typedef enum mbc_cp_t {
-	MBC_CP_NONE		=     0,
-	MBC_CP_UTF8 	= 65001,
-	MBC_CP_UTF16LE	=  1200,
-	MBC_CP_UTF16BE	=  1201,
-	MBC_CP_UTF32LE	= 12000,
-	MBC_CP_UTF32BE	= 12001,
-	MBC_CP_1BYTE 	=   437/*kari*/,
-	MBC_CP_SJIS 	=   932,
-	MBC_CP_EUCJP	= 51932/*20932*/
+    MBC_CP_NONE     =     0,
+    MBC_CP_UTF8     = 65001,
+    MBC_CP_UTF16LE  =  1200,
+    MBC_CP_UTF16BE  =  1201,
+    MBC_CP_UTF32LE  = 12000,
+    MBC_CP_UTF32BE  = 12001,
+    MBC_CP_1BYTE    =   437/*kari*/,
+    MBC_CP_SJIS     =   932,
+    MBC_CP_EUCJP    = 51932/*20932*/
 } mbc_cp_t;
 
 typedef struct mbc_enc_st {
@@ -102,17 +102,17 @@ size_t  mbc_strConvUnicode(mbc_enc_t dstMbc, char dst[], size_t dstSz, mbc_enc_t
 mbc_enc_t mbc_checkUnicodeBOM(char const* src, size_t len);
 unsigned  mbc_checkUnicodeBOMi(char const* src, size_t len);
 unsigned  mbc_getBOMbytes(char const* src, size_t len);
-int 	  mbc_cpToUnicodeIdx(mbc_cp_t cp);
+int       mbc_cpToUnicodeIdx(mbc_cp_t cp);
 static inline int mbc_cpIsUnicode(mbc_cp_t cp) { return mbc_cpToUnicodeIdx(cp) > 0; }
 
 #ifdef __cplusplus
 mbc_enc_t mbc_autoEncodeCheck(char const* src, size_t len, int brokenEndChOk = 1, mbc_enc_t const * tbl = 0, size_t tblN = 0);
 char*     mbc_strConvMalloc(mbc_enc_t dstMbc, mbc_enc_t srcMbc, char const* src, size_t srcSz, size_t* pDstSz = 0);
-int       mbc_checkUTF8(char const* src, size_t len, int lastBrokenOk = 1);	///< 0:not  1:ascii(<=7f) >=2:utf8
+int       mbc_checkUTF8(char const* src, size_t len, int lastBrokenOk = 1); ///< 0:not  1:ascii(<=7f) >=2:utf8
 #else
 mbc_enc_t mbc_autoEncodeCheck(char const* src, size_t len, int brokenEndChOk, mbc_enc_t const * tbl, size_t tblN);
 char*     mbc_strConvMalloc(mbc_enc_t dstMbc, mbc_enc_t srcMbc, char const* src, size_t srcSz, size_t* pDstSz);
-int       mbc_checkUTF8(char const* src, size_t len, int lastBrokenOk);		///< 0:not  1:ascii(<=7f) >=2:utf8
+int       mbc_checkUTF8(char const* src, size_t len, int lastBrokenOk);     ///< 0:not  1:ascii(<=7f) >=2:utf8
 #endif
 
 #ifdef _WIN32
@@ -121,10 +121,10 @@ mbc_enc_t mbc_enc_makeDBC(mbc_enc_st* mbcEnv, mbc_cp_t cp);
 
 #ifdef MBC_USE_JIS_CONV
 size_t  mbc_strConvJisType(mbc_enc_t dstEnc, char dst[], size_t dstSz
-				, mbc_enc_t srcEnc, char const* src, size_t srcSz);
+                , mbc_enc_t srcEnc, char const* src, size_t srcSz);
 #endif
 
-char*	mbc_strUpLow(mbc_enc_t mbc, char str[], unsigned flags);
+char*   mbc_strUpLow(mbc_enc_t mbc, char str[], unsigned flags);
 
 #ifdef __cplusplus
 }
@@ -138,7 +138,7 @@ char*	mbc_strUpLow(mbc_enc_t mbc, char str[], unsigned flags);
 template<class V>
 mbc_enc_t mbc_autoEncodeCheck(V const& v, bool brokenEndChOk=1, mbc_enc_t const* tbl=NULL, size_t tblNum=0)
 {
-	assert(sizeof(v[0]) == 1 || sizeof(v[0]) == 2 || sizeof(v[0]) == 4);
+    assert(sizeof(v[0]) == 1 || sizeof(v[0]) == 2 || sizeof(v[0]) == 4);
     return  mbc_autoEncodeCheck(&v[0], v.size()*sizeof(v[0]), brokenEndChOk, tbl, tblNum);
 }
 
@@ -152,7 +152,7 @@ D& mbc_convEnc(mbc_enc_t dstEnc, D& dst, mbc_enc_t srcEnc, S const& src)
     char const* s = (char const*)&src[0];
     size_t l  = mbc_strCountCapa(dstEnc, srcEnc, s, sz);
     if (l > 0) {
-		size_t dsz = (l + sizeof(v[0]) - 1) / sizeof(v[0]);
+        size_t dsz = (l + sizeof(v[0]) - 1) / sizeof(v[0]);
         dst.resize(dsz+1);
         l = mbc_strConv(dstEnc, (char*)&dst[0], l, srcEnc, s, sz);
         dsz = (l + sizeof(v[0]) - 1) / sizeof(v[0]);
@@ -162,6 +162,6 @@ D& mbc_convEnc(mbc_enc_t dstEnc, D& dst, mbc_enc_t srcEnc, S const& src)
     return dst;
 }
 
-#endif	// __cplusplus
+#endif  // __cplusplus
 
 #endif  /* MBC_H_INCLUDED__ */
