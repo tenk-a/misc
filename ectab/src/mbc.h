@@ -47,6 +47,8 @@ typedef struct mbc_enc_st {
     size_t   (*adjustSize)(char const* str, size_t size);
     int      (*cmp)(char const* lp, char const* rp);
     int      (*checkEncoding)(char const* str, size_t size, int lastBrokenOk);
+ #if defined __cplusplus
+ #endif
 } mbc_enc_st;
 
 typedef struct mbc_enc_st const* mbc_enc_t;
