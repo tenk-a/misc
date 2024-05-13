@@ -126,26 +126,26 @@
 extern "C" {
 #endif
 
-#define ExArgv_RC	int
+#define ExArgv_RC   int
 
 #if !defined EXARGV_USE_WCHAR \
-	&& (defined UNICODE || defined EXARGV_USE_WCHAR_TO_UTF8)
+    && (defined UNICODE || defined EXARGV_USE_WCHAR_TO_UTF8)
  #define EXARGV_USE_WCHAR
 #endif
 
 #if defined(EXARGV_USE_WCHAR)
- #define EXARGV_CHAR_T	wchar_t
+ #define EXARGV_CHAR_T  wchar_t
 #else
- #define EXARGV_CHAR_T	char
+ #define EXARGV_CHAR_T  char
 #endif
 
 #if defined(EXARGV_USE_WCHAR_TO_UTF8) == 0
 
-  ExArgv_RC	ExArgv_conv(int* pArgc, EXARGV_CHAR_T*** pppArgv);
-  ExArgv_RC	ExArgv_convEx(int* pArgc, EXARGV_CHAR_T*** pppArgv, unsigned wcFlags);
-  void 		ExArgv_Free(EXARGV_CHAR_T*** pppArgv);
+  ExArgv_RC ExArgv_conv(int* pArgc, EXARGV_CHAR_T*** pppArgv);
+  ExArgv_RC ExArgv_convEx(int* pArgc, EXARGV_CHAR_T*** pppArgv, unsigned wcFlags);
+  void      ExArgv_Free(EXARGV_CHAR_T*** pppArgv);
 
- #if defined EXARGV_FOR_WINMAIN	// win-gui用.
+ #if defined EXARGV_FOR_WINMAIN // win-gui用.
    ExArgv_RC ExArgv_cmdLineToArgv(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
    ExArgv_RC ExArgv_forWinMain(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
  #endif
@@ -155,20 +155,20 @@ extern "C" {
   size_t ExArgv_fileSize(EXARGV_CHAR_T const* fpath);
  #endif
 
-#else	// defined(EXARGV_USE_WCHAR_TO_UTF8)
+#else   // defined(EXARGV_USE_WCHAR_TO_UTF8)
 
-  ExArgv_RC	ExArgv_conv( int* pArgc, char*** pppArgv);
-  ExArgv_RC	ExArgv_convW(int* pArgc, wchar_t*** pppArgv);
+  ExArgv_RC ExArgv_conv( int* pArgc, char*** pppArgv);
+  ExArgv_RC ExArgv_convW(int* pArgc, wchar_t*** pppArgv);
 
-  ExArgv_RC	ExArgv_convEx( int* pArgc, char*** pppArgv, unsigned wcFlags);
-  ExArgv_RC	ExArgv_convExW(int* pArgc, wchar_t*** pppArgv, unsigned wcFlags);
+  ExArgv_RC ExArgv_convEx( int* pArgc, char*** pppArgv, unsigned wcFlags);
+  ExArgv_RC ExArgv_convExW(int* pArgc, wchar_t*** pppArgv, unsigned wcFlags);
 
-  char** 	ExArgv_convExToUtf8(int* pArgc, wchar_t** pppArgv, unsigned wcFlags);
+  char**    ExArgv_convExToUtf8(int* pArgc, wchar_t** pppArgv, unsigned wcFlags);
 
-  void 		ExArgv_Free( char*** pppArgv);
-  void 		ExArgv_FreeW(wchar_t*** pppArgv);
+  void      ExArgv_Free( char*** pppArgv);
+  void      ExArgv_FreeW(wchar_t*** pppArgv);
 
- #if defined EXARGV_FOR_WINMAIN	// win-gui用.
+ #if defined EXARGV_FOR_WINMAIN // win-gui用.
    ExArgv_RC ExArgv_cmdLineToArgv( wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
    ExArgv_RC ExArgv_cmdLineToArgvW(wchar_t const* pCmdLine, int* pArgc, wchar_t*** pppArgv);
    ExArgv_RC ExArgv_forWinMain( wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
@@ -176,8 +176,8 @@ extern "C" {
  #endif
 
  #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG
-  void*  	ExArgv_fileLoadMalloc(char const* fpath, size_t* pSize);
-  size_t 	ExArgv_fileSize(char const* fpath);
+  void*     ExArgv_fileLoadMalloc(char const* fpath, size_t* pSize);
+  size_t    ExArgv_fileSize(char const* fpath);
  #endif
 
   char**    ExArgv_wargvToUtf8(int argc, wchar_t* ppWargv[]);
@@ -185,7 +185,7 @@ extern "C" {
   wchar_t** ExArgv_u8argvToWcs(int argc, char* ppArgv[]);
   wchar_t*  ExArgv_wcsdupFromUtf8(char const* u8s);
 
-#endif	// EXARGV_USE_WCHAR_TO_UTF8
+#endif  // EXARGV_USE_WCHAR_TO_UTF8
 
 #ifdef __cplusplus
 }

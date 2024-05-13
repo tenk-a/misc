@@ -38,10 +38,11 @@
  */
 static int usage(void)
 {
-    printf("usage> ectab [-opts] file(s)    // v3.00 " __DATE__ "  writen by M.Kitamura\n"
+    printf("usage> ectab [-opts] file(s)    // v3.01 " __DATE__ "  writen by M.Kitamura\n"
            "            https://github.com/tenk-a/misc/tree/master/ectab\n"
            "  UTF8,SJIS変換やタブ変換,行末空白削除等を行う. デフォルトは標準出力.\n"
-           "  -d[DIR]   DIRに出力.\n"
+           "  -I[DIR]   DIRから入力.\n"
+           "  -O[DIR]   DIRに出力.\n"
            "  -o[FILE]  FILEに出力. -o のみは元を.bakにして入力ファイル名で出力.\n"
            "  -x[EXT]   出力ファイル名に拡張子 EXT を付加.\n"
            "  -m        行末の空白を削除.\n"
@@ -89,9 +90,10 @@ typedef struct opts_t {
     int         numbSkip;
     char       *numbSep;
 
-    const char *outname;
-    const char *extname;
-    const char *dstdir;
+    char*       outname;
+    char*       extname;
+    char*       srcdir;
+    char*       dstdir;
 } opts_t;
 
 
@@ -397,6 +399,9 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
 
 
 /** 1ファイルの変換. ファイル名の辻褄会わせ.
+ *  @param  iname   入力パス. NULL なら標準入力.
+ *  @param  oname   出力パス. NULL なら標準出力.
+ *  @param  o       オプション.
  */
 static int oneFile(const char *iname, const char *oname, opts_t *o)
 {
@@ -407,33 +412,47 @@ static int oneFile(const char *iname, const char *oname, opts_t *o)
     int  rc;
 
     nameBuf[0] = tmpname[0] = 0;
-    if (iname) {
+    if (iname) {    // 入力ファイルがあるとき.
+        // 出力ディレクトリ指定があるとき.
         if (o->dstdir && o->dstdir[0]) {
-            char const* b   = fname_base(iname);
+            char const* b = iname;
+            if (fname_startsWith(b, o->srcdir)) {   // 入力パスが、-I入力ディレクトリ下なら,
+                size_t ln = strlen(o->srcdir);
+                b += ln;                            // 入力ディレクトリ下の相対パスを取得.
+            } else if (fname_isAbsolutePath(b)) {   // 入力が絶対パスなら,
+                b  = fname_baseName(b);             // ファイル名だけ取得.
+            }
             size_t      bsz = strlen(b);
             size_t      l   = strlen(o->dstdir);
             size_t      extlen = (o->extname && o->extname[0]) ? strlen(o->extname)+1 : 0;
-            if (l + 1 + bsz + extlen >= FNAME_MAX_PATH - 1) {
+            if (l + bsz + extlen >= FNAME_MAX_PATH - 1) {
                 err_printf("[ERROR] Destination path too long. : %s/%s\n", o->dstdir, b);
                 return 1;
             }
-            strcpy(nameBuf, o->dstdir);
-            fname_addDirSep(nameBuf, FNAME_MAX_PATH);
-            strcat(nameBuf, b);
-            if (extlen) {
-                strcat(nameBuf, ".");
-                strcat(nameBuf, o->extname);
+            snprintf(nameBuf, FNAME_MAX_PATH, "%s%s%s", o->dstdir, b, extlen ? o->extname : "");
+            fname_backslashToSlash(nameBuf);        // win/dos なら \ を / に置換.
+
+            // 出力先ディレクトリが存在しなければ作成.
+            {
+                char* p = fname_baseName(nameBuf);
+                if (nameBuf < p && p[-1] == '/') {
+                    p[-1] = 0;
+                    if (!file_exist(nameBuf))
+                        file_recursive_mkdir(nameBuf, 755);
+                    p[-1] = '/';
+                }
             }
             oname = nameBuf;
         } else if (oname) {
             if (o->extname && o->extname[0]) {
-                snprintf(nameBuf, FNAME_MAX_PATH, "%s.%s", (oname[0] ? oname : iname), o->extname);
+                snprintf(nameBuf, FNAME_MAX_PATH, "%s%s", (oname[0] ? oname : iname), o->extname);
                 oname = nameBuf;
-            } else if (oname[0] == 0) {
+            } else if (oname[0] == 0) {     //
                 oname = iname;
             }
         }
     }
+
     if (oname && (oname == iname || file_exist(oname))) {
         orig_oname = oname;
         snprintf(tmpname, FNAME_MAX_PATH, "%s.~tmp", oname);
@@ -479,22 +498,21 @@ static int opts_getVal(const char *arg, char **pp, int dfltVal, int maxVal)
 
 static inline int striEqu(char const* l, char const* r)
 {
-  #if defined(_WIN32) || defined(_DOS)
-    return _stricmp(l,r) == 0;
-  #else
     return strcasecmp(l,r) == 0;
-  #endif
 }
 
-static char* opts_strDup(char const*p, char const* arg)
+static char* opts_pathDup(char const*path, char const* arg)
 {
-    if (arg && (p == NULL || *p == 0)) {
+    char* dst;
+    if (path && *path == '=')
+        ++path;
+    if (arg && (path == NULL || *path == 0)) {
         err_printf("[ERROR] Option %s : Not enough arguments.\n", arg);
         return NULL;
     }
-    if (*p == '=')
-        ++p;
-    return strdup(p);
+    dst = strdupAddCapa(path, 4);   // 4bytes余分にメモリ確保.
+    fname_backslashToSlash(dst);
+    return dst;
 }
 
 /** オプション解析.
@@ -506,29 +524,29 @@ static int opts_get(char *arg, opts_t *o)
     while (*p) {
         char* a = p;
         int   c = *p++;
-        c = toupper(c);
+        //c = toupper(c);
         switch (c) {
-        case 'M': o->trimSw = opts_getVal(arg, &p, 1, 1); break;
-        case 'R': o->crlfMd = opts_getVal(arg, &p, 0, 7); break;
-        case 'A': o->eofSw  = opts_getVal(arg, &p, 1, 1); break;
-        case 'U': o->uprSw  = opts_getVal(arg, &p, 1, 1); break;
-        case 'L': o->lwrSw  = opts_getVal(arg, &p, 1, 1); break;
-        case 'Z': o->sp1ntb = opts_getVal(arg, &p, 1, 9) ? 1 : 0; break;
-        case 'J': o->ajstab = opts_getVal(arg, &p, 1, 1); break;
-        case 'Q': o->both48 = opts_getVal(arg, &p, 1, 1); break;
-        case 'S': o->dtab   = opts_getVal(arg, &p, 4,256); break;
-        case 'T': o->stab   = opts_getVal(arg, &p, 4, 16); break;
-        case 'V': o->verbose= opts_getVal(arg, &p, 1, 1); break;
-        case 'B':
-        case 'C':
+        case 'm': o->trimSw = opts_getVal(arg, &p, 1, 1); break;
+        case 'r': o->crlfMd = opts_getVal(arg, &p, 0, 7); break;
+        case 'a': o->eofSw  = opts_getVal(arg, &p, 1, 1); break;
+        case 'u': o->uprSw  = opts_getVal(arg, &p, 1, 1); break;
+        case 'l': o->lwrSw  = opts_getVal(arg, &p, 1, 1); break;
+        case 'z': o->sp1ntb = opts_getVal(arg, &p, 1, 9) ? 1 : 0; break;
+        case 'j': o->ajstab = opts_getVal(arg, &p, 1, 1); break;
+        case 'q': o->both48 = opts_getVal(arg, &p, 1, 1); break;
+        case 's': o->dtab   = opts_getVal(arg, &p, 4,256); break;
+        case 't': o->stab   = opts_getVal(arg, &p, 4, 16); break;
+        case 'v': o->verbose= opts_getVal(arg, &p, 1, 1); break;
+        case 'b':
+        case 'c':
             o->cmode  = opts_getVal(arg, &p, 1, 2);
             if (o->cmode == 2)
                 o->cmode = 4|2|1;
             else if (o->cmode == 1)
                 o->cmode = 4|1;
             break;
-        case 'K':
-        case 'P':
+        case 'k':
+        case 'p':
             {
                 static mbc_cp_t const tbl[] = {
                     MBC_CP_1BYTE,
@@ -565,7 +583,7 @@ static int opts_get(char *arg, opts_t *o)
                 }
             }
             break;
-        case 'N':
+        case 'n':
             o->numbering = (*p == 0) ? 7 : strtoul(p,&p,0);
             if (*p == ':' || *p == ',') {
                 p++;
@@ -581,19 +599,32 @@ static int opts_get(char *arg, opts_t *o)
                 }
             }
             break;
-        case 'O':
-            o->outname= opts_strDup(p, NULL);
+        case 'o':
+            o->outname = opts_pathDup(p, NULL);
             return o->outname == NULL;
-        case 'X':
-            o->extname = opts_strDup(p, a);
-            return o->extname == NULL;
-        case 'D':
-            o->dstdir = opts_strDup(p, a);
+        case 'x':
+            o->extname = p = opts_pathDup(p, a);
+            if (p && *p != '.') {
+                memmove(p+1, p, strlen(p));
+                *p = '.';
+            }
+            return p == NULL;
+        case 'I':
+            o->srcdir  = opts_pathDup(p, a);
+            if (o->srcdir == NULL || o->srcdir[0] == 0)
+                return 1;
+            fname_addDirSep(o->srcdir, strlen(o->srcdir)+2);
+            return 0;
+        case 'O':
+        case 'd':
+            o->dstdir  = opts_pathDup(p, a);
             if (o->dstdir == NULL || o->dstdir[0] == 0)
                 return 1;
+            fname_removeDirSep(o->dstdir);
             file_recursive_mkdir(o->dstdir,755);
+            fname_addDirSep(o->dstdir, strlen(o->dstdir)+2);
             return 0;
-        case 'H':
+        case 'h':
         case '?':
             return usage();
         default:
@@ -607,10 +638,12 @@ static int opts_get(char *arg, opts_t *o)
 
 static int Main(int argc, char *argv[])
 {
-    int  i;
-    char *a;
-    static opts_t opt;
-    opts_t *o = &opt;
+    enum { Ok = 0, Er = 1 };
+    static  opts_t opt;
+    opts_t* o = &opt;
+    int     optCk = 1;
+    int     n;
+    int     i;
 
     memset(o, 0, sizeof *o);
     o->srcCP = (mbc_cp_t)0;
@@ -619,21 +652,58 @@ static int Main(int argc, char *argv[])
     if (argc < 2)
         return usage();
 
-    for (i = 1; i < argc; i++) {
-        a = argv[i];
-        if (*a == '-') {    // オプション解析.
+    if (ExArgv_convEx(&argc, &argv, 0) == 0)
+        return Er;
+
+    // オプション解析 & オプション引数は開放して詰める.
+    for (n = i = 1; i < argc; ++i) {
+        char*  a = argv[i];
+        if (optCk && *a == '-') {   // オプション解析.
             if (a[1] == '\0') {     // - だけなら標準入力.
-                if (oneFile(NULL, o->outname, o) != 0)
-                    return 1;
+            } else if (a[1] == '-' && a[2] == '\0') {
+                optCk = 0;
             } else if (opts_get(a, o) != 0) {
-                return 1;
+                return Er;
             }
-        } else if (*a != '-') {    // ファイル実行.
-            if (oneFile(a, o->outname, o) != 0)
-                return 1;
+            free(a);
+            argv[i] = NULL;
+        } else {
+            argv[n++] = a;
         }
     }
-    return 0;
+    argv[n] = NULL;
+    argc = n;
+
+    if (o->srcdir) {    // 入力ディレクトリ指定があれば相対パスに付加.
+        for (i = 1; i < argc; ++i) {
+            char*  a = argv[i];
+            if (!fname_isAbsolutePath(a)) {
+                char* dup = fname_appendDup(o->srcdir, a);
+                if (!dup)
+                    return Er;
+                free(argv[i]);
+                argv[i] = dup;
+            }
+        }
+    }
+
+    // ワイルドカード展開.
+    if (ExArgv_convEx(&argc, &argv, 3) == 0)
+        return Er;
+
+    // ファイルごとの処理.
+    for (i = 1; i < argc; ++i) {
+        char*  a = argv[i];
+        if (oneFile(a, o->outname, o) != 0)
+            return Er;
+
+        if (o->outname && o->outname[0])    // 1ファイル出力指定だったら抜ける.
+            break;
+    }
+
+    ExArgv_Free(&argv);
+
+    return Ok;
 }
 
 
@@ -643,9 +713,6 @@ int main(int argc, char* argv[])
  #if defined(_WIN32)
     int savCP = GetConsoleOutputCP();
     setConsoleCodePage(65001);
- #endif
- #ifndef NO_USE_EXARGV
-    ExArgv_conv(&argc, &argv);
  #endif
     rc = Main(argc, argv);
  #if defined(_WIN32)

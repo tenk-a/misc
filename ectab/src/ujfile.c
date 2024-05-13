@@ -26,18 +26,18 @@ static size_t fileBytes(char const* fpath)
 {
  #if defined(_WIN32)
     if (fpath) {
-		WIN32_FIND_DATAA d;
-		HANDLE h = FindFirstFileA(fpath, &d);
+        WIN32_FIND_DATAA d;
+        HANDLE h = FindFirstFileA(fpath, &d);
         if (h != INVALID_HANDLE_VALUE) {
             FindClose(h);
-			#if defined(_WIN64)
-	            return (((size_t)d.nFileSizeHigh<<32) | (size_t)d.nFileSizeLow);
-			#else
-	            return (d.nFileSizeHigh) ? (size_t)-1 : d.nFileSizeLow;
-			#endif
+            #if defined(_WIN64)
+                return (((size_t)d.nFileSizeHigh<<32) | (size_t)d.nFileSizeLow);
+            #else
+                return (d.nFileSizeHigh) ? (size_t)-1 : d.nFileSizeLow;
+            #endif
         }
     }
-	return (size_t)(-1);
+    return (size_t)(-1);
  #else
     struct stat st;
     int   rc = stat(fpath, &st);
@@ -151,9 +151,9 @@ ujfile_t* ujfile_fopen(char const* fname, char const* mode)
  */
 ujfile_t* ujfile_open(char const* fname, ujfile_opts_t const* opts)
 {
-	size_t size = 0;
-	char*  buf  = fileLoadMalloc(fname, &size);
-	if (buf) {
+    size_t size = 0;
+    char*  buf  = fileLoadMalloc(fname, &size);
+    if (buf) {
         ujfile_t* uj = (ujfile_t*)calloc(1, sizeof(ujfile_t));
         if (uj) {
             uj->malloc_buf = buf;
@@ -162,8 +162,8 @@ ujfile_t* ujfile_open(char const* fname, ujfile_opts_t const* opts)
                 return uj;
             ujfile_fclose(uj);
         } else {
-			free(buf);
-		}
+            free(buf);
+        }
     }
     return NULL;
 }

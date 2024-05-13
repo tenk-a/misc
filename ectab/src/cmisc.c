@@ -12,25 +12,55 @@
 #include "cmisc.h"
 #include "mbc.h"
 
-#if defined(_WIN32)
-#include <io.h>
-#include <direct.h>
-#include <windows.h>
+#if defined(_WIN32) || defined(_DOS)
+ #include <io.h>
+ #include <direct.h>
+ #if defined(_WIN32)
+  #include <windows.h>
+  #if defined(_MBCS)
+   #define IS_LEADBYTE(c) IsDBCSLeadByte(c)
+  #endif
+ #else
+  #define IS_LEADBYTE(c) ( ((unsigned char)(c) >= 0x81U && (unsigned char)(c) <= 0x9FU) \
+                         ||((unsigned char)(c) >= 0xE0U && (unsigned char)(c) <= 0xFCU) )
+ #endif
 #else
-#include <unistd.h>
+ #include <unistd.h>
 #endif
+
+
+void str_replace(char str[], char old_c, char new_c)
+{
+    while (*str) {
+        if (*str == old_c)
+            *str = new_c;
+        ++str;
+    }
+}
+
+
+char* strdupAddCapa(char const* str, size_t add_n)
+{
+    size_t l = strlen(str);
+    char*  m = (char*)calloc(1, l + 1 + add_n);
+    if (m) {
+        memcpy(m, str, l + 1);
+    }
+    return m;
+}
+
 
 //  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
 
-char*   fname_base(char const* p)
+char*   fname_baseName(char const* p)
 {
     char const *adr = p;
     while (*p) {
-     #if defined(_WIN32) || defined(_DOS)
+     #if defined(_WIN32) || defined(MSDOS)
         unsigned c = *(unsigned char const*)p;
         ++p;
-      #if defined(_MBCS) && defined _WIN32
-        if (IsDBCSLeadByte(c) && *p) {
+      #if defined(IS_LEADBYTE)
+        if (IS_LEADBYTE(c) && *p) {
             ++p;
             continue;
         }
@@ -48,17 +78,132 @@ char*   fname_base(char const* p)
 
 char const* fname_ext(char const* fpath)
 {
-    char const* p = fname_base(fpath);
+    char const* p = fname_baseName(fpath);
     char const* e = strrchr(p, '.');
     return e ? e : "";
 }
 
-void str_replace(char str[], char old_c, char new_c)
+
+int fname_startsWith(char const* a, char const* prefix)
 {
-    while (*str) {
-        if (*str == old_c)
-            *str = new_c;
-        ++str;
+ #if defined(_WIN32) || defined(MSDOS)
+    return strncasecmp(a, prefix, strlen(prefix)) == 0;
+ #else
+    return strncmp(a, prefix, strlen(prefix)) == 0;
+ #endif
+}
+
+
+/// 文字列の最後に \ か / があれば削除.
+char *fname_delLastDirSep(char *dir)
+{
+    if (dir) {
+        char*  s   = fname_baseName(dir);
+        size_t l   = strlen(s);
+        if (l > 1) {
+            char* p = s + l;
+            if (p[-1] == '/') {
+                p[-1] = 0;
+            }
+         #if defined(_WIN32) || defined(MSDOS)
+            else if (p[-1] == '\\') {
+              #if defined(IS_LEADBYTE)
+                int f = 0;
+                while (*s) {
+                    f = 0;
+                    if (IS_LEADBYTE(*s) && s[1]) {
+                        s++;
+                        f = 1;
+                    }
+                    s++;
+                }
+                if (f == 0)
+                    p[-1] = 0;
+              #else
+                p[-1] = 0;
+              #endif
+            }
+         #endif
+        }
+    }
+    return dir;
+}
+
+
+/** win/dos なら filePath中の \ を / に置換.
+ */
+char *fname_backslashToSlash(char filePath[])
+{
+  #if defined(_WIN32) || defined(_DOS)
+    char *p = filePath;
+    while (*p != '\0') {
+      #if defined(IS_LEADBYTE)
+        if (IS_LEADBYTE(*p) && p[1]) {
+            p += 2;
+        } else
+      #endif
+        if (*p == '\\') {
+            *p = '/';
+            ++p;
+        } else {
+            ++p;
+        }
+    }
+ #endif
+    return filePath;
+}
+
+
+int fname_isAbsolutePath(char const* s)
+{
+ #if defined(_WIN32) || defined(MSDOS)
+    if (fname_isDirSep(*s))
+        return 1;
+    if (*s && s[1] == ':' && fname_isDirSep(s[2])
+        && (*s >= 'A' && *s <= 'Z' || *s >= 'a' && *s <= 'z')
+    ) {
+        return 1;
+    }
+    return 0;
+  #else
+    return fname_isDirSep(*s);
+  #endif
+}
+
+char*   fname_removeDirSep(char path[]) {
+    char* p = fname_baseName(path);
+    if (p > path && *p == 0 && FILE_IS_DIR_SEP(p[-1]))
+        *--p = 0;
+    return path;
+}
+
+char*   fname_addDirSep(char* path, size_t capa) {
+    char* p = path;
+    fname_removeDirSep(p);
+    p += strlen(p);
+    if (p < path + capa - 1) {
+        *p++ = FILE_DIR_SEP;
+        *p = 0;
+    } else {
+        path = NULL;
+    }
+    return path;
+}
+
+char*   fname_appendDup(char const* dir, char const* fname)
+{
+    if (dir && *dir && !fname_isAbsolutePath(fname)) {
+        size_t dirlen = strlen(dir);
+        size_t fnmlen = strlen(fname);
+        size_t bufcap = dirlen + fnmlen + 4;
+        char*  buf    = strdupAddCapa(dir, fnmlen + 4);
+        if (buf) {
+            fname_addDirSep(buf, bufcap);
+            strcat(buf, fname);
+        }
+        return buf;
+    } else {
+        return strdupAddCapa(fname, 4);
     }
 }
 
@@ -117,6 +262,7 @@ size_t file_load(char const* fname, void* dst, size_t bytes, size_t max_bytes)
     return rbytes;
 }
 
+
 void* file_loadMalloc(char const* fname, size_t* pReadSize, size_t max_size)
 {
     char*  m;
@@ -150,7 +296,7 @@ static int recursive_mkdir_sub2(char* dir, int pmode)
     char const* e  = dir + strlen(dir);
     char*   s;
     do {
-        s = fname_base(dir);
+        s = fname_baseName(dir);
         if (s <= dir)
             return -1;
         --s;
@@ -191,30 +337,11 @@ int file_recursive_mkdir(char const* dir, int pmode)
     return rc;
 }
 
-char*   fname_removeDirSep(char path[]) {
-    char* p = fname_base(path);
-    if (p > path && *p == 0 && FILE_IS_DIR_SEP(p[-1]))
-        *--p = 0;
-    return path;
-}
-
-char*   fname_addDirSep(char* path, size_t capa) {
-    char* p = path;
-    fname_removeDirSep(p);
-    p += strlen(p);
-    if (p < path + capa - 1) {
-        *p++ = FILE_DIR_SEP;
-        *p = 0;
-    } else {
-        path = NULL;
-    }
-    return path;
-}
 
 //  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
 
 /** 文字列末にある空白を削除する.
- *  @param  str 文字列.書き換えられる.
+ *  @param  buf 文字列.書き換えられる.
  *  @param  flags bit0=1:最後の'￥ｎ''￥ｒ'は残す                   <br>
  *                bit1=1:C/C++ソース対策で ￥ の直後の' 'は１つ残す.
  */

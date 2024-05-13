@@ -99,7 +99,7 @@
 #endif
 
 #ifndef EXARGV_CONFIG_EXT
-//#define EXARGV_CONFIG_EXT	".ini"              ///< コンフィグファイル入力有の時の拡張子. 拡張子は4文字以内のこと.
+//#define EXARGV_CONFIG_EXT ".ini"              ///< コンフィグファイル入力有の時の拡張子. 拡張子は4文字以内のこと.
 #endif
 
 #if 0 //ndef EXARGV_USE_FULLPATH_ARGV0
@@ -168,10 +168,10 @@
 
 
 #if defined(EXARGV_USE_WCHAR)
-#define MAC_TO_STR(x)	MAC_TO_STR_2(x)
-#define MAC_TO_STR_2(x)	L##x
+#define MAC_TO_STR(x)   MAC_TO_STR_2(x)
+#define MAC_TO_STR_2(x) L##x
 #else
-#define MAC_TO_STR(x)	x
+#define MAC_TO_STR(x)   x
 #endif
 
 
@@ -190,7 +190,7 @@ typedef wchar_t         uchar_t;
 #define GET_ENV(s)      _wgetenv(s)
 //#define STDERR        stderr
 //#define FPRINTF       fwprintf
-#define ERR_PUTS(s)		fprintf(stderr, "%s", s)
+#define ERR_PUTS(s)     fprintf(stderr, "%s", s)
 #else
 #define T(x)            x
 typedef char            char_t;
@@ -201,7 +201,7 @@ typedef unsigned char   uchar_t;
 #define GET_ENV(s)      getenv(s)
 //#define STDERR        stderr
 //#define FPRINTF       fprintf
-#define ERR_PUTS(s)		fprintf(stderr, "%s", s)
+#define ERR_PUTS(s)     fprintf(stderr, "%s", s)
 #endif
 
 
@@ -225,7 +225,7 @@ enum { EXARGV_VECTOR_CAPA_BASE  = 4096 };
 //#endif
 
 #if EXARGV_USE_WC
-static BOOL				s_ExArgv_wildMode; ///< ワイルドカード文字列の有無.
+static BOOL             s_ExArgv_wildMode; ///< ワイルドカード文字列の有無.
 #endif
 
 
@@ -238,14 +238,14 @@ typedef struct ExArgv_Vector {
 } ExArgv_Vector;
 
 static ExArgv_Vector *ExArgv_Vector_create(unsigned size);
-static char_t** 	ExArgv_Vector_release(ExArgv_Vector* pVec);
+static char_t**     ExArgv_Vector_release(ExArgv_Vector* pVec);
 static BOOL         ExArgv_Vector_push(ExArgv_Vector* pVec, char_t const* pStr);
 static char_t**     ExArgv_VectorToArgv(ExArgv_Vector** pVec, int* pArgc, char_t*** pppArgv);
 static void*        ExArgv_alloc(unsigned size);
 static char_t*      ExArgv_strdup(char_t const* s);
 static void         ExArgv_free(void* s);
 
-#define EXARGV_ALLOC(T,size)	((T*)ExArgv_alloc((size) * sizeof(T)))
+#define EXARGV_ALLOC(T,size)    ((T*)ExArgv_alloc((size) * sizeof(T)))
 
 #if EXARGV_USE_WC
 static int          ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* pPathName, int recFlag);
@@ -284,7 +284,7 @@ static char_t*      ExArgv_fname_baseName(char_t const* adr);
 static char_t*      ExArgv_fname_scanArgStr(char_t const* str, char_t arg[], int argSz);
 #endif
 #if EXARGV_USE_WC
-static unsigned		ExArgv_fname_isWildCard(char_t const* s);
+static unsigned     ExArgv_fname_isWildCard(char_t const* s);
 #endif
 
 /**
@@ -301,9 +301,13 @@ static inline int ExArgv_isOpt(int c)
 
 // ===========================================================================
 
-/** argc,argv をレスポンスファイルやワイルドカード展開して、argc, argvを更新して返す.
+/** argc,argv からレスポンスファイルやワイルドカード展開して,
+ *  argc, argvを更新して返す. 
+ *  argvや各文字列はmallocしたメモリ. また argv[argc] はNULLになる.
  *  @param  pArgc       argcのアドレス.(argvの数)
  *  @param  pppArgv     argvのアドレス.
+ *  @param  wcFlags     bit0: ワイルドカード展開の有無
+ *                      bit1: 入力が ExArgv_conv した argv としてメモリ解放.
  */
 #if defined(EXARGV_USE_WCHAR)
 ExArgv_RC ExArgv_convExW(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
@@ -327,7 +331,7 @@ ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
         return 0;
 
   #if defined EXARGV_USE_FULLPATH_ARGV0 && defined _WIN32       // 古いソース用に、exeのフルパスを設定.
-   #if 0 //defined _MSC_VER     // vcならすでにあるのでそれを流用.
+   #if defined _MSC_VER     // vcならすでにあるのでそれを流用.
     ppArgv[0] = _pgmptr;
    #elif 1 //defined __GNUC__   // わからないのでモジュール名取得.
     {
@@ -341,10 +345,10 @@ ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
     if (argc < 1)
         return 0;
 
-  #if !EXARGV_USE_CONFIG && !defined(EXARGV_ENVNAME)	\
-  		&& !defined(EXARGV_TOSLASH) && !defined(EXARGV_TOBACKSLASH)
+  #if !EXARGV_USE_CONFIG && !defined(EXARGV_ENVNAME)    \
+        && !defined(EXARGV_TOSLASH) && !defined(EXARGV_TOBACKSLASH)
    #if 0 //!EXARGV_USE_WC && !EXARGV_USE_RESFILE
-    return 1;	//(void**)*ppArgv;     // ほぼ変換無し...
+    return 1;   //(void**)*ppArgv;     // ほぼ変換無し...
    #elif 0 //defined EXARGV_USE_CHK_CHR
     if (ExArgv_checkWcResfile(argc, ppArgv) == 0)   // 現状のargc,argvを弄る必要があるか?
         return 1;
@@ -359,14 +363,14 @@ ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
     // 実行ファイル名の取得.
     if (argc > 0) {
         if (ExArgv_Vector_push( pVec, ppArgv[0] ) == 0)      // Vecに登録.
-        	return 0;
-	}
+            return 0;
+    }
 
     // 環境変数の取得.
   #ifdef EXARGV_ENVNAME
     assert(STR_LEN(EXARGV_ENVNAME) > 0);
     if (ExArgv_getAppEnv(EXARGV_ENVNAME, pVec) == 0)
-    	return 0;
+        return 0;
   #endif
 
     // コンフィグファイルの読込.
@@ -386,25 +390,25 @@ ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
         char_t const* p = ppArgv[i];
       #if EXARGV_USE_RESFILE
         if (i > 0 && *p == T('@')) {
-            if (ExArgv_getResFile(p+1, pVec, 0) == 0)	// レスポンスファイル読込.
-            	return 0;
+            if (ExArgv_getResFile(p+1, pVec, 0) == 0)   // レスポンスファイル読込.
+                return 0;
         } else
       #endif
         {
           #if EXARGV_USE_WC
             s_ExArgv_wildMode |= ExArgv_fname_isWildCard(p);
           #endif
-           	if (ExArgv_Vector_push( pVec, p ) == 0)	// Vecに登録.
-           		return 0;
+            if (ExArgv_Vector_push( pVec, p ) == 0) // Vecに登録.
+                return 0;
         }
     }
 
   #if EXARGV_USE_WC
     if ((wcFlags & 1) && s_ExArgv_wildMode) {
-        if (ExArgv_wildCard(pVec) == 0) {			// ワイルドカードやディレクトリ再帰してパスを取得.
-			return 0;
-		}
-	}
+        if (ExArgv_wildCard(pVec) == 0) {           // ワイルドカードやディレクトリ再帰してパスを取得.
+            return 0;
+        }
+    }
   #endif
 
   #if (defined EXARGV_TOSLASH) || (defined EXARGV_TOBACKSLASH)
@@ -412,7 +416,12 @@ ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
   #endif
 
     // 作業リストを argc,argv に変換し、作業リスト自体は開放.
-    return ExArgv_VectorToArgv( &pVec, pArgc, pppArgv ) != 0;
+    {
+        int rc = ExArgv_VectorToArgv( &pVec, pArgc, pppArgv ) != 0;
+        if (wcFlags & 2)
+            ExArgv_Free(&ppArgv);
+        return rc;
+    }
 }
 
 
@@ -422,65 +431,65 @@ ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
 
 ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
 {
-	return ExArgv_convExW(pArgc, pppArgv, wcFlags);
+    return ExArgv_convExW(pArgc, pppArgv, wcFlags);
 }
 
 #else
 
 ExArgv_RC ExArgv_convEx(int* pArgc, char*** pppArgv, unsigned wcFlags)
 {
-	wchar_t** ppWargv = ExArgv_u8argvToWcs(*pArgc, *pppArgv);
-	ExArgv_RC rc      = ExArgv_convExW(pArgc, &ppWargv, wcFlags);
-	if (rc) {
-		*pppArgv 	  = ExArgv_wargvToUtf8(*pArgc, ppWargv);
-		ExArgv_FreeW(&ppWargv);
-	} else {
+    wchar_t** ppWargv = ExArgv_u8argvToWcs(*pArgc, *pppArgv);
+    ExArgv_RC rc      = ExArgv_convExW(pArgc, &ppWargv, wcFlags);
+    if (rc) {
+        *pppArgv      = ExArgv_wargvToUtf8(*pArgc, ppWargv);
+        ExArgv_FreeW(&ppWargv);
+    } else {
         *pppArgv = NULL;
     }
-	return *pppArgv != 0;
+    return *pppArgv != 0;
 }
 
 char** ExArgv_convExToUtf8(int* pArgc, wchar_t** ppWargv, unsigned wcFlags)
 {
-	char**	  ppArgv = NULL;
-	ExArgv_RC rc     = ExArgv_convExW(pArgc, &ppWargv, wcFlags);
-	if (rc) {
-		ppArgv		 = ExArgv_wargvToUtf8(*pArgc, ppWargv);
-		ExArgv_FreeW(&ppWargv);
+    char**    ppArgv = NULL;
+    ExArgv_RC rc     = ExArgv_convExW(pArgc, &ppWargv, wcFlags);
+    if (rc) {
+        ppArgv       = ExArgv_wargvToUtf8(*pArgc, ppWargv);
+        ExArgv_FreeW(&ppWargv);
     }
-	return ppArgv;
+    return ppArgv;
 }
 
 #endif
-#endif	// EXARGV_USE_WCHAR
+#endif  // EXARGV_USE_WCHAR
 
 
 
 #if defined(EXARGV_USE_WCHAR) == 0
 ExArgv_RC ExArgv_conv(int* pArgc, char_t*** pppArgv)
 {
-	return ExArgv_convEx(pArgc, pppArgv, 1);
+    return ExArgv_convEx(pArgc, pppArgv, 1);
 }
-#else	// EXARGV_USE_WCHAR
+#else   // EXARGV_USE_WCHAR
 
 #if defined(EXARGV_USE_WCHAR_TO_UTF8) == 0
 ExArgv_RC ExArgv_conv(int* pArgc, char_t*** pppArgv)
 {
-	return ExArgv_convEx(pArgc, pppArgv, 1);
+    return ExArgv_convEx(pArgc, pppArgv, 1);
 }
-#else	// EXARGV_USE_WCHAR_TO_UTF8
+#else   // EXARGV_USE_WCHAR_TO_UTF8
 ExArgv_RC ExArgv_conv(int* pArgc, char*** pppArgv)
 {
-	return ExArgv_convEx(pArgc, pppArgv, 1);
+    return ExArgv_convEx(pArgc, pppArgv, 1);
 }
-#endif	// EXARGV_USE_WCHAR_TO_UTF8
+#endif  // EXARGV_USE_WCHAR_TO_UTF8
 
 ExArgv_RC ExArgv_convW(int* pArgc, char_t*** pppArgv)
 {
-	return ExArgv_convExW(pArgc, pppArgv, 1);
+    return ExArgv_convExW(pArgc, pppArgv, 1);
 }
 
-#endif	// EXARGV_USE_WCHAR
+#endif  // EXARGV_USE_WCHAR
 
 
 // ===========================================================================
@@ -501,33 +510,33 @@ ExArgv_RC ExArgv_cmdLineToArgv( char_t const* pCmdLine, int* pArgc, char_t*** pp
     if (pArgc == 0 || pppArgv == 0)
         return 0;
 
-	arg = EXARGV_ALLOC(char_t, FILEPATH_SZ + 4);
-	if (arg == NULL)
-		return 0;
+    arg = EXARGV_ALLOC(char_t, FILEPATH_SZ + 4);
+    if (arg == NULL)
+        return 0;
 
     if (GetModuleFileName(NULL, arg, FILEPATH_SZ) == 0)
-    	return 0;
+        return 0;
 
     pVec = ExArgv_Vector_create(1);                 // 作業用のリストを用意.
     if (pVec == 0) {
-		ExArgv_free(arg);
+        ExArgv_free(arg);
         return 0;
-	}
+    }
 
     if (ExArgv_Vector_push(pVec, arg) == 0) {
-		ExArgv_free(arg);
-		return 0;
-	}
+        ExArgv_free(arg);
+        return 0;
+    }
 
     // 1行で渡されるコマンドラインを分割.
     s = pCmdLine;
     while ( (s = ExArgv_fname_scanArgStr(s, arg, FILEPATH_SZ)) != NULL ) {
         if (ExArgv_Vector_push( pVec, arg ) == 0) {
-			ExArgv_free(arg);
-        	return 0;
+            ExArgv_free(arg);
+            return 0;
         }
     }
-	ExArgv_free(arg);
+    ExArgv_free(arg);
 
     return ExArgv_VectorToArgv( &pVec, pArgc, pppArgv );   // 作業リストを argc,argv に変換し、作業リスト自体は開放.
 }
@@ -545,10 +554,10 @@ ExArgv_RC ExArgv_cmdLineToArgv(char_t const* pCmdLine, int* pArgc, char_t*** ppp
 
 ExArgv_RC ExArgv_cmdLineToArgv(const wchar_t* pCmdLine, int* pArgc, char*** pppArgv)
 {
-	char_t**		ppWargv = NULL;
+    char_t**        ppWargv = NULL;
     if (ExArgv_cmdLineToArgvW( pCmdLine, pArgc, &ppWargv ) != NULL)
-		*ppArgv = ExArgv_wargvToUtf8(*pArgc, ppWargv);
-	return *ppArgv != 0;
+        *ppArgv = ExArgv_wargvToUtf8(*pArgc, ppWargv);
+    return *ppArgv != 0;
 }
 
 #endif
@@ -561,17 +570,17 @@ ExArgv_RC ExArgv_cmdLineToArgv(const wchar_t* pCmdLine, int* pArgc, char*** pppA
 ExArgv_RC ExArgv_forWinMain(char_t const* pCmdLine, int* pArgc, char_t*** pppArgv)
 {
     if (ExArgv_VectorToArgv( &pVec, pArgc, pppArgv ))
-		return ExArgv_conv(pArgc, pppArgv);
-	return 0;
+        return ExArgv_conv(pArgc, pppArgv);
+    return 0;
 }
 
-#else	// EXARGV_USE_WCHAR
+#else   // EXARGV_USE_WCHAR
 
 ExArgv_RC ExArgv_forWinMainW(char_t const* pCmdLine, int* pArgc, char_t*** pppArgv)
 {
     if (ExArgv_VectorToArgvW( &pVec, pArgc, pppArgv ))
-		return ExArgv_convW(pArgc, pppArgv);
-	return 0;
+        return ExArgv_convW(pArgc, pppArgv);
+    return 0;
 }
 
 #if !defined(EXARGV_USE_WCHAR_TO_UTF8)
@@ -581,28 +590,28 @@ ExArgv_RC ExArgv_forWinMain(char_t const* pCmdLine, int* pArgc, char_t*** pppArg
     return ExArgv_forWinMainW( pCmdLine, pArgc, &ppWargv );
 }
 
-#else	// EXARGV_USE_WCHAR_TO_UTF8
+#else   // EXARGV_USE_WCHAR_TO_UTF8
 
 ExArgv_RC ExArgv_forWinMain(const wchar_t* pCmdLine, int* pArgc, char*** pppArgv)
 {
-	char_t**	ppWargv = NULL;
+    char_t**    ppWargv = NULL;
     if (ExArgv_forWinMainW( pCmdLine, pArgc, &ppWargv ) != NULL) {
-		*pppArgv = ExArgv_wargvToUtf8(*pArgc, ppWargv);
-		ExArgv_FreeW(ppWargv);
-	}
-	return *pppArgv != NULL;
+        *pppArgv = ExArgv_wargvToUtf8(*pArgc, ppWargv);
+        ExArgv_FreeW(ppWargv);
+    }
+    return *pppArgv != NULL;
 }
 
-#endif	// EXARGV_USE_WCHAR_TO_UTF8
-#endif	// EXARGV_USE_WCHAR
+#endif  // EXARGV_USE_WCHAR_TO_UTF8
+#endif  // EXARGV_USE_WCHAR
 
-#endif	// EXARGV_FOR_WINMAIN
+#endif  // EXARGV_FOR_WINMAIN
 
 
 // ===========================================================================
 
-#if defined(EXARGV_USE_WCHAR_TO_UTF8)	\
-	|| defined(EXARGV_USE_WCHAR) && (EXARGV_USE_RESFILE || EXARGV_USE_CONFIG)
+#if defined(EXARGV_USE_WCHAR_TO_UTF8)   \
+    || defined(EXARGV_USE_WCHAR) && (EXARGV_USE_RESFILE || EXARGV_USE_CONFIG)
 
 #define U8F_WCS_FROM_MBS(d,dl,s,sl) MultiByteToWideChar(65001,0,(s),(int)(sl),(d),(int)(dl))
 #define U8F_MBS_FROM_WCS(d,dl,s,sl) WideCharToMultiByte(65001,0,(s),(int)(sl),(d),(int)(dl),0,0)
@@ -613,16 +622,16 @@ ExArgv_RC ExArgv_forWinMain(const wchar_t* pCmdLine, int* pArgc, char*** pppArgv
 char** ExArgv_wargvToUtf8(int argc, wchar_t* ppWargv[])
 {
     char**  av;
-	int     i;
+    int     i;
     assert( ppWargv != 0 );
 
-	if (argc == 0) {
-		while (ppWargv[argc])
-			++argc;
-	}
-	av  = EXARGV_ALLOC(char*, argc + 2);
-	if (av == NULL)
-		return NULL;
+    if (argc == 0) {
+        while (ppWargv[argc])
+            ++argc;
+    }
+    av  = EXARGV_ALLOC(char*, argc + 2);
+    if (av == NULL)
+        return NULL;
     for (i = 0; i < argc; ++i)
         av[i] = ExArgv_u8strdupFromWcs( ppWargv[i] );
     av[argc]   = NULL;
@@ -639,7 +648,7 @@ char*  ExArgv_u8strdupFromWcs(wchar_t const* wcs) {
         wcs = L"";
     wlen = wcslen(wcs);
     len  = U8F_MBS_FROM_WCS(NULL,0, wcs, wlen);
-	u8s  = EXARGV_ALLOC(char, len + 2);
+    u8s  = EXARGV_ALLOC(char, len + 2);
     if (u8s)
         U8F_MBS_FROM_WCS(u8s, len + 1, wcs, wlen + 1);
     return u8s;
@@ -651,16 +660,16 @@ char*  ExArgv_u8strdupFromWcs(wchar_t const* wcs) {
 wchar_t** ExArgv_u8argvToWcs(int argc, char* ppArgv[])
 {
     wchar_t** av;
-	int       i;
+    int       i;
     assert( ppArgv != 0 );
 
-	if (argc == 0) {
-		while (ppArgv[argc])
-			++argc;
-	}
+    if (argc == 0) {
+        while (ppArgv[argc])
+            ++argc;
+    }
     av = EXARGV_ALLOC(wchar_t*, argc + 2);
-	if (av == NULL)
-		return NULL;
+    if (av == NULL)
+        return NULL;
     for (i = 0; i < argc; ++i)
         av[i] = ExArgv_wcsdupFromUtf8( ppArgv[i] );
     av[argc]   = NULL;
@@ -684,7 +693,7 @@ wchar_t*  ExArgv_wcsdupFromUtf8(char const* u8s) {
 }
 
 
-#endif	// EXARGV_USE_WCHAR_TO_UTF8
+#endif  // EXARGV_USE_WCHAR_TO_UTF8
 
 
 
@@ -827,8 +836,8 @@ static unsigned ExArgv_checkWcResfile(int argc, char_t** argv)
                         rc |= 2;
                 }
             } else if (*p == '-' && p[1] == '-' && p[2] == 0) {
-				optCk = 0;
-			}
+                optCk = 0;
+            }
           #endif
         }
     }
@@ -837,33 +846,33 @@ static unsigned ExArgv_checkWcResfile(int argc, char_t** argv)
 #endif
 
 
-// -	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// -    -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
 
 #ifdef EXARGV_ENVNAME
 /** 環境変数があれば、登録.
  */
 static BOOL ExArgv_getAppEnv(char_t const* envName, ExArgv_Vector* pVec)
 {
-	BOOL          rc = 1;
+    BOOL          rc = 1;
     char_t const* env;
     if (envName == 0 || envName[0] == 0)
         return 1;
     env = GET_ENV(envName);
     if (env && env[0]) {
-		char_t*	arg = EXARGV_ALLOC(char_t, FILEPATH_SZ + 4);
-		if (arg == NULL)
-			return 0;
+        char_t* arg = EXARGV_ALLOC(char_t, FILEPATH_SZ + 4);
+        if (arg == NULL)
+            return 0;
         while ( (env = ExArgv_fname_scanArgStr(env, arg, FILEPATH_SZ)) != NULL ) {
             char_t const* p = arg;
           #if EXARGV_USE_WC
             s_ExArgv_wildMode |= ExArgv_fname_isWildCard(p);
           #endif
             if (ExArgv_Vector_push( pVec, p ) == 0) {
-				rc = 0;
-				break;
-			}
+                rc = 0;
+                break;
+            }
         }
-		ExArgv_free(arg);
+        ExArgv_free(arg);
     }
     return rc;
 }
@@ -906,115 +915,115 @@ static void*  ExArgv_fileLoadMallocAW(char_t const* fpath, size_t* pSize);
  */
 static BOOL ExArgv_getResFile(char_t const* fpath, ExArgv_Vector* pVec, BOOL notFoundOk)
 {
-	unsigned char*	s;
-	unsigned char*	src;
-	unsigned char*	src_e;
-	unsigned char*  dst;
-	unsigned char*  dst_e;
-    size_t			bytes = 0;
-    unsigned		lno = 1;
-	BOOL			rc = 1;
+    unsigned char*  s;
+    unsigned char*  src;
+    unsigned char*  src_e;
+    unsigned char*  dst;
+    unsigned char*  dst_e;
+    size_t          bytes = 0;
+    unsigned        lno = 1;
+    BOOL            rc = 1;
 
-	src = (unsigned char*)ExArgv_fileLoadMallocAW(fpath, &bytes);
-	if (src == NULL) {
+    src = (unsigned char*)ExArgv_fileLoadMallocAW(fpath, &bytes);
+    if (src == NULL) {
         if (notFoundOk) {
             return 1;
         } else {
-	     #if defined(EXARGV_USE_WCHAR)
-		    char* fnm = ExArgv_u8strdupFromWcs(fpath);
-		    ERR_PUTS( fnm );
-		    ExArgv_free(fnm);
-	     #else
-		    ERR_PUTS( fpath );
+         #if defined(EXARGV_USE_WCHAR)
+            char* fnm = ExArgv_u8strdupFromWcs(fpath);
+            ERR_PUTS( fnm );
+            ExArgv_free(fnm);
+         #else
+            ERR_PUTS( fpath );
          #endif
             ERR_PUTS(" : Response-file is not opened.\n");
-		    return 0;
+            return 0;
         }
-	}
+    }
 
-	dst   = EXARGV_ALLOC(unsigned char, FILEPATH_SZ*2+2);
-	if (dst == NULL)
-		return 0;
-	dst_e = dst + FILEPATH_SZ*2;
+    dst   = EXARGV_ALLOC(unsigned char, FILEPATH_SZ*2+2);
+    if (dst == NULL)
+        return 0;
+    dst_e = dst + FILEPATH_SZ*2;
 
-	src_e = src + bytes;
-	s     = src;
+    src_e = src + bytes;
+    s     = src;
 
-	while (s < src_e) {
-		unsigned char*  d;
-		unsigned char*  p;
-		BOOL            dst_ovr = 0;
+    while (s < src_e) {
+        unsigned char*  d;
+        unsigned char*  p;
+        BOOL            dst_ovr = 0;
         unsigned        f = 0;
         unsigned        c;
 
         while (s < src_e && *s != '\n' && (*s <= 0x20 || *s == 0x7f))
-			++s;
-		if (*s == '\n') {
-			++lno;
-			continue;
-		}
-		if (*s == '#' /*|| *s == ';'*/) {
-			while (s < src_e && *s != '\n')
-				++s;
-			++lno;
-			continue;
-		}
-		d = dst;
-		p = s;
-	    do {
-	        c = *p++;
-	        if (c == '\0' || c == '\n')
-	        	break;
-	        if (c == '"') {
-	            f ^= 1;                     // "の対の間は空白をファイル名に許す.ためのフラグ.
-	            // ちょっと気持ち悪いが、Win(XP)のcmd.exeの挙動に合わせてみる.
-	            // (ほんとにあってるか、十分には調べてない)
-	            if (*p == '"' && f == 0) // 閉じ"の直後にさらに"があれば、それはそのまま表示する.
-	                ++p;
-	            else
-	                continue;               // 通常は " は省いてしまう.
-	        }
-	        if (d < dst_e)
-	            *d++ = c;
-	        else
-	            dst_ovr = 1;
-	    } while (c > 0x20 || (f && c == ' '));
-		--p;
-	    if (d > dst)
-			*--d = 0;
+            ++s;
+        if (*s == '\n') {
+            ++lno;
+            continue;
+        }
+        if (*s == '#' /*|| *s == ';'*/) {
+            while (s < src_e && *s != '\n')
+                ++s;
+            ++lno;
+            continue;
+        }
+        d = dst;
+        p = s;
+        do {
+            c = *p++;
+            if (c == '\0' || c == '\n')
+                break;
+            if (c == '"') {
+                f ^= 1;                     // "の対の間は空白をファイル名に許す.ためのフラグ.
+                // ちょっと気持ち悪いが、Win(XP)のcmd.exeの挙動に合わせてみる.
+                // (ほんとにあってるか、十分には調べてない)
+                if (*p == '"' && f == 0) // 閉じ"の直後にさらに"があれば、それはそのまま表示する.
+                    ++p;
+                else
+                    continue;               // 通常は " は省いてしまう.
+            }
+            if (d < dst_e)
+                *d++ = c;
+            else
+                dst_ovr = 1;
+        } while (c > 0x20 || (f && c == ' '));
+        --p;
+        if (d > dst)
+            *--d = 0;
 
-		if (dst_ovr) {
-		 #if defined(EXARGV_USE_WCHAR)
-			char* fnm = ExArgv_u8strdupFromWcs(fpath);
-		 #else
-		 	char const* fnm = fpath;
-	     #endif
-			fprintf(stderr, "%s (%u): Argument too long.\n", fnm, lno);
-		 #if defined(EXARGV_USE_WCHAR)
-			ExArgv_free(fnm);
-	     #endif
-		}
+        if (dst_ovr) {
+         #if defined(EXARGV_USE_WCHAR)
+            char* fnm = ExArgv_u8strdupFromWcs(fpath);
+         #else
+            char const* fnm = fpath;
+         #endif
+            fprintf(stderr, "%s (%u): Argument too long.\n", fnm, lno);
+         #if defined(EXARGV_USE_WCHAR)
+            ExArgv_free(fnm);
+         #endif
+        }
 
-		{
-	 	  #if defined(EXARGV_USE_WCHAR)
-			char_t* arg = ExArgv_wcsdupFromUtf8((char*)dst);
-		  #else
-		  	char*   arg = (char*)dst;
-	 	  #endif
-	        // 再帰検索指定,ワイルドカードの有無をチェック.
-	      #if EXARGV_USE_WC
-	        s_ExArgv_wildMode |= ExArgv_fname_isWildCard(arg);
-	      #endif
-			rc = ExArgv_Vector_push(pVec, arg);
-	 	  #if defined(EXARGV_USE_WCHAR)
-			ExArgv_free(arg);
-		  #endif
-			if (rc == 0)
-	        	break;
-		}
-	}
-	ExArgv_free(dst);
-	return rc;
+        {
+          #if defined(EXARGV_USE_WCHAR)
+            char_t* arg = ExArgv_wcsdupFromUtf8((char*)dst);
+          #else
+            char*   arg = (char*)dst;
+          #endif
+            // 再帰検索指定,ワイルドカードの有無をチェック.
+          #if EXARGV_USE_WC
+            s_ExArgv_wildMode |= ExArgv_fname_isWildCard(arg);
+          #endif
+            rc = ExArgv_Vector_push(pVec, arg);
+          #if defined(EXARGV_USE_WCHAR)
+            ExArgv_free(arg);
+          #endif
+            if (rc == 0)
+                break;
+        }
+    }
+    ExArgv_free(dst);
+    return rc;
 }
 
 //
@@ -1022,18 +1031,18 @@ static size_t ExArgv_fileSizeAW(char_t const* fpath)
 {
  #if defined(_WIN32)
     if (fpath) {
-		WIN32_FIND_DATA d;
-		HANDLE h = FindFirstFile(fpath, &d);
+        WIN32_FIND_DATA d;
+        HANDLE h = FindFirstFile(fpath, &d);
         if (h != INVALID_HANDLE_VALUE) {
             FindClose(h);
-			#if defined(_WIN64)
-	            return (((size_t)d.nFileSizeHigh<<32) | (size_t)d.nFileSizeLow);
-			#else
-	            return (d.nFileSizeHigh) ? (size_t)-1 : d.nFileSizeLow;
-			#endif
+            #if defined(_WIN64)
+                return (((size_t)d.nFileSizeHigh<<32) | (size_t)d.nFileSizeLow);
+            #else
+                return (d.nFileSizeHigh) ? (size_t)-1 : d.nFileSizeLow;
+            #endif
         }
     }
-	return (size_t)(-1);
+    return (size_t)(-1);
  #else
     struct stat st;
     int   rc = stat(fpath, &st);
@@ -1063,59 +1072,59 @@ size_t ExArgv_fileSize(char_t const* fpath)
  */
 static void* ExArgv_fileLoadMallocAW(char_t const* fpath, size_t* pSize)
 {
-	char*  buf;
-	size_t rbytes;
-	size_t bytes = ExArgv_fileSizeAW(fpath);
-	if (bytes == (size_t)(-1))
-		return NULL;
+    char*  buf;
+    size_t rbytes;
+    size_t bytes = ExArgv_fileSizeAW(fpath);
+    if (bytes == (size_t)(-1))
+        return NULL;
 
-	buf    = EXARGV_ALLOC(char, bytes + 4);
-	if (buf == NULL)
-		return NULL;
+    buf    = EXARGV_ALLOC(char, bytes + 4);
+    if (buf == NULL)
+        return NULL;
 
  #if defined(_WIN32)
-	{
-		DWORD  r   = 0;
-		HANDLE hdl = CreateFile(fpath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-		if (!hdl || hdl == INVALID_HANDLE_VALUE) {
-			ExArgv_free(buf);
-			return NULL;
-		}
-		if (!ReadFile(hdl, buf, (DWORD)bytes, &r, 0))
-		 	r = 0;
-		rbytes = r;
-		CloseHandle(hdl);
-	}
+    {
+        DWORD  r   = 0;
+        HANDLE hdl = CreateFile(fpath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+        if (!hdl || hdl == INVALID_HANDLE_VALUE) {
+            ExArgv_free(buf);
+            return NULL;
+        }
+        if (!ReadFile(hdl, buf, (DWORD)bytes, &r, 0))
+            r = 0;
+        rbytes = r;
+        CloseHandle(hdl);
+    }
  #elif 1
-	{
-	    FILE* fp = fopen(fpath, "rb");
-	    if (fp == NULL) {
-			ExArgv_free(buf);
-	        return NULL;
-	    }
-	    rbytes = fread(buf, 1, bytes, fp);
-	    fclose(fp);
-	}
+    {
+        FILE* fp = fopen(fpath, "rb");
+        if (fp == NULL) {
+            ExArgv_free(buf);
+            return NULL;
+        }
+        rbytes = fread(buf, 1, bytes, fp);
+        fclose(fp);
+    }
  #else
-	{
-	    int fd = open(fpath, O_RDONLY);
-	    if (fd == -1) {
-			ExArgv_free(buf);
-	        return NULL;
-	    }
-	    rbytes = read(fd, buf, bytes);
-	    close(fd);
+    {
+        int fd = open(fpath, O_RDONLY);
+        if (fd == -1) {
+            ExArgv_free(buf);
+            return NULL;
+        }
+        rbytes = read(fd, buf, bytes);
+        close(fd);
     }
  #endif
-	if (rbytes == bytes) {
-		buf[bytes] = buf[bytes+1] = buf[bytes+2] = buf[bytes+3] = 0;
-	} else {
-		ExArgv_free(buf);
-		buf   = NULL;
-		pSize = NULL;
-	}
-	if (pSize)
-		*pSize = bytes;
+    if (rbytes == bytes) {
+        buf[bytes] = buf[bytes+1] = buf[bytes+2] = buf[bytes+3] = 0;
+    } else {
+        ExArgv_free(buf);
+        buf   = NULL;
+        pSize = NULL;
+    }
+    if (pSize)
+        *pSize = bytes;
     return buf;
 }
 
@@ -1148,27 +1157,27 @@ void* ExArgv_fileLoadMalloc(char_t const* fpath, size_t* pSize)
 static BOOL ExArgv_wildCard(ExArgv_Vector* pVec)
 {
     char_t**        pp;
-	char_t**        ee;
+    char_t**        ee;
     int             mode;
-	BOOL			optCk = 1;
-	char_t*			name;
-	ExArgv_Vector*	wk;
+    BOOL            optCk = 1;
+    char_t*         name;
+    ExArgv_Vector*  wk;
 
     wk = ExArgv_Vector_create( pVec->size+1 );
-	if (wk == NULL)
-		return 0;
-	name = EXARGV_ALLOC(char_t, FILEPATH_SZ+4);
-	if (name == NULL)
-		return 0;
+    if (wk == NULL)
+        return 0;
+    name = EXARGV_ALLOC(char_t, FILEPATH_SZ+4);
+    if (name == NULL)
+        return 0;
     ee = pVec->buf + pVec->size;
     for (pp = pVec->buf; pp != ee; ++pp) {
         char_t const* s = *pp;
       #if EXARGV_USE_WC
-		if (optCk && ExArgv_isOpt(*s)) {
+        if (optCk && ExArgv_isOpt(*s)) {
             if (*s == '-' && s[1] == '-' && s[2] == 0)
-				optCk = 0;
-        	continue;
-		}
+                optCk = 0;
+            continue;
+        }
         if ( (pp != pVec->buf)                              // 初っ端以外([0]は実行ファイル名なので検索させない)のときで,
             && ((mode = ExArgv_fname_isWildCard( s )) != 0) // ワイルドカード指定のありのとき.
          ){
@@ -1184,20 +1193,20 @@ static BOOL ExArgv_wildCard(ExArgv_Vector* pVec)
                 s = name;
             }
             if (ExArgv_Vector_findFname(wk, s, recFlag) < 0) {
-				wk = NULL;
-            	break;
+                wk = NULL;
+                break;
             }
 
         } else {
             if (ExArgv_Vector_push( wk, s ) == 0) {
-				wk = NULL;
-            	break;
+                wk = NULL;
+                break;
             }
         }
       #else
         if (ExArgv_Vector_push( wk, s ) == 0) {
-			wk = NULL;
-			break;
+            wk = NULL;
+            break;
         }
       #endif
     }
@@ -1205,21 +1214,21 @@ static BOOL ExArgv_wildCard(ExArgv_Vector* pVec)
     ExArgv_free(name);
 
     // 今回生成したものを、pVecに設定.
-	if (wk) {
-	    // 元のリストを開放.
-	    for (pp = pVec->buf; pp != ee; ++pp) {
-	        char_t* p = *pp;
-	        if (p)
-	            ExArgv_free(p);
-	    }
-	    ExArgv_free(pVec->buf);
+    if (wk) {
+        // 元のリストを開放.
+        for (pp = pVec->buf; pp != ee; ++pp) {
+            char_t* p = *pp;
+            if (p)
+                ExArgv_free(p);
+        }
+        ExArgv_free(pVec->buf);
 
-	    pVec->buf  = wk->buf;
-    	pVec->size = wk->size;
-	    pVec->capa = wk->capa;
-	    // 作業に使ったメモリを開放.
-	    ExArgv_free(wk);
-	}
+        pVec->buf  = wk->buf;
+        pVec->size = wk->size;
+        pVec->capa = wk->capa;
+        // 作業に使ったメモリを開放.
+        ExArgv_free(wk);
+    }
     return 1;
 }
 #endif
@@ -1234,15 +1243,15 @@ static void ExArgv_convBackSlash(ExArgv_Vector* pVec)
 {
     char_t**    pp;
     char_t**    ee = pVec->buf + pVec->size;
-	BOOL		optCk = 1;
+    BOOL        optCk = 1;
 
     for (pp = pVec->buf; pp != ee; ++pp) {
         char_t* s = *pp;
-		if (optCk && ExArgv_isOpt(*s)) {	// オプションなら、変換しない.
+        if (optCk && ExArgv_isOpt(*s)) {    // オプションなら、変換しない.
             if (*s == '-' && s[1] == '-' && s[2] == 0)
-				optCk = 0;
-        	continue;
-		}
+                optCk = 0;
+            continue;
+        }
         // オプション以外の文字列で,
       #if (defined EXARGV_TOSLASH)
         ExArgv_fname_backslashToSlash(s);       // \ を / に置換.
@@ -1278,8 +1287,8 @@ static char_t** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t***
     // char_t*配列のためのメモリを取得.
     *pArgc   = ac;
     av       = EXARGV_ALLOC(char_t*, ac + 2);
-	if (!av)
-		return NULL;
+    if (!av)
+        return NULL;
     *pppArgv = av;
 
     memcpy(av, pVec->buf, sizeof(char_t*) * ac);
@@ -1299,17 +1308,17 @@ static char_t** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t***
  */
 static char_t** ExArgv_Vector_release(ExArgv_Vector* pVec)
 {
-	if (pVec) {
-		if (pVec->buf) {
+    if (pVec) {
+        if (pVec->buf) {
             size_t i;
-			for (i = 0; i < pVec->size; ++i) {
-				ExArgv_free(pVec->buf[i]);
-			}
-			ExArgv_free(pVec->buf);
-		}
-		ExArgv_free(pVec);
-	}
-	return NULL;
+            for (i = 0; i < pVec->size; ++i) {
+                ExArgv_free(pVec->buf[i]);
+            }
+            ExArgv_free(pVec->buf);
+        }
+        ExArgv_free(pVec);
+    }
+    return NULL;
 }
 
 #if defined(EXARGV_USE_WCHAR)
@@ -1517,12 +1526,12 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
     char_t*             baseName;
     size_t              baseNameSz;
 
-	if (hdl == INVALID_HANDLE_VALUE)
-		return 0;
+    if (hdl == INVALID_HANDLE_VALUE)
+        return 0;
 
     pathBuf  = EXARGV_ALLOC(char_t, FILEPATH_SZ);
     if (pathBuf == NULL)
-    	return -1;
+        return -1;
 
     str_l_cpy(pathBuf, srchName, FILEPATH_SZ);
 
@@ -1536,10 +1545,10 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
         str_l_cpy(baseName, pFindData->cFileName, baseNameSz);
         if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
             if (ExArgv_Vector_push( pVec, pathBuf ) == 0) {
-            	pVec = NULL;
-            	num  = -1;
-            	break;
-           	}
+                pVec = NULL;
+                num  = -1;
+                break;
+            }
             ++num;
         }
     } while (FindNextFile(hdl, pFindData) != 0);
@@ -1560,15 +1569,15 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
                     {
                         ;
                     } else {
-						int d;
+                        int d;
                         str_l_cat(baseName, DIRSEP_STR, baseNameSz);
                         str_l_cat(baseName, srch      , baseNameSz);
                         d = ExArgv_Vector_findFname(pVec, pathBuf, 1);
                         if (d < 0) {
-			            	pVec = NULL;
-							num  = -1;
-            				break;
-						}
+                            pVec = NULL;
+                            num  = -1;
+                            break;
+                        }
                         num += d;
                     }
                 }
@@ -1594,8 +1603,8 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
     size_t          baseNameSz;
     int             flag = 0;
 
-	if (pathBuf == NULL)
-		return -1;
+    if (pathBuf == NULL)
+        return -1;
 
     str_l_cpy(pathBuf, srchName, FILEPATH_SZ);
 
@@ -1632,7 +1641,7 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
                 if (stat(pathBuf, &statBuf) >= 0) {
                     if ((statBuf.st_mode & S_IFMT) != S_IFDIR) {
                         if (ExArgv_Vector_push( pVec, pathBuf ) == 0) {
-                        	return -1;
+                            return -1;
                         }
                         ++num;
                     }
@@ -1649,14 +1658,14 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
                 str_l_cpy(baseName, d->d_name, baseNameSz);
                 if (stat(pathBuf, &statBuf) >= 0 && STR_CMP(baseName,T(".")) != 0 && STR_CMP(baseName,T("..")) !=0 ) {
                     if ((statBuf.st_mode & S_IFMT) == S_IFDIR) {
-						int d;
+                        int d;
                         str_l_cat(baseName, T("/"), baseNameSz);
                         str_l_cat(baseName, srch  , baseNameSz);
                         d = ExArgv_Vector_findFname(pVec, pathBuf, 1);
-						if (d < 0) {
-							num = -1;
-							break;
-						}
+                        if (d < 0) {
+                            num = -1;
+                            break;
+                        }
                         num += d;
                     }
                 }
@@ -1686,15 +1695,15 @@ static ExArgv_Vector* ExArgv_Vector_create(unsigned size)
 {
     ExArgv_Vector* pVec = EXARGV_ALLOC( ExArgv_Vector, 1  );
     if (pVec) {
-    	size            = ((size + EXARGV_VECTOR_CAPA_BASE) / EXARGV_VECTOR_CAPA_BASE) * EXARGV_VECTOR_CAPA_BASE;
-    	pVec->capa      = size;
-    	pVec->size      = 0;
-    	pVec->buf       = EXARGV_ALLOC(char_t*, size);
-    	if (!pVec->buf) {
+        size            = ((size + EXARGV_VECTOR_CAPA_BASE) / EXARGV_VECTOR_CAPA_BASE) * EXARGV_VECTOR_CAPA_BASE;
+        pVec->capa      = size;
+        pVec->size      = 0;
+        pVec->buf       = EXARGV_ALLOC(char_t*, size);
+        if (!pVec->buf) {
             ExArgv_free(pVec);
             pVec = NULL;
         }
-	}
+    }
     return pVec;
 }
 
@@ -1706,10 +1715,10 @@ static BOOL ExArgv_Vector_push(ExArgv_Vector* pVec, char_t const* pStr)
     assert(pVec != 0);
     assert(pStr != 0);
     if (pStr && pVec) {
-		char_t*     p;
+        char_t*     p;
         unsigned    capa = pVec->capa;
         if (pVec->buf == NULL)
-        	return 0; //assert(pVec->buf != 0);
+            return 0; //assert(pVec->buf != 0);
         if (pVec->size >= capa) {   // キャパを超えていたら、メモリを確保しなおす.
             char_t**        buf;
             unsigned        newCapa = capa + EXARGV_VECTOR_CAPA_BASE;
