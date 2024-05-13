@@ -47,76 +47,82 @@ static size_t fileBytes(char const* fpath)
 
 static void* fileLoadStdin(size_t* pSize)
 {
-	size_t size = 0;
-	size_t cur  = 0;
-	char*  dst  = NULL;
-	for (;;) {
-		int c = fgetc(stdin);
-		if (c < 0)
-			break;
-		if (cur >= size) {
-			size += 0x10000;
-			dst   = realloc(dst, size);
-			if (dst == NULL)
-				return NULL;
-		}
-		dst[cur++] = c;
-	}
-    return buf;
+    size_t capa = 0;
+    size_t cur  = 0;
+    char*  dst  = NULL;
+    for (;;) {
+        int c = fgetc(stdin);
+        if (c < 0)
+            break;
+        if (cur >= capa) {
+            capa += 0x100000;
+            dst   = realloc(dst, capa);
+            if (dst == NULL)
+                return NULL;
+        }
+        dst[cur++] = c;
+    }
+    dst   = realloc(dst, cur + 4);
+    if (dst) {
+        dst[cur] = dst[cur+1] = dst[cur+2] = dst[cur+3] = 0;
+        if (pSize)
+            *pSize = cur;
+    }
+    return dst;
 }
 
 /** Load the file, add '\0'*4 to the end and return malloced memory.
  */
 static void* fileLoadMalloc(char const* fpath, size_t* pSize)
 {
-	char*  buf;
-	size_t rbytes;
-	size_t bytes;
+    char*  buf;
+    size_t rbytes;
+    size_t bytes;
 
-	if (!fpath)
-		return fileLoadStdin(pSize);
+    if (!fpath)
+        return fileLoadStdin(pSize);
 
-	bytes = fileBytes(fpath);
-	if (bytes == (size_t)(-1))
-		return NULL;
+    bytes = fileBytes(fpath);
+    if (bytes == (size_t)(-1))
+        return NULL;
 
-	buf    = (char*)malloc(bytes + 4);
-	if (buf == NULL)
-		return NULL;
+    buf    = (char*)malloc(bytes + 4);
+    if (buf == NULL)
+        return NULL;
 
  #if 0 //defined(_WIN32)
-	{
-		DWORD  r   = 0;
-		HANDLE hdl = CreateFileA(fpath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-		if (!hdl || hdl == INVALID_HANDLE_VALUE) {
-			free(buf);
-			return NULL;
-		}
-		if (!ReadFile(hdl, buf, (DWORD)bytes, &r, 0))
-		 	r = 0;
-		rbytes = r;
-		CloseHandle(hdl);
-	}
+    {
+        DWORD  r   = 0;
+        HANDLE hdl = CreateFileA(fpath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+        if (!hdl || hdl == INVALID_HANDLE_VALUE) {
+            free(buf);
+            return NULL;
+        }
+        if (!ReadFile(hdl, buf, (DWORD)bytes, &r, 0))
+             r = 0;
+        rbytes = r;
+        CloseHandle(hdl);
+    }
  #else
-	{
-	    FILE* fp = fopen(fpath, "rb");
-	    if (fp == NULL) {
-			free(buf);
-	        return NULL;
-	    }
-	    rbytes = fread(buf, 1, bytes, fp);
-	    fclose(fp);
+    {
+        FILE* fp = fopen(fpath, "rb");
+        if (fp == NULL) {
+            free(buf);
+            return NULL;
+        }
+        rbytes = fread(buf, 1, bytes, fp);
+        fclose(fp);
     }
  #endif
-	if (rbytes == bytes) {
-		buf[bytes] = buf[bytes+1] = buf[bytes+2] = buf[bytes+3] = 0;
-	} else {
-		free(buf);
-		buf   = NULL;
-		pSize = NULL;
-	}
-	if (pSize)
-		*pSize = bytes;
+    if (rbytes == bytes) {
+        buf[bytes] = buf[bytes+1] = buf[bytes+2] = buf[bytes+3] = 0;
+    } else {
+        free(buf);
+        buf   = NULL;
+        pSize = NULL;
+    }
+    if (pSize)
+        *pSize = bytes;
     return buf;
 }
 
