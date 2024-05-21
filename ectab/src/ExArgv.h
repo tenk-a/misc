@@ -1,54 +1,54 @@
 /**
  *  @file   ExArgv.h
- *  @brief  argc,argvの拡張処理(ワイルドカード,レスポンスファイル).
+ *  @brief  Extended processing for argc, argv (wildcards, response files).
  *  @author Masashi KITAMURA
  *  @date   2006-2024
- *  @license Boost Software Lisence Version 1.0
+ *  @license Boost Software License Version 1.0
  *  @note
- *  -   主にWin/Dos系(のコマンドラインツール)での利用を想定.
- *      mac,linux gcc/clang でも利用可.
+ *  - Primarily intended for use with Win/Dos (command line tools).
+ *    Usable with mac, linux gcc/clang as well.
  *
- *  -   main(int argc,char* argv[]) のargc,argvに対し,
- *      ワイルドカード指定やレスポンスファイル指定等を展開したargc,argvに変換.
- *      main()の初っ端ぐらいで,
- *          ExArgv_conv(&argc, &argv);
- *      のように呼び出す.
- *      WC変換を後で行いたい場合は
- *          ExArgv_convEx(&argc, &argv, 0); // ResFile等WC展開以外を先に行う.
- *          (なにか処理)
- *          ExArgv_convEx(&argc, &argv, 1); // WC展開を行う.
- *      結果の argv の各文字列は、必ず malloc されたものになる.
- *      明示的に argv を開放する場合は ExArgv_Free(&argv) する.
+ *  - Converts argc, argv in main(int argc, char* argv[]) to expand
+ *    wildcards and response file specifications.
+ *    Call as early as possible in main():
+ *        ExArgv_conv(&argc, &argv);
+ *    If you want to perform WC conversion later:
+ *        ExArgv_convEx(&argc, &argv, 0); // First, perform non-WC expansion like ResFile.
+ *        (perform some operations)
+ *        ExArgv_convEx(&argc, &argv, 2|1); // Perform WC expansion and free the old argv.
+ *    Each string in the resulting argv will be malloc'ed.
+ *    Free argv explicitly with ExArgv_release(&argv).
  *
- *  -   WinMain() で使う場合は EXARGV_FOR_WINMAIN を定義し、
- *          ExArgv_cmdLineToArgv(cmdl, &argc, &argv);
- *          ExArgv_conv(&argc, &argv);
- *      のように呼び出す. 旧版互換で,
- *          ExArgv_forWinMain(cmdl, &argc, &argv);
- *      も可.
+ *  - When using with WinMain(), define EXARGV_FOR_WINMAIN and call:
+ *        ExArgv_cmdLineToArgv(cmdl, &argc, &argv);
+ *        ExArgv_conv(&argc, &argv);
+ *    Alternatively, you can use:
+ *        ExArgv_forWinMain(cmdl, &argc, &argv);
  *
- *  -   ExArgv.h は、ヘッダだが、ExArgv.c の設定ファイルでもある.
- *      アプリごとに ExArgv.h ExArgv.c をコピーして、ExArgv.h
- *      をカスタムして使うのを想定.
- *      - あるいは ExArgv_conf.h を用意, (EXARGV_UE_CONF_Hを定義して)
- *        そちらに設定する.
+ *  - ExArgv.h is a header but also serves as a configuration file for ExArgv.c.
+ *    Intended for copying ExArgv.h and ExArgv.c for each application and
+ *    customizing ExArgv.h.
+ *    Alternatively, prepare ExArgv_conf.h and define EXARGV_UE_CONF_H to set
+ *    configurations there.
  *
- *  -   設定できる要素は,
- *      - ワイルドカード (on/off)
- *      - ワイルドカード時の再帰指定(**)の有無 (on/off)
- *      - @レスポンスファイル (on/off)
- *      - .exe連動 .cfg ファイル 読込 (on/off)
- *      - オプション環境変数名の利用.
- *      等.
+ *  - Configurable elements include:
+ *    - Wildcards (on/off)
+ *    - Recursive wildcard specification (**) (on/off)
+ *    - @response files (on/off)
+ *    - Reading .cfg files associated with .exe (on/off)
+ *    - Use of optional environment variable names.
+ *    etc.
  *
- *  -   引数文字列の先頭が'-'ならばオプションだろうで、その文字列中に
- *      ワイルドカード文字があっても展開しない.
- *  -   _WIN32 が定義されていれば win用、でなければ unix系を想定.
- *  -   マクロ UNICODE か EXARGV_USE_WCHAR を定義で wchar_t用、なければchar用.
- *  -   UTF8 が普及したので、EXARGV_USE_MBC 定義時のみMBCの2バイト目'\'対処.
- *  -   EXARGV_USE_WCHAR_TO_UTF8 を定義すれば、Win10 1903以前の環境で UTF8名を
- *      扱うための変換関数を用意.
- *      ex) int wmain(int argc, wchar_t* wargv[]) {
+ *  - If the argument string starts with '-', it's likely an option,
+ *    so wildcard characters within it are not expanded.
+ *  - Assumes win for defined _WIN32, otherwise unix-like.
+ *  - Define the UNICODE or EXARGV_ENCODE_WCHAR macro for wchar_t,
+ *    otherwise use char.
+ *  - With the prevalence of UTF8, handle the second byte '\' of MBC only
+ *    if defined(EXARGV_ENCODE_MBC).
+ *  - Define EXARGV_ENCODE_UTF8 to prepare conversion functions
+ *    for handling UTF8 names in environments prior to Win10 1903.
+ *    e.g.) int wmain(int argc, wchar_t* wargv[]) {
  *              char** argv = ExArgv_convExToUtf8(&argc, wargv, 1);
  */
 
@@ -56,68 +56,86 @@
 #define EXARGV_H_INCLUDED__
 
 // ---------------------------------------------------------------------------
-// 設定.
+// Configuration settings.
 
-//[] 定義すると、WinMain 用に ExArgv_forWinMain を生成.
+// [] Define to generate ExArgv_forWinMain for use with WinMain.
 //#define EXARGV_FOR_WINMAIN
 
-//[] 定義すると、wchar_t 用として生成. UNICODE 定義時は自動で定義される.
-//#define EXARGV_USE_WCHAR
+// [] Define one of the following for path string character encoding.
+//    If omitted, WCHAR is used if UNICODE is defined, otherwise UTF8.
+//    Assumes UTF8 for non-Windows. MBC is for considering SJIS, etc.
+//#define EXARGV_ENCODE_ANSI    // Use A-type API on Windows. Assumes UTF8 for non-Windows.
+//#define EXARGV_ENCODE_MBC     // Use A-type API on Windows. Considers 2nd byte of DBC.
+//#define EXARGV_ENCODE_UTF8    // Use W-type API on Windows for UTF8 encoding. Same as ANSI for non-Windows.
+//#define EXARGV_ENCODE_WCHAR   // Use W-type API on Windows. Not for non-Windows.
 
-//[] 定義すると、EXARGV_USE_WCHAR を有効、ExArgv_wargvToU8等を利用可能に.
-//#define EXARGV_USE_WCHAR_TO_UTF8
+// [] Enable wildcard specification: 1=enabled, 0=disabled, undefined=1
+//#define EXARGV_USE_WC             1
 
-//[] 定義され かつ UNICODE 未定義なら MBCS として2バイト目\文字対処を行う.
-//#define EXARGV_USE_MBC
+// [] For wildcard enabled, recursive search if wildcard ** is present:
+//      1=enabled, 0=disabled, undefined=1
+//#define EXARGV_USE_WC_REC         1
 
-//[] ワイルドカード指定を 1=有効  0=無効  未定義=デフォルト設定(1)
-//#define EXARGV_USE_WC         1
+// [] Enable @response files:
+//      1=enabled, 0=disabled, undefined=0
+//#define EXARGV_USE_RESFILE        0
 
-//[] ワイルドカードon時に、ワイルドカード文字 ** があれば再帰検索に,
-//      1=する 0=しない 未定義=デフォルト設定(1)
-//#define EXARGV_USE_WC_REC     1
+// [] Enable simple config (response) file input:
+//      1=enabled, 0=disabled, undefined=0
+//    When enabled, replaces .exe with .ini for win/dos.
+//    For non-Windows, assumes unix-style ~/.executable_name.ini
+//#define EXARGV_USE_CONFIG         0
 
-//[] @レスポンスファイルを,
-//      1=有効   0=無効  未定義=デフォルト設定(0)
-//#define EXARGV_USE_RESFILE    0
-#define EXARGV_USE_RESFILE    1
+// [] When config file input is enabled, define this to set the config file extension.
+//#define EXARGV_CONFIG_EXT         ".ini"
 
-//[] 簡易コンフィグ(レスポンス)ファイル入力を,
-//      1=有効  0=無効  未定義=デフォルト(0)
-//   有効時は、win/dosなら .exe を .cfg に置換したパス名.
-//             以外なら unix 系だろうで ~/.実行ファイル名.cfg
-//#define EXARGV_USE_CONFIG     0
+// [] Define to use this environment variable as the command line string.
+//#define EXARGV_ENVNAME            "your_app_env_name"
 
-//[] コンフィグファイル入力有効のとき、これを定義すれば,
-//      コンフィグファイルの拡張子をこれにする.
-//#define EXARGV_CONFIG_EXT     ".ini"
+// [] Windows only. Full path for argv[0] executable name:
+//      1=enabled, 0=disabled, undefined=0
+//    Note: bcc, dmc, watcom already use full path, so this is for vc, gcc.
+//#define EXARGV_USE_FULLPATH_ARGV0  0
 
-//[] 定義すると、この名前の環境変数をコマンドライン文字列として利用.
-//#define EXARGV_ENVNAME    "your_app_env_name"
-
-
-//[] win環境のみ. argv[0] の実行ファイル名をフルパス化.
-//      1=有効  0=無効      未定義=デフォルト(0)
-//   ※bcc,dmc,watcomは元からフルパスなので何もしません. のでvc,gcc向.
-//#define EXARGV_USE_FULLPATH_ARGV0
-
-//[] 定義すれば、filePath中の \ を / に置換.
+// [] Define to replace \ with / in filepath.
 //#define EXARGV_TOSLASH
 
-
-//[] 定義すれば、filePath中の / を \ に置換.
+// [] Define to replace / with \ in filepath.
 //#define EXARGV_TOBACKSLASH
 
-//[] 定義すれば、/ もオプション開始文字とみなす.
-//#define EXARGV_USE_SLASH_OPT
+// [] Treat / as option start character (1) or not (0)
+//#define EXARGV_USE_SLASH_OPT      0
 
 
 // ---------------------------------------------------------------------------
-// 上記で設定せず、ExArg_conf.h で設定の場合.
 
-//#if defined(EXARGV_USE_CONF_H) || (defined(__has_include) && __has_include("ExArgv_conf.h"))
-#if defined(EXARGV_USE_CONF_H) || defined(__has_include) && __has_include("ExArgv_conf.h")
+#if defined(__has_include) && !defined(EXARGV_USE_CONF_H)
+ #if __has_include("ExArgv_conf.h")
+  #define EXARGV_USE_CONF_H
+ #endif
+#endif
+#if defined(EXARGV_USE_CONF_H)
  #include "ExArgv_conf.h"
+#endif
+
+#if (1 <  defined(EXARGV_ENCODE_UTF8)+defined(EXARGV_ENCODE_ANSI)+defined(EXARGV_ENCODE_MBC)+defined(EXARGV_ENCODE_WCHAR))
+#error Define one of EXARGV_ENCODE_UTF8, EXARGV_ENCODE_ANSI, EXARGV_ENCODE_MBC, or EXARGV_ENCODE_WCHAR
+#endif
+
+#if (0 == defined(EXARGV_ENCODE_UTF8)+defined(EXARGV_ENCODE_ANSI)+defined(EXARGV_ENCODE_MBC)+defined(EXARGV_ENCODE_WCHAR))
+ #if defined(UNICODE) || defined(_UNICODE)
+  #define EXARGV_ENCODE_WCHAR
+ #elif 1 //defined(_WIN32)
+  #define EXARGV_ENCODE_UTF8
+ #else
+  #define EXARGV_ENCODE_ANSI
+ #endif
+#endif
+
+#include <stddef.h>
+
+#if defined(EXARGV_ENCODE_WCHAR) && !defined(__cplusplus)
+#include <wchar.h>  // wchar_t
 #endif
 
 
@@ -126,69 +144,65 @@
 extern "C" {
 #endif
 
-#define ExArgv_RC   int
-
-#if !defined EXARGV_USE_WCHAR \
-    && (defined UNICODE || defined EXARGV_USE_WCHAR_TO_UTF8)
- #define EXARGV_USE_WCHAR
-#endif
-
-#if defined(EXARGV_USE_WCHAR)
+#if defined(EXARGV_ENCODE_WCHAR)
  #define EXARGV_CHAR_T  wchar_t
 #else
  #define EXARGV_CHAR_T  char
 #endif
 
-#if defined(EXARGV_USE_WCHAR_TO_UTF8) == 0
+#define ExArgv_RC       int
 
-  ExArgv_RC ExArgv_conv(int* pArgc, EXARGV_CHAR_T*** pppArgv);
-  ExArgv_RC ExArgv_convEx(int* pArgc, EXARGV_CHAR_T*** pppArgv, unsigned wcFlags);
-  void      ExArgv_Free(EXARGV_CHAR_T*** pppArgv);
+ExArgv_RC ExArgv_conv(int* pArgc, EXARGV_CHAR_T*** pppArgv);
+ExArgv_RC ExArgv_convEx(int* pArgc, EXARGV_CHAR_T*** pppArgv, unsigned wcFlags);
+void      ExArgv_release(EXARGV_CHAR_T*** pppArgv);
 
- #if defined EXARGV_FOR_WINMAIN // win-gui用.
-   ExArgv_RC ExArgv_cmdLineToArgv(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
-   ExArgv_RC ExArgv_forWinMain(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
+#if defined(EXARGV_FOR_WINMAIN) // for win-gui.
+ #if defined(EXARGV_ENCODE_UTF8)
+  ExArgv_RC ExArgv_cmdLineToArgv(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
+  ExArgv_RC ExArgv_forWinMain(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
+ #else
+  ExArgv_RC ExArgv_cmdLineToArgv(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
+  ExArgv_RC ExArgv_forWinMain(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
  #endif
+#endif
 
- #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG
-  void*  ExArgv_fileLoadMalloc(EXARGV_CHAR_T const* fpath, size_t* pSize);
-  size_t ExArgv_fileSize(EXARGV_CHAR_T const* fpath);
- #endif
+#if defined(EXARGV_ENCODE_UTF8) && defined(_WIN32)
+ char**    ExArgv_convExToUtf8(int* pArgc, wchar_t** pppArgv, unsigned wcFlags);
+ char**    ExArgv_wargvToUtf8(int argc, wchar_t* ppWargv[]);
+ wchar_t** ExArgv_u8argvToWcs(int argc, char* ppArgv[]);
+#endif
 
-#else   // defined(EXARGV_USE_WCHAR_TO_UTF8)
 
-  ExArgv_RC ExArgv_conv( int* pArgc, char*** pppArgv);
-  ExArgv_RC ExArgv_convW(int* pArgc, wchar_t*** pppArgv);
+// ---------------------------------------------------------------------------
 
-  ExArgv_RC ExArgv_convEx( int* pArgc, char*** pppArgv, unsigned wcFlags);
-  ExArgv_RC ExArgv_convExW(int* pArgc, wchar_t*** pppArgv, unsigned wcFlags);
+EXARGV_CHAR_T*  ExArgv_fnameBase(EXARGV_CHAR_T const* adr);
+EXARGV_CHAR_T*  ExArgv_strdupAddCapa(EXARGV_CHAR_T const* s, size_t add_capa);
 
-  char**    ExArgv_convExToUtf8(int* pArgc, wchar_t** pppArgv, unsigned wcFlags);
-
-  void      ExArgv_Free( char*** pppArgv);
-  void      ExArgv_FreeW(wchar_t*** pppArgv);
-
- #if defined EXARGV_FOR_WINMAIN // win-gui用.
-   ExArgv_RC ExArgv_cmdLineToArgv( wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
-   ExArgv_RC ExArgv_cmdLineToArgvW(wchar_t const* pCmdLine, int* pArgc, wchar_t*** pppArgv);
-   ExArgv_RC ExArgv_forWinMain( wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
-   ExArgv_RC ExArgv_forWinMainW(wchar_t const* pCmdLine, int* pArgc, wchar_t*** pppArgv);
- #endif
-
- #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG
-  void*     ExArgv_fileLoadMalloc(char const* fpath, size_t* pSize);
-  size_t    ExArgv_fileSize(char const* fpath);
- #endif
-
-  char**    ExArgv_wargvToUtf8(int argc, wchar_t* ppWargv[]);
+#if defined(_WIN32) && defined(EXARGV_ENCODE_UTF8)
   char*     ExArgv_u8strdupFromWcs(wchar_t const* wcs);
-  wchar_t** ExArgv_u8argvToWcs(int argc, char* ppArgv[]);
   wchar_t*  ExArgv_wcsdupFromUtf8(char const* u8s);
+#endif
 
-#endif  // EXARGV_USE_WCHAR_TO_UTF8
+#if EXARG_USE_UTIL || EXARGV_USE_RESFILE || EXARGV_USE_CONFIG
+ void*      ExArgv_fileLoadMalloc(EXARGV_CHAR_T const* fpath, size_t* pSize);
+ size_t     ExArgv_fileSize(EXARGV_CHAR_T const* fpath);
+#endif
+#if EXARG_USE_UTIL || defined(EXARGV_ENVNAME) || defined(EXARGV_FOR_WINMAIN)
+ EXARGV_CHAR_T* ExArgv_scanArgStr(EXARGV_CHAR_T const* str, EXARGV_CHAR_T arg[], size_t argSz);
+#endif
+#if EXARG_USE_UTIL || defined(EXARGV_ENVNAME)
+ EXARGV_CHAR_T* ExArgv_getenvDup(EXARGV_CHAR_T const* envName);
+#endif
 
 #ifdef __cplusplus
 }
 #endif
+
+
+// ---------------------------------------------------------------------------
+#if EXARG_USE_UTIL
+ int        ExArgv_fileExist(EXARGV_CHAR_T const* fpath);   // 0:none 1:file 2:dir
+#endif
+
 // ---------------------------------------------------------------------------
 #endif  // EXARGV_H_INCLUDED__

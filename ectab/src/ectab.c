@@ -701,7 +701,7 @@ static int Main(int argc, char *argv[])
             break;
     }
 
-    ExArgv_Free(&argv);
+    ExArgv_release(&argv);
 
     return Ok;
 }
