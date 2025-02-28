@@ -1,5 +1,5 @@
 /**
- *  @file   cmisc.c
+ *  @file   ujfile.c
  *  @brief  misc for c
  *  @author Masashi Kitamura (tenka@6809.net)
  *  @license Boost Software Lisence Version 1.0

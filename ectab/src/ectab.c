@@ -325,6 +325,9 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
             break;
         ++lno;
 
+        if (crlfMd && size >= crlfSize) {
+            size -= crlfSize;
+        }
         charbuf_set(&sbuf, curline, size);
         charbuf_set(&tbuf, NULL, size*4);
 

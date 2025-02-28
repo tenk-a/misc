@@ -1231,14 +1231,10 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
     ExArgv_finddata_t*  pFindData   = EXARGV_ALLOC(ExArgv_finddata_t, 1);
     HANDLE              hdl         = ExArgv_FindFirstFile(srchName, pFindData);
 
-    if (hdl == INVALID_HANDLE_VALUE)
-        return 0;
-
     pathBufCapa = STR_LEN(srchName) + 1 + FILENAME_LEN + 4;
     pathBuf  = EXARGV_ALLOC(char_t, pathBufCapa);
     if (pathBuf == NULL)
         return -1;
-
     str_l_cpy(pathBuf, srchName, pathBufCapa);
 
     baseName    = ExArgv_fnameBase(pathBuf);
@@ -1246,19 +1242,24 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
     baseNameCapa  = pathBufCapa - STR_LEN(pathBuf);
     assert(baseNameCapa > FILENAME_LEN);
 
-    // Get file name. * Hidden files are not included.
-    do {
-        str_l_cpy(baseName, pFindData->cFileName, baseNameCapa);
-        if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
-            if (ExArgv_Vector_push( pVec, pathBuf ) == 0) {
-                pVec = NULL;
-                num  = -1;
-                break;
+    if (hdl != INVALID_HANDLE_VALUE) {
+        // Get file name. * Hidden files are not included.
+        do {
+            str_l_cpy(baseName, pFindData->cFileName, baseNameCapa);
+            if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
+                if (ExArgv_Vector_push( pVec, pathBuf ) == 0) {
+                    pVec = NULL;
+                    num  = -1;
+                    break;
+                }
+                ++num;
             }
-            ++num;
-        }
-    } while (ExArgv_FindNextFile(hdl, pFindData) != 0);
-    ExArgv_FindClose(hdl);
+        } while (ExArgv_FindNextFile(hdl, pFindData) != 0);
+        ExArgv_FindClose(hdl);
+    } else {
+        if (recFlag == 0)
+            return 0;
+    }
 
    #if EXARGV_USE_WC_REC
     // Get file name using directory recursion.
