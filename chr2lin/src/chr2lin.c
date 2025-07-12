@@ -1,9 +1,9 @@
 /*
-    ƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚±‚İA•¶š nŒÂ‚ğ‚Ps‚Æ‚µ‚Äo—Í
+    ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿ã“ã¿ã€æ–‡å­— nå€‹ã‚’ï¼‘è¡Œã¨ã—ã¦å‡ºåŠ›
 
-    0.50 ‚Å -aN ‚ğ’Ç‰Á‚µ‚½ƒo[ƒWƒ‡ƒ“‚Æ
-    0.80 ‚Å -s	‚ğ’Ç‰Á‚µ‚½ƒo[ƒWƒ‡ƒ“‚Ì
-    ‚QŒn“‚É•ª‚©‚ê‚Ä‚µ‚Ü‚Á‚Ä‚¢‚½‚Ì‚ÅA“‡B
+    0.50 ã§ -aN ã‚’è¿½åŠ ã—ãŸãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¨
+    0.80 ã§ -s  ã‚’è¿½åŠ ã—ãŸãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®
+    ï¼’ç³»çµ±ã«åˆ†ã‹ã‚Œã¦ã—ã¾ã£ã¦ã„ãŸã®ã§ã€çµ±åˆã€‚
  */
 
 
@@ -15,45 +15,49 @@
 #include "ExArgv.h"
 #include "mbc.h"
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 typedef unsigned char_t;
 
 void Usage(void)
 {
     printf(
-    	"usage> chr2lin [-opts] textfile(s)  //v1.00  " __DATE__ "  " __TIME__ "\n"
-    	"ƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚±‚İAoŒ»‡‚É‚P•¶š‚Ps‚Æ‚µ‚Äo—Í\n"
-    	"ˆê“xoŒ»‚µ‚½•¶š‚Í–³‹\n"
-    	" -oNAME o—Íƒtƒ@ƒCƒ‹–¼w’è\n"
-    	" -nN    1•¶š‚Å‚Ps‚È‚­ N•¶š‚Åˆês‚É‚µ‚Äo—Í\n"
-    	" -eN    N s‚²‚Æ‚É‰üs‚ğ“ü‚ê‚é\n"
-    	" -yN    N s‚²‚Æ‚Éƒtƒ@ƒCƒ‹‚ğ•ª‚¯‚é\n"
-    	"        o—Íƒtƒ@ƒCƒ‹–¼‚Í, outfile.000 outfile.001 ‚Ì‚æ‚¤‚È\n"
-    	"        ˜A”ÔŠg’£q‚Ìƒtƒ@ƒCƒ‹‚ğ¶¬\n"
-    	" -ye    -y‚Æ“¯‚¶‚¾‚ªA–¼‘O‚Ì‚Â‚¯•û‚ª outfile000.ext ‚Ì‚æ‚¤‚É‚È‚é\n"
-    	" -s     ƒ\[ƒg‚·‚é\n"
-    	" -cC    ƒeƒLƒXƒg’†‚Ì•¶š C ˆÈ~‰üs‚Ü‚Å‚ğ–³‹‚·‚é.\n"
-    	"        -c ‚Ì‚İ‚¾‚Æ // ƒRƒƒ“ƒg‚ğ–³‹‚·‚é.\n"
-    	" -aN    o—Í‚Ì Ns‚ğ‹ó”’‚É‚·‚é\n"
-    	" -b     ”¼Šp‚ğ–³‹\n"
-    	" -l[S]  “üo—Í‚Ì•¶šƒR[ƒh S:utf8,mbc,sjis,eucjp\n"
+        "usage> chr2lin [-opts] textfile(s)  //v1.00  " __DATE__ "  " __TIME__ "\n"
+        "ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿ã“ã¿ã€å‡ºç¾é †ã«ï¼‘æ–‡å­—ï¼‘è¡Œã¨ã—ã¦å‡ºåŠ›\n"
+        "ä¸€åº¦å‡ºç¾ã—ãŸæ–‡å­—ã¯ç„¡è¦–\n"
+        " -oNAME å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åæŒ‡å®š\n"
+        " -nN    1æ–‡å­—ã§ï¼‘è¡Œãªã Næ–‡å­—ã§ä¸€è¡Œã«ã—ã¦å‡ºåŠ›\n"
+        " -eN    N è¡Œã”ã¨ã«æ”¹è¡Œã‚’å…¥ã‚Œã‚‹\n"
+        " -yN    N è¡Œã”ã¨ã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åˆ†ã‘ã‚‹\n"
+        "        å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åã¯, outfile.000 outfile.001 ã®ã‚ˆã†ãª\n"
+        "        é€£ç•ªæ‹¡å¼µå­ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆ\n"
+        " -ye    -yã¨åŒã˜ã ãŒã€åå‰ã®ã¤ã‘æ–¹ãŒ outfile000.ext ã®ã‚ˆã†ã«ãªã‚‹\n"
+        " -s     ã‚½ãƒ¼ãƒˆã™ã‚‹\n"
+        " -cC    ãƒ†ã‚­ã‚¹ãƒˆä¸­ã®æ–‡å­— C ä»¥é™æ”¹è¡Œã¾ã§ã‚’ç„¡è¦–ã™ã‚‹.\n"
+        "        -c ã®ã¿ã ã¨ // ã‚³ãƒ¡ãƒ³ãƒˆã‚’ç„¡è¦–ã™ã‚‹.\n"
+        " -aN    å‡ºåŠ›ã® Nè¡Œã‚’ç©ºç™½ã«ã™ã‚‹\n"
+        " -b     åŠè§’ã‚’ç„¡è¦–\n"
+        " -l[S]  å…¥å‡ºåŠ›ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ S:utf8,mbc,sjis,eucjp\n"
     );
     exit(1);
 }
 
 /* ------------------------------------------------------------------------ */
-SLIST	*fileList   = NULL;
-long	opt_clm     = 1;
-long	opt_len     = 0;
-int 	opt_mltDivFlg = 0;
-int 	opt_cmtChr  = 0;
-int 	opt_sort    = 0;
-int 	opt_noAscii = 0;
-char	*opt_oname  = NULL;
-int 	addLinNum   = 0;
+SLIST   *fileList   = NULL;
+long    opt_clm     = 1;
+long    opt_len     = 0;
+int     opt_mltDivFlg = 0;
+int     opt_cmtChr  = 0;
+int     opt_sort    = 0;
+int     opt_noAscii = 0;
+char    *opt_oname  = NULL;
+int     addLinNum   = 0;
 static int    utf8_flag = 0;
 
 
-/** ƒIƒvƒVƒ‡ƒ“‚Ìˆ—
+/** ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®å‡¦ç†
  */
 int Opts(char *a)
 {
@@ -62,66 +66,66 @@ int Opts(char *a)
     c = toupper(c);
     switch (c) {
     case 'O':
-    	opt_oname = strdupE(p);
-    	break;
+        opt_oname = strdupE(p);
+        break;
     case 'N':
-    	opt_clm = strtol(p,&p,0);
-    	if (opt_clm <= 0) {
-    	    err_exit("bad -n param(%d)\n", opt_clm);
-    	}
-    	break;
+        opt_clm = strtol(p,&p,0);
+        if (opt_clm <= 0) {
+            err_exit("bad -n param(%d)\n", opt_clm);
+        }
+        break;
     case 'E':
-    	opt_len = strtol(p,&p,0);
-    	if (opt_len < 0) {
-    	    err_exit("bad -e param(%d)\n", opt_len);
-    	}
-    	break;
+        opt_len = strtol(p,&p,0);
+        if (opt_len < 0) {
+            err_exit("bad -e param(%d)\n", opt_len);
+        }
+        break;
     case 'S':
-    	opt_sort = (*p != '-');
-    	break;
+        opt_sort = (*p != '-');
+        break;
     case 'Y':
-    	opt_mltDivFlg = 1;
-    	if (*p == 'E' || *p == 'e') {
-    	    opt_mltDivFlg = 2;
-    	    p++;
-    	}
-    	opt_len = strtol(p,&p,0);
-    	if (opt_len < 0) {
-    	    err_exit("bad -y param(%d)\n", opt_len);
-    	}
-    	break;
+        opt_mltDivFlg = 1;
+        if (*p == 'E' || *p == 'e') {
+            opt_mltDivFlg = 2;
+            p++;
+        }
+        opt_len = strtol(p,&p,0);
+        if (opt_len < 0) {
+            err_exit("bad -y param(%d)\n", opt_len);
+        }
+        break;
     case 'C':
-    	opt_cmtChr = *p;
-    	if (*p == 0)
-    	    opt_cmtChr = -1;
-    	break;
+        opt_cmtChr = *p;
+        if (*p == 0)
+            opt_cmtChr = -1;
+        break;
     case 'A':
-    	addLinNum = strtol(p,&p,0);
-    	break;
+        addLinNum = strtol(p,&p,0);
+        break;
     case 'B':
-    	opt_noAscii = (*p != '-');
-    	break;
+        opt_noAscii = (*p != '-');
+        break;
     case 'Z':
-    	debugflag = (*p != '-');
-    	break;
+        debugflag = (*p != '-');
+        break;
     case 'L':
-    	if (STRCASECMP(p, "utf8")==0 || STRCASECMP(p, "utf-8") == 0) {
-    	    mbs_setEnv("ja_JP.UTF-8");
-    	    utf8_flag = 1;
-    	} else if (STRCASECMP(p, "mbc")==0 || STRCASECMP(p, "mbs") == 0 || STRCASECMP(p, "mb") == 0) {
-    	    mbs_setEnv("win");
-    	} else if (STRCASECMP(p, "sjis") == 0 || STRCASECMP(p,"932") == 0) {
-    	    mbs_setEnv("ja_JP.SJIS");
-    	} else if (STRCASECMP(p, "euc-jp") == 0 || STRCASECMP(p, "eucjp") == 0 || STRCASECMP(p, "euc") == 0) {
-    	    mbs_setEnv("ja_JP.EUC");
-    	}
-    	break;
+        if (STRCASECMP(p, "utf8")==0 || STRCASECMP(p, "utf-8") == 0) {
+            mbs_setEnv("ja_JP.UTF-8");
+            utf8_flag = 1;
+        } else if (STRCASECMP(p, "mbc")==0 || STRCASECMP(p, "mbs") == 0 || STRCASECMP(p, "mb") == 0) {
+            mbs_setEnv("win");
+        } else if (STRCASECMP(p, "sjis") == 0 || STRCASECMP(p,"932") == 0) {
+            mbs_setEnv("ja_JP.SJIS");
+        } else if (STRCASECMP(p, "euc-jp") == 0 || STRCASECMP(p, "eucjp") == 0 || STRCASECMP(p, "euc") == 0) {
+            mbs_setEnv("ja_JP.EUC");
+        }
+        break;
 
     case '\0':
     case '?':
-    	Usage();
+        Usage();
     default:
-    	err_exit("Incorrect command line option : %s\n", a);
+        err_exit("Incorrect command line option : %s\n", a);
     }
     return 0;
 }
@@ -143,10 +147,10 @@ int ChrChkAdd(int c)
 {
     int i;
 
-    // oŒ»‡‚É“o˜^‚µ‚½‚¢‚Ì‚ÅA’Pƒ‚ÈŒŸõ
+    // å‡ºç¾é †ã«ç™»éŒ²ã—ãŸã„ã®ã§ã€å˜ç´”ãªæ¤œç´¢
     for (i = chrBuf_num; --i >= 0;) {
-    	if (c == chrBuf[i])
-    	    return 0;
+        if (c == chrBuf[i])
+            return 0;
     }
     //printf("%c%c", GHB(c), GLB(c));
     chrBuf[chrBuf_num++] = c;
@@ -162,27 +166,27 @@ void GetFile(SLIST *sl_first)
 
     chrBuf_num = 0;
     for (sl = sl_first; sl != NULL; sl = sl->link) {
-    	TXT1_OpenE(sl->s);
-    	while (TXT1_GetsE(buf, sizeof buf)) {
-    	    s = buf;
-    	    for (;;) {
-    	    	s = StrSkipSpc(s);
-    	    	c = mbs_getc(&s);
-    	    	if (c == 0)
-    	    	    break;
-    	    	if (opt_noAscii && c < 0x80) {
-    	    	    continue;
-    	    	}
-    	    	if (opt_cmtChr) {
-    	    	    if (c == opt_cmtChr)
-    	    	    	break;
-    	    	    else if (opt_cmtChr < 0 && c == '/' && *s == '/')
-    	    	    	break;
-    	    	}
-    	    	ChrChkAdd(c);
-    	    }
-    	}
-    	TXT1_Close();
+        TXT1_OpenE(sl->s);
+        while (TXT1_GetsE(buf, sizeof buf)) {
+            s = buf;
+            for (;;) {
+                s = StrSkipSpc(s);
+                c = mbs_getc((char const**)&s);
+                if (c == 0)
+                    break;
+                if (opt_noAscii && c < 0x80) {
+                    continue;
+                }
+                if (opt_cmtChr) {
+                    if (c == opt_cmtChr)
+                        break;
+                    else if (opt_cmtChr < 0 && c == '/' && *s == '/')
+                        break;
+                }
+                ChrChkAdd(c);
+            }
+        }
+        TXT1_Close();
     }
     chrBuf[chrBuf_num] = 0;
 }
@@ -197,9 +201,9 @@ static int  mlt_num;
 FILE *MltFileOpen(int md)
 {
     if (md)
-    	sprintf(mlt_name, "%s%03d.%s", mlt_basename, mlt_num, mlt_ext);
+        sprintf(mlt_name, "%s%03d.%s", mlt_basename, mlt_num, mlt_ext);
     else
-    	sprintf(mlt_name, "%s.%03d", mlt_basename, mlt_num);
+        sprintf(mlt_name, "%s.%03d", mlt_basename, mlt_num);
     mlt_num++;
     return fopenE(mlt_name, "wt");
 }
@@ -207,19 +211,19 @@ FILE *MltFileOpen(int md)
 
 void MltFile(char *inputname, char *oname, int w, int h, int md)
 {
-    FILE    	*fp;
-    char    	buf[16];
-    int     	c,l,m,n;
+    FILE        *fp;
+    char        buf[16];
+    int         c,l,m,n;
 
     if (oname == NULL)
-    	oname = inputname;
+        oname = inputname;
 
     mlt_num = 0;
     if (md) {
-    	strcpy(mlt_ext, FIL_ExtPtr(oname));
+        strcpy(mlt_ext, FIL_ExtPtr(oname));
     }
     if (oname == NULL)
-    	oname = inputname;
+        oname = inputname;
     strcpy(mlt_basename, oname);
     FIL_ChgExt(mlt_basename, NULL);
 
@@ -228,42 +232,42 @@ void MltFile(char *inputname, char *oname, int w, int h, int md)
     //c = 0x8140;
     c = ' ';
     for (m = l = n = 0; n < addLinNum*w; n++) {
-    	char buf[16];
-    	*mbs_setc(buf, c) = '\0';
-    	fprintf(fp, "%s", buf);
-    	//fprintf(fp, "%c%c", GHB(c), GLB(c));
-    	if (++m == w) {
-    	    fprintf(fp,"\n");
-    	    m = 0;
-    	    ++l;
-    	    if (h && l == h) {
-    	    	fprintf(fp,"\n");
-    	    	l = 0;
-    	    }
-    	}
+        char buf[16];
+        *mbs_setc(buf, c) = '\0';
+        fprintf(fp, "%s", buf);
+        //fprintf(fp, "%c%c", GHB(c), GLB(c));
+        if (++m == w) {
+            fprintf(fp,"\n");
+            m = 0;
+            ++l;
+            if (h && l == h) {
+                fprintf(fp,"\n");
+                l = 0;
+            }
+        }
     }
     if (m)
-    	fprintf(fp,"\n");
+        fprintf(fp,"\n");
 
     for (l = addLinNum, m = n = 0; n < chrBuf_num; n++) {
-    	c = chrBuf[n];
-    	*mbs_setc(buf, c) = '\0';
-    	fprintf(fp, "%s", buf);
-    	//fprintf(fp, "%c%c", GHB(c), GLB(c));
-    	if (++m == w) {
-    	    fprintf(fp,"\n");
-    	    fflush(fp);
-    	    m = 0;
-    	    ++l;
-    	    if (h && l == h) {
-    	    	fclose(fp);
-    	    	fp = MltFileOpen(md);
-    	    	l = 0;
-    	    }
-    	}
+        c = chrBuf[n];
+        *mbs_setc(buf, c) = '\0';
+        fprintf(fp, "%s", buf);
+        //fprintf(fp, "%c%c", GHB(c), GLB(c));
+        if (++m == w) {
+            fprintf(fp,"\n");
+            fflush(fp);
+            m = 0;
+            ++l;
+            if (h && l == h) {
+                fclose(fp);
+                fp = MltFileOpen(md);
+                l = 0;
+            }
+        }
     }
     if (m)
-    	fprintf(fp,"\n");
+        fprintf(fp,"\n");
     fclose(fp);
 }
 
@@ -276,73 +280,73 @@ void OneFile(char *inputname, char *oname, int w, int h)
     int     c,l,m,n;
 
     if (h == 0 && w) {
-    	h = (chrBuf_num + w - 1) / w;
+        h = (chrBuf_num + w - 1) / w;
     }
 
     if (oname == NULL) {
-    	printf("[%s] -> <stdout> %d*%d\n", inputname, w, h);
-    	fp = stdout;
+        printf("[%s] -> <stdout> %d*%d\n", inputname, w, h);
+        fp = stdout;
     } else {
-    	printf("[%s] -> [%s] %d*%d\n", inputname, oname, w, h);
-    	fp = fopenE(oname, "wt");
+        printf("[%s] -> [%s] %d*%d\n", inputname, oname, w, h);
+        fp = fopenE(oname, "wt");
     }
 
     if (addLinNum == 0) {
-    	for (l = m = n = 0; n < chrBuf_num; n++) {
-    	    c = chrBuf[n];
-    	    *mbs_setc(buf, c) = '\0';
-    	    fprintf(fp, "%s", buf);
-    	    //fprintf(fp, "%c%c", GHB(c), GLB(c));
-    	    if (++m == w) {
-    	    	fprintf(fp,"\n");
-    	    	m = 0;
-    	    	++l;
-    	    	if (h && l == h) {
-    	    	    fprintf(fp,"\n");
-    	    	    l = 0;
-    	    	}
-    	    }
-    	}
+        for (l = m = n = 0; n < chrBuf_num; n++) {
+            c = chrBuf[n];
+            *mbs_setc(buf, c) = '\0';
+            fprintf(fp, "%s", buf);
+            //fprintf(fp, "%c%c", GHB(c), GLB(c));
+            if (++m == w) {
+                fprintf(fp,"\n");
+                m = 0;
+                ++l;
+                if (h && l == h) {
+                    fprintf(fp,"\n");
+                    l = 0;
+                }
+            }
+        }
     } else {
-    	//c = 0x8140;
-    	c = ' ';
-    	for (m = l = n = 0; n < addLinNum*w; n++) {
-    	    *mbs_setc(buf, c) = '\0';
-    	    fprintf(fp, "%s", buf);
-    	    //fprintf(fp, "%c%c", GHB(c), GLB(c));
-    	    if (++m == w) {
-    	    	fprintf(fp,"\n");
-    	    	m = 0;
-    	    	++l;
-    	    	if (h && l == h) {
-    	    	    fprintf(fp,"\n");
-    	    	    l = 0;
-    	    	}
-    	    }
-    	}
-    	if (m)
-    	    fprintf(fp,"\n");
-    	for (m = 0, l = addLinNum, n = 0; n < chrBuf_num; n++) {
-    	    c = chrBuf[n];
-    	    *mbs_setc(buf, c) = '\0';
-    	    fprintf(fp, "%s", buf);
-    	    //fprintf(fp, "%c%c", GHB(c), GLB(c));
-    	    if (++m == w) {
-    	    	fprintf(fp,"\n");
-    	    	m = 0;
-    	    	++l;
-    	    	if (h && l == h) {
-    	    	    fprintf(fp,"\n");
-    	    	    l = 0;
-    	    	}
-    	    }
-    	}
+        //c = 0x8140;
+        c = ' ';
+        for (m = l = n = 0; n < addLinNum*w; n++) {
+            *mbs_setc(buf, c) = '\0';
+            fprintf(fp, "%s", buf);
+            //fprintf(fp, "%c%c", GHB(c), GLB(c));
+            if (++m == w) {
+                fprintf(fp,"\n");
+                m = 0;
+                ++l;
+                if (h && l == h) {
+                    fprintf(fp,"\n");
+                    l = 0;
+                }
+            }
+        }
+        if (m)
+            fprintf(fp,"\n");
+        for (m = 0, l = addLinNum, n = 0; n < chrBuf_num; n++) {
+            c = chrBuf[n];
+            *mbs_setc(buf, c) = '\0';
+            fprintf(fp, "%s", buf);
+            //fprintf(fp, "%c%c", GHB(c), GLB(c));
+            if (++m == w) {
+                fprintf(fp,"\n");
+                m = 0;
+                ++l;
+                if (h && l == h) {
+                    fprintf(fp,"\n");
+                    l = 0;
+                }
+            }
+        }
     }
     if (m)
-    	fprintf(fp,"\n");
+        fprintf(fp,"\n");
 
     if (oname)
-    	fclose(fp);
+        fclose(fp);
 }
 
 
@@ -354,42 +358,49 @@ int main(int argc, char *argv[])
     char    binname[260];
     int i;
     char *p;
+ #if defined(_WIN32)
+    int savCP = GetConsoleOutputCP();
+    SetConsoleOutputCP(65001);
+ #endif
 
     if (argc < 2)
-    	Usage();
+        Usage();
 
     mbs_setEnv(NULL);
  #ifdef EXARGV_INCLUDED
     ExArgv_conv(&argc, &argv);
  #endif
 
-    /* ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ */
+    /* ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ */
     for (i = 1; i < argc; i++) {
-    	p = argv[i];
-    	if (*p == '-') {
-    	    Opts(p);
-    	} else {
-    	    SLIST_Add(&fileList, p);
-    	}
+        p = argv[i];
+        if (*p == '-') {
+            Opts(p);
+        } else {
+            SLIST_Add(&fileList, p);
+        }
     }
 
     if (fileList == NULL) {
-    	err_exit("no file\n");
+        err_exit("no file\n");
     }
 
-    /* ƒeƒLƒXƒg“ü—Í */
+    /* ãƒ†ã‚­ã‚¹ãƒˆå…¥åŠ› */
     GetFile(fileList);
 
-    /* ƒ\[ƒg‚·‚é‚Æ‚« */
+    /* ã‚½ãƒ¼ãƒˆã™ã‚‹ã¨ã */
     if (opt_sort) {
-    	qsort(chrBuf, chrBuf_num, sizeof(chrBuf[0]), chrBuf_cmp);
+        qsort(chrBuf, chrBuf_num, sizeof(chrBuf[0]), chrBuf_cmp);
     }
 
-    /* 1ƒtƒ@ƒCƒ‹‚ğˆ— */
+    /* 1ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‡¦ç† */
     if (opt_mltDivFlg)
-    	MltFile(fileList->s, opt_oname, opt_clm, opt_len, opt_mltDivFlg-1);
+        MltFile(fileList->s, opt_oname, opt_clm, opt_len, opt_mltDivFlg-1);
     else
-    	OneFile(fileList->s, opt_oname, opt_clm, opt_len);
+        OneFile(fileList->s, opt_oname, opt_clm, opt_len);
 
+ #if defined(_WIN32)
+    SetConsoleOutputCP(savCP);
+ #endif
     return 0;
 }
