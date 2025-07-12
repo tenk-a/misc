@@ -1,9 +1,6 @@
 /*
     テキストファイルを読みこみ、文字 n個を１行として出力
 
-    0.50 で -aN を追加したバージョンと
-    0.80 で -s  を追加したバージョンの
-    ２系統に分かれてしまっていたので、統合。
  */
 
 
@@ -11,12 +8,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "subr.h"
 #include "ExArgv.h"
 #include "mbc.h"
+#include "ujfile.h"
 
 #if defined(_WIN32)
 #include <windows.h>
+#endif
+
+#ifndef PATH_MAX
+#define PATH_MAX    1024
 #endif
 
 typedef unsigned char_t;
@@ -24,7 +25,7 @@ typedef unsigned char_t;
 void Usage(void)
 {
     printf(
-        "usage> chr2lin [-opts] textfile(s)  //v1.00  " __DATE__ "  " __TIME__ "\n"
+        "usage> chr2lin [-opts] textfile(s)  //v1.10  " __DATE__ "  " __TIME__ "\n"
         "テキストファイルを読みこみ、出現順に１文字１行として出力\n"
         "一度出現した文字は無視\n"
         " -oNAME 出力ファイル名指定\n"
@@ -39,23 +40,148 @@ void Usage(void)
         "        -c のみだと // コメントを無視する.\n"
         " -aN    出力の N行を空白にする\n"
         " -b     半角を無視\n"
-        " -l[S]  入出力の文字コード S:utf8,mbc,sjis,eucjp\n"
+        " -l[S]  入出力の文字コード S:utf8,mbc,sjis,eucjp (default: 自動)\n"
     );
     exit(1);
 }
 
-/* ------------------------------------------------------------------------ */
-SLIST   *fileList   = NULL;
-long    opt_clm     = 1;
-long    opt_len     = 0;
-int     opt_mltDivFlg = 0;
-int     opt_cmtChr  = 0;
-int     opt_sort    = 0;
-int     opt_noAscii = 0;
-char    *opt_oname  = NULL;
-int     addLinNum   = 0;
-static int    utf8_flag = 0;
 
+/*---------------------------------------------------------------------------*/
+
+#if defined(_WIN32)
+#ifndef strcasecmp
+#define strcasecmp(a,b)         _stricmp((a),(b))
+#endif
+#endif
+
+char *StrSkipSpc(char *s)
+{
+    while ((*s && *(unsigned char *)s <= ' ') || *s == 0x7f) {
+        s++;
+    }
+    return s;
+}
+
+char *fpath_baseName(char *adr)
+{
+    char *p = adr;
+    while (*p != '\0') {
+        if (*p == ':' || *p == '/' || *p == '\\')
+            adr = p + 1;
+        //if (ISKANJI((*(unsigned char *)p)) && *(p+1) ) p++;
+        ++p;
+    }
+    return adr;
+}
+
+char *fpath_getExt(char *name)
+{
+    char *p;
+    name = fpath_baseName(name);
+    p = strrchr(name, '.');
+    if (p) {
+        return p+1;
+    }
+    return name + strlen(name);
+}
+
+char *fpath_chgExt(char filename[], char *ext)
+{
+    char *p;
+
+    p = fpath_baseName(filename);
+    p = strrchr( p, '.');
+    if (p == NULL) {
+        if (ext) {
+            strcat(filename,".");
+            strcat( filename, ext);
+        }
+    } else {
+        if (ext == NULL)
+            *p = 0;
+        else
+            strcpy(p+1, ext);
+    }
+    return filename;
+}
+
+
+volatile void err_exit(char *fmt, ...)
+{
+    va_list app;
+    va_start(app, fmt);
+    // fprintf(stdout, "%s %5d : ", src_name, src_line);
+    vfprintf(stdout, fmt, app);
+    va_end(app);
+    exit(1);
+}
+
+void *callocE(size_t a, size_t b)
+{
+    void *p;
+    if (a== 0 || b == 0)
+        a = b = 1;
+    p = calloc(a,b);
+    if (p == NULL)
+        err_exit("Not enough memory.(%d*%d byte(s))\n",a,b);
+    return p;
+}
+
+char *strdupE(char *s)
+{
+    char *p = callocE(1, strlen(s) + 8);
+    return p ? strcpy(p, s) : NULL;
+}
+
+
+typedef struct SLIST {
+    struct SLIST    *link;
+    char            *s;
+} SLIST;
+
+SLIST *SLIST_Add(SLIST **p0, char *s)
+{
+    SLIST* p;
+    p = *p0;
+    if (p == NULL) {
+        p = callocE(1, sizeof(SLIST));
+        p->s = strdupE(s);
+        *p0 = p;
+    } else {
+        while (p->link != NULL) {
+            p = p->link;
+        }
+        p->link = callocE(1, sizeof(SLIST));
+        p = p->link;
+        p->s = strdupE(s);
+    }
+    return p;
+}
+
+void SLIST_Free(SLIST **p0)
+{
+    SLIST *p, *q;
+
+    for (p = *p0; p; p = q) {
+        q = p->link;
+        free(p->s);
+        free(p);
+    }
+}
+
+
+/* ------------------------------------------------------------------------ */
+SLIST*      fileList    = NULL;
+long        opt_clm     = 1;
+long        opt_len     = 0;
+int         opt_mltDivFlg = 0;
+int         opt_cmtChr  = 0;
+int         opt_sort    = 0;
+int         opt_noAscii = 0;
+char*       opt_oname   = NULL;
+int         addLinNum   = 0;
+int         cur_cp      = 0;
+mbc_enc_t   cur_enc     = NULL;
 
 /** オプションの処理
  */
@@ -105,19 +231,15 @@ int Opts(char *a)
     case 'B':
         opt_noAscii = (*p != '-');
         break;
-    case 'Z':
-        debugflag = (*p != '-');
-        break;
     case 'L':
-        if (STRCASECMP(p, "utf8")==0 || STRCASECMP(p, "utf-8") == 0) {
-            mbs_setEnv("ja_JP.UTF-8");
-            utf8_flag = 1;
-        } else if (STRCASECMP(p, "mbc")==0 || STRCASECMP(p, "mbs") == 0 || STRCASECMP(p, "mb") == 0) {
-            mbs_setEnv("win");
-        } else if (STRCASECMP(p, "sjis") == 0 || STRCASECMP(p,"932") == 0) {
-            mbs_setEnv("ja_JP.SJIS");
-        } else if (STRCASECMP(p, "euc-jp") == 0 || STRCASECMP(p, "eucjp") == 0 || STRCASECMP(p, "euc") == 0) {
-            mbs_setEnv("ja_JP.EUC");
+        if (strcasecmp(p, "utf8")==0 || strcasecmp(p, "utf-8") == 0) {
+            cur_cp = MBC_CP_UTF8;   //mbs_setEnv("ja_JP.UTF-8");
+        } else if (strcasecmp(p, "mbc")==0 || strcasecmp(p, "mbs") == 0 || strcasecmp(p, "mb") == 0) {
+            cur_cp = MBC_CP_NONE;   //mbs_setEnv("win");
+        } else if (strcasecmp(p, "sjis") == 0 || strcasecmp(p,"932") == 0) {
+            cur_cp = MBC_CP_SJIS;   //mbs_setEnv("ja_JP.SJIS");
+        } else if (strcasecmp(p, "euc-jp") == 0 || strcasecmp(p, "eucjp") == 0 || strcasecmp(p, "euc") == 0) {
+            cur_cp = MBC_CP_EUCJP;  //mbs_setEnv("ja_JP.EUC");
         }
         break;
 
@@ -131,11 +253,10 @@ int Opts(char *a)
 }
 
 
-
 /*---------------------------------------------------------------------------*/
 #define CHR_BUF_MAX 0xFFFF
-static char_t chrBuf[CHR_BUF_MAX+1];
-static int    chrBuf_num;
+static char_t s_chrBuf[CHR_BUF_MAX+1];
+static int    s_chrBuf_size;
 
 int chrBuf_cmp(const void *a, const void *b)
 {
@@ -143,35 +264,44 @@ int chrBuf_cmp(const void *a, const void *b)
 }
 
 
-int ChrChkAdd(int c)
+static int ChrChkAdd(int c)
 {
     int i;
 
     // 出現順に登録したいので、単純な検索
-    for (i = chrBuf_num; --i >= 0;) {
-        if (c == chrBuf[i])
+    for (i = s_chrBuf_size; --i >= 0;) {
+        if (c == s_chrBuf[i])
             return 0;
     }
     //printf("%c%c", GHB(c), GLB(c));
-    chrBuf[chrBuf_num++] = c;
+    s_chrBuf[s_chrBuf_size++] = c;
     return 1;
 }
 
 
 void GetFile(SLIST *sl_first)
 {
-    SLIST *sl;
-    char buf[1030], *s;
-    unsigned  c;
+    SLIST*      sl;
+    char        buf[0x2000];
+    unsigned    c;
 
-    chrBuf_num = 0;
+    s_chrBuf_size = 0;
     for (sl = sl_first; sl != NULL; sl = sl->link) {
-        TXT1_OpenE(sl->s);
-        while (TXT1_GetsE(buf, sizeof buf)) {
-            s = buf;
+        int         cp;
+        ujfile_t*   uj = ujfile_fopen(sl->s, "rt");
+        if (uj == NULL) {
+            err_exit("%s : File open error.\n", sl->s);
+        }
+        cp  = ujfile_curCP(uj);
+        if (cur_cp && cur_cp != cp && cur_cp != MBC_CP_1BYTE)
+            err_exit("%s : Bad Codepage.\n", sl->s);
+        cur_cp  = cp;
+        cur_enc = mbc_cpToEnc(cur_cp);
+        while (ujfile_fgets(buf, sizeof buf, uj)) {
+            char* s = buf;
             for (;;) {
                 s = StrSkipSpc(s);
-                c = mbs_getc((char const**)&s);
+                c = mbc_getChr(cur_enc, (char const**)&s);
                 if (c == 0)
                     break;
                 if (opt_noAscii && c < 0x80) {
@@ -186,26 +316,39 @@ void GetFile(SLIST *sl_first)
                 ChrChkAdd(c);
             }
         }
-        TXT1_Close();
+        ujfile_fclose(uj);
     }
-    chrBuf[chrBuf_num] = 0;
+    s_chrBuf[s_chrBuf_size] = 0;
 }
 
 
 
 /*-----------------------------------------------------------------------*/
-static char mlt_name[FIL_NMSZ], mlt_basename[FIL_NMSZ], mlt_ext[FIL_NMSZ];
+static char mlt_name[PATH_MAX], mlt_basename[PATH_MAX], mlt_ext[PATH_MAX];
 static int  mlt_num;
+
+
+static char const* chrToStr(char_t c)
+{
+    static char buf[16];
+    char* p = mbc_strSetChr(cur_enc, buf, buf+sizeof(buf), c);
+    *p = 0;
+    return buf;
+}
 
 
 FILE *MltFileOpen(int md)
 {
+    FILE* fp;
     if (md)
         sprintf(mlt_name, "%s%03d.%s", mlt_basename, mlt_num, mlt_ext);
     else
         sprintf(mlt_name, "%s.%03d", mlt_basename, mlt_num);
     mlt_num++;
-    return fopenE(mlt_name, "wt");
+    fp = fopen(mlt_name, "wt");
+    if (fp == NULL)
+        err_exit("%s : File open error.\n", mlt_name);
+    return fp;
 }
 
 
@@ -220,22 +363,19 @@ void MltFile(char *inputname, char *oname, int w, int h, int md)
 
     mlt_num = 0;
     if (md) {
-        strcpy(mlt_ext, FIL_ExtPtr(oname));
+        strcpy(mlt_ext, fpath_getExt(oname));
     }
     if (oname == NULL)
         oname = inputname;
     strcpy(mlt_basename, oname);
-    FIL_ChgExt(mlt_basename, NULL);
+    fpath_chgExt(mlt_basename, NULL);
 
     fp = MltFileOpen(md);
 
     //c = 0x8140;
     c = ' ';
     for (m = l = n = 0; n < addLinNum*w; n++) {
-        char buf[16];
-        *mbs_setc(buf, c) = '\0';
-        fprintf(fp, "%s", buf);
-        //fprintf(fp, "%c%c", GHB(c), GLB(c));
+        fprintf(fp, "%s", chrToStr(c));
         if (++m == w) {
             fprintf(fp,"\n");
             m = 0;
@@ -249,11 +389,9 @@ void MltFile(char *inputname, char *oname, int w, int h, int md)
     if (m)
         fprintf(fp,"\n");
 
-    for (l = addLinNum, m = n = 0; n < chrBuf_num; n++) {
-        c = chrBuf[n];
-        *mbs_setc(buf, c) = '\0';
-        fprintf(fp, "%s", buf);
-        //fprintf(fp, "%c%c", GHB(c), GLB(c));
+    for (l = addLinNum, m = n = 0; n < s_chrBuf_size; n++) {
+        c = s_chrBuf[n];
+        fprintf(fp, "%s", chrToStr(c));
         if (++m == w) {
             fprintf(fp,"\n");
             fflush(fp);
@@ -280,7 +418,7 @@ void OneFile(char *inputname, char *oname, int w, int h)
     int     c,l,m,n;
 
     if (h == 0 && w) {
-        h = (chrBuf_num + w - 1) / w;
+        h = (s_chrBuf_size + w - 1) / w;
     }
 
     if (oname == NULL) {
@@ -288,15 +426,15 @@ void OneFile(char *inputname, char *oname, int w, int h)
         fp = stdout;
     } else {
         printf("[%s] -> [%s] %d*%d\n", inputname, oname, w, h);
-        fp = fopenE(oname, "wt");
+        fp = fopen(oname, "wt");
+        if (fp == NULL)
+            err_exit("%s : File open error.\n", oname);
     }
 
     if (addLinNum == 0) {
-        for (l = m = n = 0; n < chrBuf_num; n++) {
-            c = chrBuf[n];
-            *mbs_setc(buf, c) = '\0';
-            fprintf(fp, "%s", buf);
-            //fprintf(fp, "%c%c", GHB(c), GLB(c));
+        for (l = m = n = 0; n < s_chrBuf_size; n++) {
+            c = s_chrBuf[n];
+            fprintf(fp, "%s", chrToStr(c));
             if (++m == w) {
                 fprintf(fp,"\n");
                 m = 0;
@@ -311,9 +449,7 @@ void OneFile(char *inputname, char *oname, int w, int h)
         //c = 0x8140;
         c = ' ';
         for (m = l = n = 0; n < addLinNum*w; n++) {
-            *mbs_setc(buf, c) = '\0';
-            fprintf(fp, "%s", buf);
-            //fprintf(fp, "%c%c", GHB(c), GLB(c));
+            fprintf(fp, "%s", chrToStr(c));
             if (++m == w) {
                 fprintf(fp,"\n");
                 m = 0;
@@ -326,11 +462,9 @@ void OneFile(char *inputname, char *oname, int w, int h)
         }
         if (m)
             fprintf(fp,"\n");
-        for (m = 0, l = addLinNum, n = 0; n < chrBuf_num; n++) {
-            c = chrBuf[n];
-            *mbs_setc(buf, c) = '\0';
-            fprintf(fp, "%s", buf);
-            //fprintf(fp, "%c%c", GHB(c), GLB(c));
+        for (m = 0, l = addLinNum, n = 0; n < s_chrBuf_size; n++) {
+            c = s_chrBuf[n];
+            fprintf(fp, "%s", chrToStr(c));
             if (++m == w) {
                 fprintf(fp,"\n");
                 m = 0;
@@ -366,7 +500,6 @@ int main(int argc, char *argv[])
     if (argc < 2)
         Usage();
 
-    mbs_setEnv(NULL);
  #ifdef EXARGV_INCLUDED
     ExArgv_conv(&argc, &argv);
  #endif
@@ -385,12 +518,14 @@ int main(int argc, char *argv[])
         err_exit("no file\n");
     }
 
+    cur_enc = mbc_cpToEnc(cur_cp);
+
     /* テキスト入力 */
     GetFile(fileList);
 
     /* ソートするとき */
     if (opt_sort) {
-        qsort(chrBuf, chrBuf_num, sizeof(chrBuf[0]), chrBuf_cmp);
+        qsort(s_chrBuf, s_chrBuf_size, sizeof(s_chrBuf[0]), chrBuf_cmp);
     }
 
     /* 1ファイルを処理 */
@@ -398,6 +533,8 @@ int main(int argc, char *argv[])
         MltFile(fileList->s, opt_oname, opt_clm, opt_len, opt_mltDivFlg-1);
     else
         OneFile(fileList->s, opt_oname, opt_clm, opt_len);
+
+    SLIST_Free(&fileList);
 
  #if defined(_WIN32)
     SetConsoleOutputCP(savCP);
