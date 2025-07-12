@@ -18,8 +18,6 @@ BuildLog.htm
 err.txt
 
 build
-bld/*
-!bld/gen_bld.bat
-smp/*
-!smp/*.txt
+bld
+bin
 thirdparty/ccwrap

@@ -1,8 +1,7 @@
 /**
  *  @file   txt2cstr.cpp
  *  @brief  テキストファイルをc/c++の文字列に変換するコマンドラインツール
- *
- *  @author 北村雅史<NBB00541@nifty.com>
+ *  @author Masashi Kitamura (tenka@6809.net)
  *  @date   2003-07-26
  */
 
@@ -10,11 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#include <fstream>
-//#include <iostream>
 #include <string>
 #include <vector>
-//#include <set>
+
 #if defined _WIN32
 #include <windows.h>
 #endif
@@ -122,7 +119,7 @@ int Opts::get(const char *arg)
 class Conv {
     string fmt_;
     bool   dbc_;
-    static char *chTbl[256];
+    static char const* const chTbl[256];
     int  convLine(vector<char> &st, const char *src, mbc_enc_t enc);
   public:
     Conv() {
@@ -195,7 +192,7 @@ int Conv::run(const char *name, const char *outName)
 
 
 /// 特殊な文字コードを変換するためのテーブル
-char *Conv::chTbl[256] = {              // a:0x07,b:0x08,t:0x09,n:0x0a,v:0x0b,f:0x0c,r:0x0d,
+char const* const Conv::chTbl[256] = {              // a:0x07,b:0x08,t:0x09,n:0x0a,v:0x0b,f:0x0c,r:0x0d,
     "\\x00", "\\x01", "\\x02", "\\x03", "\\x04", "\\x05", "\\x06", "\\a"  ,
     "\\b"  , "\\t"  , "\\n"  , "\\v"  , "\\f"  , "\\r"  , "\\x0e", "\\x0f",
     "\\x10", "\\x11", "\\x12", "\\x13", "\\x14", "\\x15", "\\x16", "\\x17",
@@ -347,12 +344,16 @@ int main(int argc, char* argv[])
     ExArgv_conv(&argc, &argv);
  #endif
     App app;
+ #if 1
+    rc = app.main(argc, argv);
+ #else
     try {
         rc = app.main(argc, argv);
     } catch (const exception &ex) {
         err_printf("%s\n", ex.what());
         rc = 1;
     }
+ #endif
  #if defined(_WIN32)
     SetConsoleOutputCP(savCP);
  #endif
