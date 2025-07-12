@@ -150,19 +150,17 @@ extern "C" {
  #define EXARGV_CHAR_T  char
 #endif
 
-#define ExArgv_RC       int
-
-ExArgv_RC ExArgv_conv(int* pArgc, EXARGV_CHAR_T*** pppArgv);
-ExArgv_RC ExArgv_convEx(int* pArgc, EXARGV_CHAR_T*** pppArgv, unsigned wcFlags);
+int       ExArgv_conv(int* pArgc, EXARGV_CHAR_T*** pppArgv);
+int       ExArgv_convEx(int* pArgc, EXARGV_CHAR_T*** pppArgv, unsigned wcFlags);
 void      ExArgv_release(EXARGV_CHAR_T*** pppArgv);
 
 #if defined(EXARGV_FOR_WINMAIN) // for win-gui.
  #if defined(EXARGV_ENCODE_UTF8)
-  ExArgv_RC ExArgv_cmdLineToArgv(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
-  ExArgv_RC ExArgv_forWinMain(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
+  int      ExArgv_cmdLineToArgv(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
+  int      ExArgv_forWinMain(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv);
  #else
-  ExArgv_RC ExArgv_cmdLineToArgv(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
-  ExArgv_RC ExArgv_forWinMain(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
+  int      ExArgv_cmdLineToArgv(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
+  int      ExArgv_forWinMain(EXARGV_CHAR_T const* pCmdLine, int* pArgc, EXARGV_CHAR_T*** pppArgv);
  #endif
 #endif
 

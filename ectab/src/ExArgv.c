@@ -1,5 +1,5 @@
 /**
- *  @file   ExArgv.cpp
+ *  @file   ExArgv.c
  *  @brief  Extended processing for argc, argv (wildcards, response files).
  *  @author Masashi KITAMURA
  *  @date   2006-2024
@@ -280,7 +280,7 @@ wchar_t*  ExArgv_wcsdupFromUtf8(char const* u8s);
 #if defined(EXARGV_ENCODE_UTF8) == 0
 
 typedef WIN32_FIND_DATA             ExArgv_finddata_t;
-#define ExArgv_FindFirstFile(fn,dt) FindFirstFileEx((fn),FindExInfoStandard,(dt),FindExSearchNameMatch,NULL,FIND_FIRST_EX_LARGE_FETCH)
+#define ExArgv_FindFirstFile(fn,dt) FindFirstFileEx((fn),FindExInfoStandard,(dt),FindExSearchNameMatch,NULL,2/*FIND_FIRST_EX_LARGE_FETCH*/)
 #define ExArgv_FindNextFile(h,dt)   FindNextFile(h, (dt))
 #define ExArgv_FindClose(h)         FindClose(h)
 
@@ -321,21 +321,21 @@ static BOOL   ExArgv_FindNextFile(HANDLE hdl, ExArgv_finddata_t* data);
  *  @param  wcFlags     bit0: Perform wildcard expansion.
  *                      bit1: Memory is released as argv of ExArgv_conv is input.
  */
-ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
+int ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
 {
     int             argc;
     char_t**        ppArgv;
     ExArgv_Vector*  pVec;
     int             i;
 
-    assert( pArgc != 0 && pppArgv != 0 );
-    if (pArgc == 0 || pppArgv == 0)
+    assert( pArgc != NULL && pppArgv != NULL );
+    if (pArgc == NULL || pppArgv == NULL)
         return 0;
 
     ppArgv = *pppArgv;
     argc   = *pArgc;
-    assert(argc > 0 && ppArgv != 0);
-    if (argc == 0 || ppArgv == 0)
+    assert(argc > 0 && ppArgv != NULL);
+    if (argc == 0 || ppArgv == NULL)
         return 0;
 
     // When setting the full path of the exe in argv[0] according to the old specifications.
@@ -409,8 +409,8 @@ ExArgv_RC ExArgv_convEx(int* pArgc, char_t*** pppArgv, unsigned wcFlags)
 #if defined(EXARGV_ENCODE_UTF8)
 char** ExArgv_convExToUtf8(int* pArgc, wchar_t** ppWargv, unsigned wcFlags)
 {
-    char**    ppArgv = ExArgv_wargvToUtf8(*pArgc, ppWargv);
-    ExArgv_RC rc     = ExArgv_convEx(pArgc, &ppArgv, wcFlags);
+    char** ppArgv = ExArgv_wargvToUtf8(*pArgc, ppWargv);
+    int    rc     = ExArgv_convEx(pArgc, &ppArgv, wcFlags);
     if (!rc)
         ExArgv_release(&ppArgv);
     return ppArgv;
@@ -418,7 +418,7 @@ char** ExArgv_convExToUtf8(int* pArgc, wchar_t** ppWargv, unsigned wcFlags)
 #endif
 
 
-ExArgv_RC ExArgv_conv(int* pArgc, char_t*** pppArgv)
+int ExArgv_conv(int* pArgc, char_t*** pppArgv)
 {
     return ExArgv_convEx(pArgc, pppArgv, 1);
 }
@@ -429,17 +429,17 @@ ExArgv_RC ExArgv_conv(int* pArgc, char_t*** pppArgv)
 #if defined(EXARGV_FOR_WINMAIN)
 
 #if defined(EXARGV_ENCODE_UTF8)
-static ExArgv_RC ExArgv_cmdLineToArgvSub(char const* pCmdLine, int* pArgc, char*** pppArgv)
+static int ExArgv_cmdLineToArgvSub(char const* pCmdLine, int* pArgc, char*** pppArgv)
 #else
-ExArgv_RC ExArgv_cmdLineToArgv( char_t const* pCmdLine, int* pArgc, char_t*** pppArgv)
+int ExArgv_cmdLineToArgv( char_t const* pCmdLine, int* pArgc, char_t*** pppArgv)
 #endif
 {
     ExArgv_Vector*  pVec;
     char_t*         arg;
     char_t const*   s;
 
-    assert(pArgc != 0 && pppArgv != 0);
-    if (pArgc == 0 || pppArgv == 0)
+    assert(pArgc != NULL && pppArgv != NULL);
+    if (pArgc == NULL || pppArgv == NULL)
         return 0;
 
     arg = EXARGV_ALLOC(char_t, FILEPATH_SZ + 4);
@@ -450,7 +450,7 @@ ExArgv_RC ExArgv_cmdLineToArgv( char_t const* pCmdLine, int* pArgc, char_t*** pp
         return 0;
 
     pVec = ExArgv_Vector_create(1);
-    if (pVec == 0) {
+    if (pVec == NULL) {
         ExArgv_free(arg);
         return 0;
     }
@@ -475,10 +475,10 @@ ExArgv_RC ExArgv_cmdLineToArgv( char_t const* pCmdLine, int* pArgc, char_t*** pp
 }
 
 #if defined(EXARGV_ENCODE_UTF8)
-ExArgv_RC ExArgv_cmdLineToArgv( wchar_t const* pCmdLineW, int* pArgc, char*** pppArgv)
+int ExArgv_cmdLineToArgv( wchar_t const* pCmdLineW, int* pArgc, char*** pppArgv)
 {
-    char*     pCmdLine = ExArgv_u8strdupFromWcs(pCmdLineW);
-    ExArgv_RC rc       = ExArgv_cmdLineToArgvSub(pCmdLine, pArgc, pppArgv);
+    char* pCmdLine = ExArgv_u8strdupFromWcs(pCmdLineW);
+    int   rc       = ExArgv_cmdLineToArgvSub(pCmdLine, pArgc, pppArgv);
     ExArgv_free(pCmdLine);
     return rc;
 }
@@ -487,14 +487,14 @@ ExArgv_RC ExArgv_cmdLineToArgv( wchar_t const* pCmdLineW, int* pArgc, char*** pp
 /** From WinMain.
  */
 #if defined(EXARGV_ENCODE_UTF8)
-ExArgv_RC ExArgv_forWinMain(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv)
+int ExArgv_forWinMain(wchar_t const* pCmdLine, int* pArgc, char*** pppArgv)
 {
     if (ExArgv_cmdLineToArgv( pCmdLine, pArgc, pppArgv ))
         return ExArgv_conv(pArgc, pppArgv);
     return 0;
 }
 #else
-ExArgv_RC ExArgv_forWinMain(char_t const* pCmdLine, int* pArgc, char_t*** pppArgv)
+int ExArgv_forWinMain(char_t const* pCmdLine, int* pArgc, char_t*** pppArgv)
 {
     if (ExArgv_cmdLineToArgv( pCmdLine, pArgc, pppArgv ))
         return ExArgv_conv(pArgc, pppArgv);
@@ -516,7 +516,7 @@ char** ExArgv_wargvToUtf8(int argc, wchar_t* ppWargv[])
 {
     char**  av;
     int     i;
-    assert( ppWargv != 0 );
+    assert( ppWargv != NULL );
 
     if (argc == 0) {    // If argc is 0, count argv until NULL appears.
         while (ppWargv[argc])
@@ -539,7 +539,7 @@ wchar_t** ExArgv_u8argvToWcs(int argc, char* ppArgv[])
 {
     wchar_t** av;
     int       i;
-    assert( ppArgv != 0 );
+    assert( ppArgv != NULL );
 
     if (argc == 0) {    // If argc is 0, count argv until NULL appears.
         while (ppArgv[argc])
@@ -679,7 +679,7 @@ static BOOL ExArgv_getAppEnv(char_t const* envName, ExArgv_Vector* pVec)
 {
     BOOL    rc = 1;
     char_t* env;
-    if (envName == 0 || envName[0] == 0)
+    if (envName == NULL || envName[0] == 0)
         return 1;
     env = ExArgv_getenvDup(envName);
     if (env && env[0]) {
@@ -713,7 +713,7 @@ static BOOL ExArgv_loadConfigFile(char_t const* exeName, ExArgv_Vector* pVec)
  #if defined(DOSWIN32)
     size_t        exelen = STR_LEN(exeName);
     char_t*       name   = EXARGV_ALLOC(char_t, exelen + extlen + 4);
-    if (!name)
+    if (name == NULL)
         return 0;
     memcpy(name, exeName, (exelen+1) * sizeof(char_t));
     p = STR_R_CHR(name, T('.'));
@@ -725,9 +725,9 @@ static BOOL ExArgv_loadConfigFile(char_t const* exeName, ExArgv_Vector* pVec)
  #else
     char_t*       base   = ExArgv_fnameBase(exeName);
     size_t        baselen= STR_LEN(base);
-    size_t        nameCap= exelen + extlen + 8;
+    size_t        nameCap= baselen + extlen + 8;
     char_t*       name   = EXARGV_ALLOC(char_t, nameCap);
-    if (!name)
+    if (name == NULL)
         return 0;
     snprintf(name, nameCap, "~/.%s%s", base, ext);
  #endif
@@ -740,21 +740,14 @@ static BOOL ExArgv_loadConfigFile(char_t const* exeName, ExArgv_Vector* pVec)
 
 #if EXARGV_USE_RESFILE || EXARGV_USE_CONFIG
 
+static BOOL ExArgv_getResponseArgs(ExArgv_Vector* pVec, unsigned char* src, size_t bytes, char_t const* fpath);
+
 /** Load response file.
  */
 static BOOL ExArgv_loadResponseFile(char_t const* fpath, ExArgv_Vector* pVec, BOOL notFoundOk)
 {
-    enum { BUF_SZ = 0x8010 * 3 };
-    unsigned char*  s;
-    unsigned char*  src;
-    unsigned char*  src_e;
-    unsigned char*  dst;
-    unsigned char*  dst_e;
     size_t          bytes = 0;
-    unsigned        lno = 1;
-    BOOL            rc = 1;
-
-    src = (unsigned char*)ExArgv_fileLoadMalloc(fpath, &bytes);
+    unsigned char*  src   = (unsigned char*)ExArgv_fileLoadMalloc(fpath, &bytes);
     if (src == NULL) {
         if (notFoundOk) {
             return 1;
@@ -770,8 +763,22 @@ static BOOL ExArgv_loadResponseFile(char_t const* fpath, ExArgv_Vector* pVec, BO
             return 0;
         }
     }
+    if (bytes == 0)
+    	return 1;
+	return ExArgv_getResponseArgs(pVec, src, bytes, fpath);
+}
 
-    dst   = EXARGV_ALLOC(unsigned char, BUF_SZ+4);
+
+static BOOL ExArgv_getResponseArgs(ExArgv_Vector* pVec, unsigned char* src, size_t bytes, char_t const* fpath)
+{
+    enum { BUF_SZ = 0x8010 * 3 };
+    unsigned char*  s     = src;
+    unsigned char*  src_e = src + bytes;
+    unsigned        lno   = 1;
+    BOOL            rc    = 1;
+    unsigned char*  dst   = EXARGV_ALLOC(unsigned char, BUF_SZ+4);
+    unsigned char*  dst_e;
+
     if (dst == NULL)
         return 0;
     dst_e = dst + BUF_SZ;
@@ -821,7 +828,7 @@ static BOOL ExArgv_loadResponseFile(char_t const* fpath, ExArgv_Vector* pVec, BO
         if (d > dst)
             *--d = 0;
 
-        if (dst_ovr) {
+        if (dst_ovr && fpath) {
          #if defined(EXARGV_ENCODE_WCHAR)
             char* fnm = ExArgv_u8strdupFromWcs(fpath);
          #else
@@ -982,7 +989,7 @@ static char_t** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t***
     char_t**        av;
     int             ac;
 
-    assert( pppArgv != 0 && pArgc != 0 && ppVec != 0 );
+    assert( pppArgv != NULL && pArgc != NULL && ppVec != NULL );
 
     *pppArgv = NULL;
     *pArgc   = 0;
@@ -997,7 +1004,7 @@ static char_t** ExArgv_VectorToArgv(ExArgv_Vector** ppVec, int* pArgc, char_t***
 
     *pArgc   = ac;
     av       = EXARGV_ALLOC(char_t*, ac + 2);
-    if (!av)
+    if (av == NULL)
         return NULL;
     *pppArgv = av;
 
@@ -1083,8 +1090,8 @@ static int ExArgv_fname_is_mbblead(unsigned c) {
     case 0 /* INIT */: ExArgv_fname_check_locale(); goto RETRY;
     case 2 /* SJIS */: return ((c >= 0x81 && c <= 0x9F) || (c >= 0xE0 && c <= 0xFC));
     case 3 /* BIG5 */: return ((c >= 0xA1 && c <= 0xC6) || (c >= 0xC9 && c <= 0xF9));
-    case 4 /* GBK  */: return (c >= 0x81 && c <= 0xFE);
-    default:           return 0;
+    case 4 /* GBK  */: return  (c >= 0x81 && c <= 0xFE);
+    default:           return  0;
     }
 }
 #endif  // defined(DOSWIN32)== 0 && defined(EXARGV_ENCODE_MBC)
@@ -1158,10 +1165,10 @@ char_t *ExArgv_scanArgStr(char_t const *str, char_t arg[], size_t argSz)
     unsigned        f = 0;
     int             c;
 
-    if (s == 0)
+    if (s == NULL)
         return NULL;
 
-    assert( str != 0 && arg != 0 && argSz > 1 );
+    assert( str != NULL && arg != NULL && argSz > 1 );
 
     // Skip space.
     // while ( *s < 0x7f && isspace(*s) )
@@ -1231,10 +1238,14 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
     ExArgv_finddata_t*  pFindData   = EXARGV_ALLOC(ExArgv_finddata_t, 1);
     HANDLE              hdl         = ExArgv_FindFirstFile(srchName, pFindData);
 
+    if (hdl == INVALID_HANDLE_VALUE)
+        return 0;
+
     pathBufCapa = STR_LEN(srchName) + 1 + FILENAME_LEN + 4;
     pathBuf  = EXARGV_ALLOC(char_t, pathBufCapa);
     if (pathBuf == NULL)
         return -1;
+
     str_l_cpy(pathBuf, srchName, pathBufCapa);
 
     baseName    = ExArgv_fnameBase(pathBuf);
@@ -1242,24 +1253,19 @@ static int  ExArgv_Vector_findFname(ExArgv_Vector* pVec, char_t const* srchName,
     baseNameCapa  = pathBufCapa - STR_LEN(pathBuf);
     assert(baseNameCapa > FILENAME_LEN);
 
-    if (hdl != INVALID_HANDLE_VALUE) {
-        // Get file name. * Hidden files are not included.
-        do {
-            str_l_cpy(baseName, pFindData->cFileName, baseNameCapa);
-            if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
-                if (ExArgv_Vector_push( pVec, pathBuf ) == 0) {
-                    pVec = NULL;
-                    num  = -1;
-                    break;
-                }
-                ++num;
+    // Get file name. * Hidden files are not included.
+    do {
+        str_l_cpy(baseName, pFindData->cFileName, baseNameCapa);
+        if ((pFindData->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_HIDDEN)) == 0) {
+            if (ExArgv_Vector_push( pVec, pathBuf ) == 0) {
+                pVec = NULL;
+                num  = -1;
+                break;
             }
-        } while (ExArgv_FindNextFile(hdl, pFindData) != 0);
-        ExArgv_FindClose(hdl);
-    } else {
-        if (recFlag == 0)
-            return 0;
-    }
+            ++num;
+        }
+    } while (ExArgv_FindNextFile(hdl, pFindData) != 0);
+    ExArgv_FindClose(hdl);
 
    #if EXARGV_USE_WC_REC
     // Get file name using directory recursion.
@@ -1405,7 +1411,7 @@ static ExArgv_Vector* ExArgv_Vector_create(unsigned size)
         pVec->capa      = size;
         pVec->size      = 0;
         pVec->buf       = EXARGV_ALLOC(char_t*, size);
-        if (!pVec->buf) {
+        if (pVec->buf == NULL) {
             ExArgv_free(pVec);
             pVec = NULL;
         }
@@ -1418,8 +1424,6 @@ static ExArgv_Vector* ExArgv_Vector_create(unsigned size)
  */
 static BOOL ExArgv_Vector_push(ExArgv_Vector* pVec, char_t const* pStr)
 {
-    assert(pVec != 0);
-    assert(pStr != 0);
     if (pStr && pVec) {
         char_t*     p;
         unsigned    capa = pVec->capa;
@@ -1451,12 +1455,14 @@ static BOOL ExArgv_Vector_push(ExArgv_Vector* pVec, char_t const* pStr)
         }
         assert(pVec->size < pVec->capa);
         pVec->buf[ pVec->size ] = p = ExArgv_strdupE(pStr);
-        if (!p) {
+        if (p == NULL) {
             ExArgv_Vector_release(pVec);
             return 0;
         }
         ++ pVec->size;
-    }
+    } else {
+        assert(pVec != NULL && pStr != NULL);
+	}
     return 1;
 }
 
@@ -1524,7 +1530,7 @@ void ExArgv_free(void* s)
 char*  ExArgv_u8strdupFromWcs(wchar_t const* wcs) {
     size_t  len, wlen;
     char* u8s;
-    if (!wcs)
+    if (wcs == NULL)
         wcs = L"";
     wlen = wcslen(wcs);
     len  = EXARGV_MBS_FROM_WCS(NULL,0, wcs, wlen);
@@ -1539,7 +1545,7 @@ char*  ExArgv_u8strdupFromWcs(wchar_t const* wcs) {
 wchar_t*  ExArgv_wcsdupFromUtf8(char const* u8s) {
     size_t  len, wlen;
     wchar_t* wcs;
-    if (!u8s)
+    if (u8s == NULL)
         u8s = "";
     len  = strlen(u8s);
     wlen = EXARGV_WCS_FROM_MBS(NULL,0, u8s, len);
@@ -1649,8 +1655,8 @@ static HANDLE ExArgv_FindFirstFile(char_t const* fpath, ExArgv_finddata_t* data)
     if (fpath && data) {
         EXARGV_WPATH_FROM_CS(0, wpath, fpath);
         //h = FindFirstFileW(wpath, (WIN32_FIND_DATAW*)data);
-        h = FindFirstFileExW(wpath,FindExInfoStandard,(WIN32_FIND_DATAW*)data
-                            ,FindExSearchNameMatch,NULL,FIND_FIRST_EX_LARGE_FETCH);
+        h = FindFirstFileExW(wpath,0/*FindExInfoStandard*/,(WIN32_FIND_DATAW*)data
+                            ,0/*FindExSearchNameMatch*/,NULL,2/*FIND_FIRST_EX_LARGE_FETCH*/);
         if (h != INVALID_HANDLE_VALUE) {
             EXARGV_MBS_FROM_WCS(data->cFileName, sizeof(data->cFileName), data->cFileNameW, wcslen(data->cFileNameW)+1);
         }
