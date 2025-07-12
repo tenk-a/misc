@@ -91,7 +91,7 @@ typedef struct opts_t {
     char       *numbSep;
 
     char*       outname;
-    char*       extname;
+    char const* extname;
     char*       srcdir;
     char*       dstdir;
 } opts_t;
@@ -406,7 +406,7 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
  *  @param  oname   出力パス. NULL なら標準出力.
  *  @param  o       オプション.
  */
-static int oneFile(const char *iname, const char *oname, opts_t *o)
+static int oneFile(char const* iname, char const* oname, opts_t *o)
 {
     // ファイル名生成やバックアップの処理.
     char nameBuf[FNAME_MAX_PATH+8];
@@ -425,14 +425,16 @@ static int oneFile(const char *iname, const char *oname, opts_t *o)
             } else if (fname_isAbsolutePath(b)) {   // 入力が絶対パスなら,
                 b  = fname_baseName(b);             // ファイル名だけ取得.
             }
-            size_t      bsz = strlen(b);
-            size_t      l   = strlen(o->dstdir);
-            size_t      extlen = (o->extname && o->extname[0]) ? strlen(o->extname)+1 : 0;
-            if (l + bsz + extlen >= FNAME_MAX_PATH - 1) {
-                err_printf("[ERROR] Destination path too long. : %s/%s\n", o->dstdir, b);
-                return 1;
+            {
+                size_t      bsz = strlen(b);
+                size_t      l   = strlen(o->dstdir);
+                size_t      extlen = (o->extname && o->extname[0]) ? strlen(o->extname)+1 : 0;
+                if (l + bsz + extlen >= FNAME_MAX_PATH - 1) {
+                    err_printf("[ERROR] Destination path too long. : %s/%s\n", o->dstdir, b);
+                    return 1;
+                }
+                snprintf(nameBuf, FNAME_MAX_PATH, "%s%s%s", o->dstdir, b, extlen ? o->extname : "");
             }
-            snprintf(nameBuf, FNAME_MAX_PATH, "%s%s%s", o->dstdir, b, extlen ? o->extname : "");
             fname_backslashToSlash(nameBuf);        // win/dos なら \ を / に置換.
 
             // 出力先ディレクトリが存在しなければ作成.

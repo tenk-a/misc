@@ -490,8 +490,8 @@ static char*    eucjp_setChr(char*  d, char *e, unsigned c) {
         *d++ = c;
     } else {
      #if 1
-        *d++ = EUCJP_NREPL >> 8;
-        *d++ = EUCJP_NREPL & 255;
+        *d++ = (char)(EUCJP_NREPL >> 8);
+        *d++ = (char)(EUCJP_NREPL); // & 255;
      #endif
     }
     return d;

@@ -47,8 +47,6 @@ typedef struct mbc_enc_st {
     size_t   (*adjustSize)(char const* str, size_t size);
     int      (*cmp)(char const* lp, char const* rp);
     int      (*checkEncoding)(char const* str, size_t size, int lastBrokenOk);
- #if defined __cplusplus
- #endif
 } mbc_enc_st;
 
 typedef struct mbc_enc_st const* mbc_enc_t;
@@ -140,7 +138,7 @@ char*   mbc_strUpLow(mbc_enc_t mbc, char str[], unsigned flags);
 template<class V>
 mbc_enc_t mbc_autoEncodeCheck(V const& v, bool brokenEndChOk=1, mbc_enc_t const* tbl=NULL, size_t tblNum=0)
 {
-    assert(sizeof(v[0]) == 1 || sizeof(v[0]) == 2 || sizeof(v[0]) == 4);
+    //assert(sizeof(v[0]) == 1 || sizeof(v[0]) == 2 || sizeof(v[0]) == 4);
     return  mbc_autoEncodeCheck(&v[0], v.size()*sizeof(v[0]), brokenEndChOk, tbl, tblNum);
 }
 
@@ -154,10 +152,10 @@ D& mbc_convEnc(mbc_enc_t dstEnc, D& dst, mbc_enc_t srcEnc, S const& src)
     char const* s = (char const*)&src[0];
     size_t l  = mbc_strCountCapa(dstEnc, srcEnc, s, sz);
     if (l > 0) {
-        size_t dsz = (l + sizeof(v[0]) - 1) / sizeof(v[0]);
+        size_t dsz = (l + sizeof(dst[0]) - 1) / sizeof(dst[0]);
         dst.resize(dsz+1);
         l = mbc_strConv(dstEnc, (char*)&dst[0], l, srcEnc, s, sz);
-        dsz = (l + sizeof(v[0]) - 1) / sizeof(v[0]);
+        dsz = (l + sizeof(dst[0]) - 1) / sizeof(dst[0]);
         dst[dsz] = 0;
         dst.resize(dsz);
     }

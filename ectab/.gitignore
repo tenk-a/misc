@@ -18,9 +18,10 @@ BuildLog.htm
 err.txt
 
 build
-bld/*
-!bld/gen_bld.bat
+bld
+bin
+thirdparty/ccwrap
+
 smp/*
 !smp/base
 !smp/smp.bat
-thirdparty/ccwrap
