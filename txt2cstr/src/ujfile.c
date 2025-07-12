@@ -328,6 +328,8 @@ size_t ujfile_getline(ujfile_t* uj, char* buf, size_t bufSz)
     size_t   l;
     assert(bufSz > 1);
 
+    if (ujfile_eof(uj))
+        return (size_t)-1;
     l = ujfile_currentLineSize(uj, &crlfSize);
     if (l - crlfSize + hasLineBreak < bufSzM1) {
         size_t n       = l - crlfSize;
@@ -344,8 +346,8 @@ size_t ujfile_getline(ujfile_t* uj, char* buf, size_t bufSz)
         uj->curpos += bufSzM1;
         dst += bufSzM1;
         *dst = 0;
+        return dst - buf;
     }
-    return (size_t)-1;
 }
 
 /** like fgets
