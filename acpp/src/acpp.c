@@ -179,7 +179,7 @@ int Main(int argc, char *argv[])
     for (fl = fileListTop; fl != NULL; fl = fl->link) {
         p = fl->s;
         if (Filn_Open(p) < 0)
-            exit(1);
+            return 1;
         /* マクロ展開後のソースを出力 */
         for (;;) {
             p = Filn_Gets();
@@ -241,7 +241,7 @@ static void OptsInit(void)
     Filn->opt_dellf     = 1;        /* 0以外ならば￥改行による行連結を行う  */
     Filn->opt_sscomment = 1;        /* 0以外ならば//コメントを削除する      */
     Filn->opt_blkcomment= 1;        /* 0以外ならば／＊コメント＊／を削除する*/
-    Filn->opt_kanji     = 1;        /* 0以外ならばMS全角に対応              */
+    Filn->opt_kanji     = 1;        /* 0以外ならば ascii 以外に対応         */
     Filn->opt_sq_mode   = 1;        /* ' を ペアで文字定数として扱う        */
     Filn->opt_wq_mode   = 1;        /* " を ペアで文字列定数として扱う      */
     Filn->opt_mot_doll  = 0;        /* $ を モトローラな 16進数定数開始文字として扱う */
@@ -282,12 +282,10 @@ static int Opts(char *a)
     p++, c = *p++, c = toupper(c);
     switch(c) {
     case 'D':
-        if (Filn_SetLabel(p, NULL))
-            goto OPT_ERR;
+        Filn_SetLabel(p, NULL);
         break;
     case 'U':
-        if (Filn_UndefLabel(p))
-            goto OPT_ERR;
+        Filn_UndefLabel(p);
         break;
     case 'I':
         Filn_AddIncDir(strdupE(p));
@@ -339,19 +337,19 @@ static int Opts(char *a)
             }
             break;
         case 'T':
-            Filn->opt_delspc = (*p == '-') ? 0 : 1; /* 0以外ならば空白の圧縮を許す */
+            Filn->opt_delspc = (*p != '-');     /* 0以外ならば空白の圧縮を許す */
             break;
         case 'F':
-            Filn->opt_dellf  = (*p == '-') ? 0 : 1; /* 0以外ならば￥改行による行連結を行う */
+            Filn->opt_dellf  = (*p != '-');     /* 0以外ならば￥改行による行連結を行う */
             break;
         case 'S':
-            Filn->opt_sscomment = (*p == '-') ? 0 : 1;  /* 0以外ならば//コメントを削除する */
+            Filn->opt_sscomment = (*p != '-');  /* 0以外ならば//コメントを削除する */
             break;
         case 'B':
-            Filn->opt_blkcomment= (*p == '-') ? 0 : 1;  /* 0以外ならば／＊コメント＊／を削除する */
+            Filn->opt_blkcomment= (*p != '-');  /* 0以外ならば／＊コメント＊／を削除する */
             break;
         case 'J':
-            Filn->opt_kanji = (*p == '-') ? 0 : 1;      /* 0以外ならばMS全角に対応 */
+            Filn->opt_kanji = (*p != '-');      /* 0以外ならばMS全角に対応 */
             break;
         case 'Q':
             if (*p == '0') {
@@ -438,7 +436,7 @@ static int Opts(char *a)
             }
             break;
         case 'Z':
-            Filn->macErrFlg = (*p == '-') ? 0 : 1;      /* マクロ中のエラー行番号も表示 1:する 0:しない */
+            Filn->macErrFlg = (*p != '-');       /* マクロ中のエラー行番号も表示 1:する 0:しない */
             break;
 
         case 'H':
@@ -451,7 +449,7 @@ static int Opts(char *a)
         break;
 
     case 'Z':
-        debugflag = (*p == '-') ? 0 : 1;
+        debugflag = (*p != '-');
         break;
 
     case '\0':  //何もしない。オプション無しで、標準入力したいとき用

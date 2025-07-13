@@ -58,9 +58,8 @@ typedef struct SRCLIST {
 typedef struct FILN_INC_T {
     FILE*       fp;
     char*       name;
-    uint32_t   line;
-    uint32_t   linCnt;
-/*  int     lcflg;*/
+    uint32_t    line;
+    uint32_t    linCnt;
 } FILN_INC_T;
 
 
@@ -1095,8 +1094,7 @@ static int  Filn_Open0(char const* name, int md)
     Z.inclp = &Z.inclStk[Z.inclNo];
     Z.inclp->name = strdupE(fnam);
     Z.inclp->line = 0;
-    /*Z.inclp->lcflg = 0;*/
-    Z.inclp->fp = fp;
+    Z.inclp->fp   = fp;
     return 0;
 }
 
@@ -1146,7 +1144,6 @@ char *Filn_GetStr(char* buf, size_t len)
     for (;;) {
      /* J1: */
         if (i == len) {
-            /*Z.inclp->lcflg = 1;*/
             //Filn_Error("1行が長すぎる\n");
             Filn_Error("Line too long\n");
             break;
@@ -1386,14 +1383,12 @@ static char *Filn_GetLine(void)
     d = Z.linbuf;
 
   LOOP:
-    /*Z.inclp->lcflg = 0;*/
     Z.inclp->linCnt++;
     if (Filn_GetStr(Z.linbuf0, LINBUF0_SIZE) == NULL) {
         Z.linbuf[0] = 0;
         Z.linbuf0[0] = 0;
         return NULL;
     }
-    /*if (Z.inclp->lcflg) Z.inclp->linCnt--;*/
 
     /* 行頭コメントのチェック */
     if (V.cmt_chrTop[0]) {
@@ -1417,10 +1412,10 @@ static char *Filn_GetLine(void)
     s = Z.linbuf0;
     for (; ;) {
         c = GetC(s);    //c = *s++;
-        if (c == 0) {                                       /* 改行 */
+        if (c == 0) {   /* 改行 */
       EOS:
             if (V.opt_dellf) {
-                if (V.opt_delspc) { /* 0以外ならば空白の圧縮を許す          */
+                if (V.opt_delspc) {     /* 0以外ならば空白の圧縮を許す */
                     while (d > Z.linbuf) {
                         c = d[-1];
                         if (c == 0 || c > 0x20)
@@ -1533,13 +1528,11 @@ static char *Filn_GetLine(void)
                         s = SkipSpc(s+1);
                         break;
                     } else if (c == '\0') {
-                        /*Z.inclp->lcflg = 0;*/
                         Z.inclp->linCnt++;
                         if (Filn_GetStr(Z.linbuf0, LINBUF0_SIZE) == NULL) {
                             //Filn_Exit("/*コメント*/の途中でEOFが現れた\n");
                             Filn_Exit("EOF appeared in the middle of /* comment */\n");
                         }
-                        /*if (Z.inclp->lcflg) Z.inclp->linCnt--;*/
                         s = Z.linbuf0;
                     }
                 }
@@ -1693,16 +1686,7 @@ static MTREE_T  *MTREE_Add(char const* name, int atr, val_t argb, int argc, char
                 Filn_Error("定義済みの#マクロ(%s)を再定義しようとした\n", p->name);
             if ((p->atr == M_ATR_DEF || p->atr == M_ATR_MAC) && (atr == M_ATR_DEF || atr == M_ATR_MAC)) {
                 SAFE_FREE(p->buf);
-             #if 1
                 M_FreeArg(&p->argc, &p->argv);
-             #else
-                if (p->argv) {
-                    int i;
-                    for (i = 0; i < p->argc; i++)
-                        SAFE_FREE(p->argv[i]);
-                    SAFE_FREE(p->argv);
-                }
-             #endif
                 p->atr = M_ATR_0;
                 goto J1;
             }
@@ -1867,7 +1851,8 @@ static char const* M_GetSymLabel(int c, char const* s, char const* p)
             --s;
             k = mbs_len1(s);
             if (k < 2) {
-                Filn_Error("全角文字２バイト目(以降)がおかしい(%02x:%02x)\n",c,*s);
+                //Filn_Error("全角文字２バイト目(以降)がおかしい(%02x:%02x)\n",c,*s);
+                Filn_Error("The second byte (or later) of a full-width character is invalid.(%02x:%02x)\n",c,*s);
             } else if (l >= k) {
                 unsigned j;
                 l -= k;
@@ -2977,16 +2962,7 @@ static char const* M_Undef(char const* name)
     p = MTREE_Search(Z.M_name);
     if (p) {
         SAFE_FREE(p->buf);
-      #if 1
         M_FreeArg(&p->argc, &p->argv);
-      #else
-        if (p->argv) {
-            int         i;
-            for (i = 0; i < p->argc; i++)
-                SAFE_FREE(p->argv[i]);
-            SAFE_FREE(p->argv);
-        }
-      #endif
         p->atr = M_ATR_0;
     }
     return s;
@@ -3531,13 +3507,7 @@ static void MM_Macc(char const* s, int exmacF, MTREE_T* m, char** v /*, char *fn
                     } while(Z.M_sym == ',');
                     /* ループ展開 */
                     MM_Macc_MIpr(name, &s, c, (char const* const*)a /*, fname, line*/);
-                 #if 1
                     M_FreeArg(&c, &a);
-                 #else
-                    for (i = 0; i < c; i++)
-                        SAFE_FREE(a[i]);
-                    SAFE_FREE(a);
-                 #endif
                     goto LOOP;
                 } else if (k == M_ARRAY) {
                     //p = s;
@@ -4225,7 +4195,8 @@ static char *Filn_GetLineMac(void)
         s = SkipSpc(s);
         /*c = *s;*/
         if (Z.M_sym != 'A') {
-            Filn_Error("%c行の命令がおかしい\n",V.mac_chr);
+            //Filn_Error("%c行の命令がおかしい\n",V.mac_chr);
+            Filn_Error("%c line command error.\n",V.mac_chr);
             goto GETL;
         }
         o = M_OdrSearch(Z.M_name);
@@ -4249,16 +4220,7 @@ static char *Filn_GetLineMac(void)
                 InitStMbuf();
                 Z.errMacFnm = Z.inclp->name, Z.errMacLin = Z.inclp->line;
                 MM_Macc(((MTREE_T*)Z.macBgnStr)->buf, 1, (a ? ((MTREE_T*)Z.macBgnStr) : NULL), a/*, s, l*/, "<macbgn>");
-             #if 1
                 M_FreeArg(&ac, &a);
-             #else
-                if (((MTREE_T*)Z.macBgnStr)->argc) {
-                    for (i = 0; i < ((MTREE_T*)Z.macBgnStr)->argc; i++) {
-                        SAFE_FREE(a[i]);
-                    }
-                    SAFE_FREE(a);
-                }
-             #endif
                 Z.errMacFnm = NULL, Z.errMacLin = 0;
                 Z.MM_ptr = Z.M_mbuf;
                 M_Undef("_macro\xff_");
