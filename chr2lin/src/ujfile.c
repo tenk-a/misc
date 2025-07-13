@@ -136,7 +136,7 @@ static ujfile_t* ujfile_set(ujfile_t* uj, char* malloc_buf, size_t size, char co
  */
 ujfile_t* ujfile_fopen(char const* fname, char const* mode)
 {
-    ujfile_opts_t opts = { 0, MBC_CP_UTF8, 1, 0 };
+    ujfile_opts_t opts = { 0, MBC_CP_UTF8, 1, 0, 0, };
     while (*mode) {
         int c = *mode++;
         if (c == 'b')
@@ -176,9 +176,8 @@ static ujfile_t*    ujfile_set(ujfile_t* uj, char* malloc_buf, size_t size, char
     unsigned    bomSize = 0;
     char*       src   = malloc_buf;
     mbc_enc_t   curEnc;
-    assert(uj != NULL);
-    if (opts)
-        uj->opts = *opts;
+    assert(uj != NULL && opts != NULL);
+    uj->opts    = *opts;
     dstCP       = opts->dst_cp;
     curEnc      = (opts->src_cp) ? mbc_cpToEnc((mbc_cp_t)opts->src_cp)
                     : mbc_autoEncodeCheck(src, size, 0, NULL, 0);
