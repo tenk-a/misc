@@ -1943,6 +1943,7 @@ mbc_enc_t mbc_cpToEnc(mbc_cp_t cp)
     case MBC_CP_UTF32BE:    return mbc_enc_utf32be;
     case MBC_CP_SJIS:       return mbc_enc_cp932;
     case MBC_CP_EUCJP:      return mbc_enc_eucjp;
+    case MBC_CP_1BYTE:      return mbc_enc_asc;
     default: break;
     }
     return NULL;
