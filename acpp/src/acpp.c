@@ -1,10 +1,10 @@
 /**
     @file   acpp.c
-    @brief  Šg’£/—”ñ‚bƒvƒŠƒvƒƒZƒbƒT
+    @brief  cppé¢¨ãƒã‚¯ãƒ­ãƒ»ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µ
     @author Masashi KITAMURA (tenka@6809.net)
-    @date   1996-2017
+    @date   1996-2025
+    @license Boost Software License Version 1.0
     @note
-    	see license.txt
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,30 +13,63 @@
 #include <ctype.h>
 #include "Filn.h"
 
+#if defined(_WIN32)
+ #include <windows.h>
+ #if !defined(USE_SJIS)
+  #define USE_JAPANESE_CONSOLE()    SetConsoleOutputCP(65001)
+  char   s_jpFlag  = 0;
+ #endif
+#endif
 
-#define STDERR	    stderr
-int err_printf(char *fmt, ...);
 
-char	*appName;
+#define STDERR      stderr
+int     err_printf(char *fmt, ...);
+
+char*   g_appName = NULL;
 
 static void Usage(void)
 {
-    err_printf("\nŠg’£/—”ñ‚bƒvƒŠƒvƒƒZƒbƒT acpp v0.96 (" __DATE__ ")  by tenk*\n");
-    err_printf(" usage> %s [-options] filename [-options]\n", appName);
-    err_printf("  -d[NAME]  %cdefine NAME  1  ‚ğ‚·‚é\n", Filn->mac_chr);
-    err_printf("  -u[NAME]  %cundef  NAME ‚ğ‚·‚é\n", Filn->mac_chr);
-    err_printf(
-    	   "  -?  -h    ƒwƒ‹ƒv\n"
-    	   "  -i[DIR]   include ‚É‘Fõ‚·‚éƒfƒBƒŒƒNƒgƒŠ\n"
-    	   "  -o[FILE]  o—Í‚ğ FILE ‚É‚·‚é\n"
-    	   "  -e[FILE]  ƒGƒ‰[o—Í‚ğ FILE ‚É‚·‚é\n"
-    	   "  -s        Œ³ƒ\[ƒX‚ğƒRƒƒ“ƒg‚Æ‚µ‚Äo—Í‚µ‚È‚¢(-pc0 ‚É“¯‚¶)\n"
-    	   "  -w        –³‹\n"
-    	   "  -p...     -p‚Ån‚Ü‚éƒIƒvƒVƒ‡ƒ“\n"
-    	   "  -p?       -p‚Ån‚Ü‚éƒIƒvƒVƒ‡ƒ“‚Ìƒwƒ‹ƒv\n"
-    );
-    err_printf("  -c[FILE]  FILE[.CFG] ‚ğ %s ‚Ì‚ ‚éƒfƒBƒŒƒNƒgƒŠ‚©‚ç“Ç‚İ‚Ş\n", appName);
-    err_printf("  ¦ w’è‚È‚­‚Æ‚à %s ‚Æ“¯‚¶ƒtƒHƒ‹ƒ_‚É‚ ‚é .cfgƒtƒ@ƒCƒ‹ ‚ğ“Ç‚Ş\n", appName);
+ #if defined(USE_JAPANESE_CONSOLE)
+    if (s_jpFlag) {
+        USE_JAPANESE_CONSOLE();
+        err_printf("\nacpp v0.98 (" __DATE__ ")  by tenk*\n");
+        err_printf("  cppé¢¨ãƒã‚¯ãƒ­ãƒ»ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µ\n");
+        err_printf(" usage> %s [-options] filename [-options]\n", g_appName);
+        err_printf("  -d[NAME]  %cdefine NAME  1  ã‚’ã™ã‚‹\n", Filn->mac_chr);
+        err_printf("  -u[NAME]  %cundef  NAME ã‚’ã™ã‚‹\n", Filn->mac_chr);
+        err_printf(
+               "  -?  -h    ãƒ˜ãƒ«ãƒ—\n"
+               "  -i[DIR]   include æ™‚ã«è©®ç´¢ã™ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª\n"
+               "  -o[FILE]  å‡ºåŠ›ã‚’ FILE ã«ã™ã‚‹\n"
+               "  -e[FILE]  ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã‚’ FILE ã«ã™ã‚‹\n"
+               "  -s        å…ƒã‚½ãƒ¼ã‚¹ã‚’ã‚³ãƒ¡ãƒ³ãƒˆã¨ã—ã¦å‡ºåŠ›ã—ãªã„(-pc0 ã«åŒã˜)\n"
+               "  -w        ç„¡è¦–\n"
+               "  -p...     -pã§å§‹ã¾ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³\n"
+               "  -p?       -pã§å§‹ã¾ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ãƒ˜ãƒ«ãƒ—\n"
+        );
+        err_printf("  -c[FILE]  FILE[.CFG] ã‚’ %s ã®ã‚ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã‚‰èª­ã¿è¾¼ã‚€\n", g_appName);
+        err_printf("  â€» æŒ‡å®šãªãã¨ã‚‚ %s ã¨åŒã˜ãƒ•ã‚©ãƒ«ãƒ€ã«ã‚ã‚‹ .cfgãƒ•ã‚¡ã‚¤ãƒ« ã‚’èª­è¾¼ã‚€\n", g_appName);
+    } else
+ #endif
+    {
+        err_printf("acpp v0.98 (" __DATE__ ")  by tenk*\n");
+        err_printf(" usage> %s [-options] filename [-options]\n", g_appName);
+        err_printf("  -d[NAME]  %cdefine NAME 1\n", Filn->mac_chr);
+        err_printf("  -u[NAME]  %cundef NAME\n", Filn->mac_chr);
+        err_printf(
+               "  -?  -h    Help\n"
+               "  -i[DIR]   Directory to search on include\n"
+               "  -o[FILE]  Output to FILE\n"
+               "  -e[FILE]  Output errors to FILE\n"
+               "  -s        Do not output the original source as comments (same as -pc0)\n"
+               "  -w        Ignore\n"
+               "  -p...     Option starting with -p\n"
+               "  -p?       Help for options starting with -p\n"
+        );
+        err_printf("  -c[FILE]  Load FILE[.CFG] from the directory where %s is located\n", g_appName);
+
+        err_printf("\n Even without specifying, .cfg file in the same folder as %s will be loaded\n", g_appName);
+    }
     exit(1);
 }
 
@@ -45,15 +78,15 @@ static void Usage(void)
 /* ------------------------------------------------------------------------ */
 typedef struct SLIST {
     struct SLIST    *link;
-    char    	    *s;
+    char            *s;
 } SLIST;
 
-int 	    	debugflag;
+int             debugflag;
 
-static SLIST	*fileListTop = NULL;
-static int  	cmtchr_i=0,cmtcht_i=0;
-static char 	*outname = NULL;
-static char 	*errname = NULL;
+static SLIST    *fileListTop = NULL;
+static int      cmtchr_i=0,cmtcht_i=0;
+static char     *outname = NULL;
+static char     *errname = NULL;
 
 
 static void ResFileRead(char *name);
@@ -78,7 +111,7 @@ volatile void err_exit(char *fmt, ...);
 
 /* ------------------------------------------------------------------------ */
 
-int main(int argc, char *argv[])
+int Main(int argc, char *argv[])
 {
     static char name[2100/*FIL_NMSZ*/];
     int i;
@@ -86,82 +119,82 @@ int main(int argc, char *argv[])
     SLIST *fl;
     FILE *fp;
 
-    appName = strdupE(FIL_BaseName(argv[0]));
+    g_appName = strdupE(FIL_BaseName(argv[0]));
 
-    if (Filn_Init() == NULL) {	    /* ƒ\[ƒX“ü—Íƒ‹[ƒ`ƒ“‚Ì‰Šú‰» */
-    	err_exit("ƒƒ‚ƒŠ‚ª‘«‚è‚Ü‚¹‚ñ\n");
-    	return 1;
+    if (Filn_Init() == NULL) {      /* ã‚½ãƒ¼ã‚¹å…¥åŠ›ãƒ«ãƒ¼ãƒãƒ³ã®åˆæœŸåŒ– */
+        err_exit("Initialize error.\n");
+        return 1;
     }
     OptsInit();
 
-    /* ƒRƒ“ƒtƒBƒOEƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ */
+    /* ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ */
     FIL_ChgExt(strcpy(name, argv[0]), "cfg");
     ResFileRead(name);
 
-    /* ˆø”‚ª–³‚¯‚ê‚Îƒwƒ‹ƒv•\¦ */
+    /* å¼•æ•°ãŒç„¡ã‘ã‚Œã°ãƒ˜ãƒ«ãƒ—è¡¨ç¤º */
     if (argc < 2)
-    	Usage();
+        Usage();
 
-    /* ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ */
+    /* ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ */
     for (i = 1; i < argc; i++) {
-    	p = argv[i];
-    	if (*p == '-') {
-    	    if (p[1] == 'C' || p[1] == 'c') {	/* ƒRƒ“ƒtƒBƒOƒtƒ@ƒCƒ‹“Ç‚İ‚İ */
-    	    	strcpy(name, argv[0]);
-    	    	*FIL_BaseName(name) = '\0';
-    	    	strcat(name, p+2);
-    	    	FIL_AddExt(name,"CFG");
-    	    	ResFileRead(name);
-    	    } else {
-    	    	Opts(p);
-    	    }
-    	} else if ( *p == '@') {
-    	    ResFileRead(p+1);
-    	} else {
-    	    SLIST_Add(&fileListTop, p);
-    	}
+        p = argv[i];
+        if (*p == '-') {
+            if (p[1] == 'C' || p[1] == 'c') {   /* ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ */
+                strcpy(name, argv[0]);
+                *FIL_BaseName(name) = '\0';
+                strcat(name, p+2);
+                FIL_AddExt(name,"CFG");
+                ResFileRead(name);
+            } else {
+                Opts(p);
+            }
+        } else if ( *p == '@') {
+            ResFileRead(p+1);
+        } else {
+            SLIST_Add(&fileListTop, p);
+        }
     }
 
-    if (fileListTop == NULL) {	// ƒtƒ@ƒCƒ‹‚ª‚È‚¯‚ê‚Î•W€“ü—Í‚·‚é
-    	//err_exit("ƒtƒ@ƒCƒ‹–¼‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢\n");
-    	SLIST_Add(&fileListTop, NULL);
+    if (fileListTop == NULL) {  // ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã‘ã‚Œã°æ¨™æº–å…¥åŠ›ã™ã‚‹
+        //err_exit("ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®šã—ã¦ãã ã•ã„\n");
+        SLIST_Add(&fileListTop, NULL);
     }
 
-    /* ƒGƒ‰[o—Í‚Ì€”õ */
+    /* ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã®æº–å‚™ */
     if (Filn_ErrReOpen(errname, stderr) == NULL) {
-    	err_exit("ƒGƒ‰[o—Íƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½\n");
+        err_exit("Error-output-file open error.\n");
     }
 
-    /* ƒ\[ƒXo—ÍƒXƒgƒŠ[ƒ€€”õ */
+    /* ã‚½ãƒ¼ã‚¹å‡ºåŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ æº–å‚™ */
     if (outname) {
-    	fp = fopen(outname,"wt");
-    	if (fp == NULL) {
-    	    err_exit("%s ‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ\n", outname);
-    	}
+        fp = fopen(outname,"wt");
+        if (fp == NULL) {
+            err_exit("%s : File open error.\n", outname);
+        }
     } else {
-    	fp = stdout;
+        fp = stdout;
     }
 
-    /* ‘S‚Ä‚Ìƒtƒ@ƒCƒ‹‚ğˆ— */
+    /* å…¨ã¦ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‡¦ç† */
     for (fl = fileListTop; fl != NULL; fl = fl->link) {
-    	p = fl->s;
-    	if (Filn_Open(p) < 0)
-    	    exit(1);
-    	/* ƒ}ƒNƒ“WŠJŒã‚Ìƒ\[ƒX‚ğo—Í */
-    	for (;;) {
-    	    p = Filn_Gets();
-    	    if (p == NULL)
-    	    	break;
-    	    fprintf(fp, "%s", p);
-    	    freeE(p);
-    	}
+        p = fl->s;
+        if (Filn_Open(p) < 0)
+            exit(1);
+        /* ãƒã‚¯ãƒ­å±•é–‹å¾Œã®ã‚½ãƒ¼ã‚¹ã‚’å‡ºåŠ› */
+        for (;;) {
+            p = Filn_Gets();
+            if (p == NULL)
+                break;
+            fprintf(fp, "%s", p);
+            freeE(p);
+        }
     }
 
-    /* o—Íæ‚ÌƒNƒ[ƒY */
+    /* å‡ºåŠ›å…ˆã®ã‚¯ãƒ­ãƒ¼ã‚º */
     if (fp != stdout)
-    	fclose(fp);
+        fclose(fp);
 
-    /* ƒ\[ƒX“ü—Íƒ‹[ƒ`ƒ“‚ÌI—¹ */
+    /* ã‚½ãƒ¼ã‚¹å…¥åŠ›ãƒ«ãƒ¼ãƒãƒ³ã®çµ‚äº† */
     Filn_Term();
 
     return 0;
@@ -169,7 +202,7 @@ int main(int argc, char *argv[])
 
 
 
-/**ƒŒƒXƒ|ƒ“ƒXEƒtƒ@ƒCƒ‹‚©‚çƒtƒ@ƒCƒ‹–¼,ƒIƒvƒVƒ‡ƒ“‚ğæ‚èo‚·
+/**ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«å,ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å–ã‚Šå‡ºã™
  */
 static void ResFileRead(char *name)
 {
@@ -180,22 +213,22 @@ static void ResFileRead(char *name)
 
     fp = fopen(name,"rt");
     if (fp == NULL)
-    	return;
+        return;
     n = 0;
     while (fgets(bf,sizeof bf,fp) != NULL) {
-    	++n;
-    	p = strtok(bf, " \t\n");
-    	while (p && *p && *p != ';') {
-    	    if (*p == '-')
-    	    	Opts(p);
-    	    else
-    	    	SLIST_Add(&fileListTop, p);
-    	    p = strtok(NULL, " \t\n");
-    	}
+        ++n;
+        p = strtok(bf, " \t\n");
+        while (p && *p && *p != ';') {
+            if (*p == '-')
+                Opts(p);
+            else
+                SLIST_Add(&fileListTop, p);
+            p = strtok(NULL, " \t\n");
+        }
     }
     if (ferror(fp)) {
-    	printf("%s %d : ƒŠ[ƒhƒGƒ‰[\n", name, n);
-    	exit(1);
+        printf("%s %d : Read error.\n", name, n);
+        exit(1);
     }
     fclose(fp);
 }
@@ -204,41 +237,41 @@ static void ResFileRead(char *name)
 
 static void OptsInit(void)
 {
-    Filn->opt_delspc	= 0;	    /* 0ˆÈŠO‚È‚ç‚Î‹ó”’‚Ìˆ³k‚ğ‹–‚·  	    */
-    Filn->opt_dellf 	= 1;	    /* 0ˆÈŠO‚È‚ç‚Î‰üs‚É‚æ‚és˜AŒ‹‚ğs‚¤  */
-    Filn->opt_sscomment = 1;	    /* 0ˆÈŠO‚È‚ç‚Î//ƒRƒƒ“ƒg‚ğíœ‚·‚é	    */
-    Filn->opt_blkcomment= 1;	    /* 0ˆÈŠO‚È‚ç‚Î^–ƒRƒƒ“ƒg–^‚ğíœ‚·‚é*/
-    Filn->opt_kanji 	= 1;	    /* 0ˆÈŠO‚È‚ç‚ÎMS‘SŠp‚É‘Î‰	    	    */
-    Filn->opt_sq_mode	= 1;	    /* ' ‚ğ ƒyƒA‚Å•¶š’è”‚Æ‚µ‚Äˆµ‚¤ */
-    Filn->opt_wq_mode	= 1;	    /* " ‚ğ ƒyƒA‚Å•¶š—ñ’è”‚Æ‚µ‚Äˆµ‚¤ */
-    Filn->opt_mot_doll	= 0;	    /* $ ‚ğ ƒ‚ƒgƒ[ƒ‰‚È 16i”’è”ŠJn•¶š‚Æ‚µ‚Äˆµ‚¤ */
-    Filn->opt_oct   	= 1;	    /* 1: 0‚©‚çn‚Ü‚é”š‚Í‚Wi”  0:10i */
+    Filn->opt_delspc    = 0;        /* 0ä»¥å¤–ãªã‚‰ã°ç©ºç™½ã®åœ§ç¸®ã‚’è¨±ã™          */
+    Filn->opt_dellf     = 1;        /* 0ä»¥å¤–ãªã‚‰ã°ï¿¥æ”¹è¡Œã«ã‚ˆã‚‹è¡Œé€£çµã‚’è¡Œã†  */
+    Filn->opt_sscomment = 1;        /* 0ä»¥å¤–ãªã‚‰ã°//ã‚³ãƒ¡ãƒ³ãƒˆã‚’å‰Šé™¤ã™ã‚‹      */
+    Filn->opt_blkcomment= 1;        /* 0ä»¥å¤–ãªã‚‰ã°ï¼ï¼Šã‚³ãƒ¡ãƒ³ãƒˆï¼Šï¼ã‚’å‰Šé™¤ã™ã‚‹*/
+    Filn->opt_kanji     = 1;        /* 0ä»¥å¤–ãªã‚‰ã°MSå…¨è§’ã«å¯¾å¿œ              */
+    Filn->opt_sq_mode   = 1;        /* ' ã‚’ ãƒšã‚¢ã§æ–‡å­—å®šæ•°ã¨ã—ã¦æ‰±ã†        */
+    Filn->opt_wq_mode   = 1;        /* " ã‚’ ãƒšã‚¢ã§æ–‡å­—åˆ—å®šæ•°ã¨ã—ã¦æ‰±ã†      */
+    Filn->opt_mot_doll  = 0;        /* $ ã‚’ ãƒ¢ãƒˆãƒ­ãƒ¼ãƒ©ãª 16é€²æ•°å®šæ•°é–‹å§‹æ–‡å­—ã¨ã—ã¦æ‰±ã† */
+    Filn->opt_oct       = 1;        /* 1: 0ã‹ã‚‰å§‹ã¾ã‚‹æ•°å­—ã¯ï¼˜é€²æ•°  0:10é€²   */
 
-    Filn->opt_orgSrc	= 3;	    /* 1:Œ³‚Ìƒ\[ƒX‚àƒRƒƒ“ƒg‚É‚µ‚Äo—Í 2:TAG JUMPŒ`® 3:#line file  0:o—Í‚µ‚È‚¢ */
+    Filn->opt_orgSrc    = 3;        /* 1:å…ƒã®ã‚½ãƒ¼ã‚¹ã‚‚ã‚³ãƒ¡ãƒ³ãƒˆã«ã—ã¦å‡ºåŠ› 2:TAG JUMPå½¢å¼ 3:#line file  0:å‡ºåŠ›ã—ãªã„ */
 
-    Filn->orgSrcPre 	= ";";	    /* Œ³ƒ\[ƒXo—Í‚Ìs“ª‚É‚Â‚¯‚é•¶š—ñ   */
-    Filn->orgSrcPost	= "";	    /* Œ³ƒ\[ƒXo—Í‚Ìs––‚É‚Â‚¯‚é•¶š—ñ   */
-    Filn->immMode   	= 0;	    /* 1:•„†•t10i 2:•„†–³10i 3:0xFF 4:$FF X(5:0FFh) */
-    Filn->cmt_chr[0]	= 0;	    /* ƒRƒƒ“ƒgŠJn•¶š‚É‚È‚é•¶š */
-    Filn->cmt_chr[1]	= 0;	    /* ƒRƒƒ“ƒgŠJn•¶š‚É‚È‚é•¶š */
-    Filn->cmt_chrTop[0] = 0;	    /* s“ªƒRƒƒ“ƒgŠJn•¶š‚É‚È‚é•¶š */
-    Filn->cmt_chrTop[1] = 0;	    /* s“ªƒRƒƒ“ƒgŠJn•¶š‚É‚È‚é•¶š */
-    Filn->macErrFlg 	= 1;	    /* ƒ}ƒNƒ’†‚ÌƒGƒ‰[s”Ô†‚à•\¦ 1:‚·‚é 0:‚µ‚È‚¢ */
-    Filn->mac_chr   	= '#';	    /* ƒ}ƒNƒsŠJn•¶š */
-    Filn->mac_chr2  	= '#';	    /* ƒ}ƒNƒ‚Ì“Áê“WŠJw’è•¶š.  */
-    Filn->localPrefix	= "_LCL_";
-    Filn->opt_yen   	= 1;	    /* \\•¶š‚ğC‚Ì‚æ‚¤‚Éˆµ‚í‚È‚¢. 1:‚·‚é 2:'"’†‚Ì‚İ  3,4:•ÏŠ·‚à‚µ‚¿‚á‚¤(ÀŒ±) */
+    Filn->orgSrcPre     = ";";      /* å…ƒã‚½ãƒ¼ã‚¹å‡ºåŠ›æ™‚ã®è¡Œé ­ã«ã¤ã‘ã‚‹æ–‡å­—åˆ—   */
+    Filn->orgSrcPost    = "";       /* å…ƒã‚½ãƒ¼ã‚¹å‡ºåŠ›æ™‚ã®è¡Œæœ«ã«ã¤ã‘ã‚‹æ–‡å­—åˆ—   */
+    Filn->immMode       = 0;        /* 1:ç¬¦å·ä»˜10é€² 2:ç¬¦å·ç„¡10é€² 3:0xFF 4:$FF X(5:0FFh) */
+    Filn->cmt_chr[0]    = 0;        /* ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹æ–‡å­—ã«ãªã‚‹æ–‡å­—           */
+    Filn->cmt_chr[1]    = 0;        /* ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹æ–‡å­—ã«ãªã‚‹æ–‡å­—           */
+    Filn->cmt_chrTop[0] = 0;        /* è¡Œé ­ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹æ–‡å­—ã«ãªã‚‹æ–‡å­—       */
+    Filn->cmt_chrTop[1] = 0;        /* è¡Œé ­ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹æ–‡å­—ã«ãªã‚‹æ–‡å­—       */
+    Filn->macErrFlg     = 1;        /* ãƒã‚¯ãƒ­ä¸­ã®ã‚¨ãƒ©ãƒ¼è¡Œç•ªå·ã‚‚è¡¨ç¤º 1:ã™ã‚‹ 0:ã—ãªã„ */
+    Filn->mac_chr       = '#';      /* ãƒã‚¯ãƒ­è¡Œé–‹å§‹æ–‡å­—                     */
+    Filn->mac_chr2      = '#';      /* ãƒã‚¯ãƒ­ã®ç‰¹æ®Šå±•é–‹æŒ‡å®šæ–‡å­—.            */
+    Filn->localPrefix   = "_LCL_";
+    Filn->opt_yen       = 1;        /* \\æ–‡å­—ã‚’Cã®ã‚ˆã†ã«æ‰±ã‚ãªã„. 1:ã™ã‚‹ 2:'"ä¸­ã®ã¿  3,4:å¤‰æ›ã‚‚ã—ã¡ã‚ƒã†(å®Ÿé¨“) */
 
-    Filn->sym_chr_doll	= '$';
-    Filn->sym_chr_atmk	= '@';
-    Filn->sym_chr_qa	= '?';
-    Filn->sym_chr_shp	= 0/*'#'*/;
-    Filn->sym_chr_prd	= 0/*'.'*/;
+    Filn->sym_chr_doll  = '$';
+    Filn->sym_chr_atmk  = '@';
+    Filn->sym_chr_qa    = '?';
+    Filn->sym_chr_shp   = 0/*'#'*/;
+    Filn->sym_chr_prd   = 0/*'.'*/;
 }
 
 
 
-/** ƒIƒvƒVƒ‡ƒ“‚Ìˆ—
+/** ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®å‡¦ç†
  */
 static int Opts(char *a)
 {
@@ -249,182 +282,187 @@ static int Opts(char *a)
     p++, c = *p++, c = toupper(c);
     switch(c) {
     case 'D':
-    	if (Filn_SetLabel(p, NULL))
-    	    goto OPT_ERR;
-    	break;
+        if (Filn_SetLabel(p, NULL))
+            goto OPT_ERR;
+        break;
     case 'U':
-    	if (Filn_UndefLabel(p))
-    	    goto OPT_ERR;
-    	break;
+        if (Filn_UndefLabel(p))
+            goto OPT_ERR;
+        break;
     case 'I':
-    	Filn_AddIncDir(strdupE(p));
-    	break;
+        Filn_AddIncDir(strdupE(p));
+        break;
     case 'O':
-    	outname = strdupE(p);
-    	break;
+        outname = strdupE(p);
+        break;
     case 'E':
-    	errname = strdupE(p);
-    	break;
+        errname = strdupE(p);
+        break;
     case 'S':
-    	Filn->opt_orgSrc = 0;
-    	break;
+        Filn->opt_orgSrc = 0;
+        break;
     case 'W':
-    	break;
+        break;
     case 'P':
-    	c = *p++, c = toupper(c);
-    	switch(c) {
-    	case 'C':
-    	    if (*p == 'S' || *p == 's') {
-    	    	p++;
-    	    	Filn->orgSrcPre = strdupE(p);
-    	    } else if (*p == 'E' || *p == 'e') {
-    	    	p++;
-    	    	Filn->orgSrcPost = strdupE(p);
-    	    } else {
-    	    	Filn->opt_orgSrc = strtoul(p,&p,10);
-    	    }
-    	    break;
-    	case 'D':
-    	    if (*p == 0)
-    	    	Filn->immMode = 1;
-    	    else if (*p == '-')
-    	    	Filn->immMode = 0;
-    	    else
-    	    	Filn->immMode = (int)strtoul(p, NULL, 10);
-    	    if (Filn->immMode > 4)
-    	    	goto OPT_ERR;
-    	    break;
-    	case 'P':
-    	    Filn->localPrefix = strdupE(p);
-    	    break;
-    	case 'Y':
-    	    Filn->opt_yen = (*p == '1' || *p == 0) ? 1 : (*p == '2') ? 2 : 0;
-    	    if (*p++) {
-    	    	if (*p == 't' || *p == 'T') {
-    	    	    Filn->opt_yen += 2;
-    	    	}
-    	    }
-    	    break;
-    	case 'T':
-    	    Filn->opt_delspc = (*p == '-') ? 0 : 1; /* 0ˆÈŠO‚È‚ç‚Î‹ó”’‚Ìˆ³k‚ğ‹–‚· */
-    	    break;
-    	case 'F':
-    	    Filn->opt_dellf  = (*p == '-') ? 0 : 1; /* 0ˆÈŠO‚È‚ç‚Î‰üs‚É‚æ‚és˜AŒ‹‚ğs‚¤ */
-    	    break;
-    	case 'S':
-    	    Filn->opt_sscomment = (*p == '-') ? 0 : 1;	/* 0ˆÈŠO‚È‚ç‚Î//ƒRƒƒ“ƒg‚ğíœ‚·‚é */
-    	    break;
-    	case 'B':
-    	    Filn->opt_blkcomment= (*p == '-') ? 0 : 1;	/* 0ˆÈŠO‚È‚ç‚Î^–ƒRƒƒ“ƒg–^‚ğíœ‚·‚é */
-    	    break;
-    	case 'J':
-    	    Filn->opt_kanji = (*p == '-') ? 0 : 1;  	/* 0ˆÈŠO‚È‚ç‚ÎMS‘SŠp‚É‘Î‰ */
-    	    break;
-    	case 'Q':
-    	    if (*p == '0') {
-    	    	Filn->opt_sq_mode = 0;
-    	    } else if (*p == '1') {
-    	    	Filn->opt_sq_mode = 1;
-    	    } else if (*p == '2') {
-    	    	Filn->opt_sq_mode = 2;
-    	    } else if (*p == 'W' || *p == 'w') {
-    	    	p++;
-    	    	if (*p == '0') {
-    	    	    Filn->opt_wq_mode = 0;
-    	    	} else if (*p == '1') {
-    	    	    Filn->opt_wq_mode = 1;
-    	    	} else if (*p == '2') {
-    	    	    Filn->opt_wq_mode = 2;
-    	    	} else {
-    	    	    goto OPT_ERR;
-    	    	}
-    	    } else {
-    	    	goto OPT_ERR;
-    	    }
-    	    break;
-    	case 'R':
-    	    c = toupper(*p); p++;
-    	    if (c == 'Q') {
-    	    	Filn->opt_sq_mode = 2;
-    	    	if (*p == '-')
-    	    	    Filn->opt_sq_mode = 1;
-    	    } else if (c == 'D') {
-    	    	Filn->opt_mot_doll = 1;
-    	    	if (*p == '-')
-    	    	    Filn->opt_mot_doll = 0;
-    	    }
-    	    break;
-    	case 'O':
-    	    if (*p == '-') {
-    	    	Filn->opt_oct = 0;
-    	    } else {
-    	    	Filn->opt_oct = 1;
-    	    }
-    	    break;
-    	case 'M':
-    	    if (*p == 'M' || *p == 'm') {
-    	    	++p;
-    	    	Filn->mac_chr2 = *p;	    	    	    	/* ƒ}ƒNƒsŠJn•¶š */
-    	    } else {
-    	    	Filn->mac_chr = *p; 	    	    	    /* ƒ}ƒNƒsŠJn•¶š */
-    	    	Filn->mac_chr2 = *p;	    	    	    	/* ƒ}ƒNƒsŠJn•¶š */
-    	    }
-    	    c = 0;
-    	    goto N1;
-    	case 'L':
-    	    c = *p;
-    	    goto N1;
-    	case 'N':
-    	    c = 0;
+        c = *p++, c = toupper(c);
+        switch(c) {
+        case 'C':
+            if (*p == 'S' || *p == 's') {
+                p++;
+                Filn->orgSrcPre = strdupE(p);
+            } else if (*p == 'E' || *p == 'e') {
+                p++;
+                Filn->orgSrcPost = strdupE(p);
+            } else {
+                Filn->opt_orgSrc = strtoul(p,&p,10);
+            }
+            break;
+        case 'D':
+            if (*p == 0)
+                Filn->immMode = 1;
+            else if (*p == '-')
+                Filn->immMode = 0;
+            else
+                Filn->immMode = (int)strtoul(p, NULL, 10);
+            if (Filn->immMode > 4)
+                goto OPT_ERR;
+            break;
+        case 'P':
+            Filn->localPrefix = strdupE(p);
+            break;
+        case 'Y':
+            Filn->opt_yen = (*p == '1' || *p == 0) ? 1 : (*p == '2') ? 2 : 0;
+            if (*p++) {
+                if (*p == 't' || *p == 'T') {
+                    Filn->opt_yen += 2;
+                }
+            }
+            break;
+        case 'T':
+            Filn->opt_delspc = (*p == '-') ? 0 : 1; /* 0ä»¥å¤–ãªã‚‰ã°ç©ºç™½ã®åœ§ç¸®ã‚’è¨±ã™ */
+            break;
+        case 'F':
+            Filn->opt_dellf  = (*p == '-') ? 0 : 1; /* 0ä»¥å¤–ãªã‚‰ã°ï¿¥æ”¹è¡Œã«ã‚ˆã‚‹è¡Œé€£çµã‚’è¡Œã† */
+            break;
+        case 'S':
+            Filn->opt_sscomment = (*p == '-') ? 0 : 1;  /* 0ä»¥å¤–ãªã‚‰ã°//ã‚³ãƒ¡ãƒ³ãƒˆã‚’å‰Šé™¤ã™ã‚‹ */
+            break;
+        case 'B':
+            Filn->opt_blkcomment= (*p == '-') ? 0 : 1;  /* 0ä»¥å¤–ãªã‚‰ã°ï¼ï¼Šã‚³ãƒ¡ãƒ³ãƒˆï¼Šï¼ã‚’å‰Šé™¤ã™ã‚‹ */
+            break;
+        case 'J':
+            Filn->opt_kanji = (*p == '-') ? 0 : 1;      /* 0ä»¥å¤–ãªã‚‰ã°MSå…¨è§’ã«å¯¾å¿œ */
+            break;
+        case 'Q':
+            if (*p == '0') {
+                Filn->opt_sq_mode = 0;
+            } else if (*p == '1') {
+                Filn->opt_sq_mode = 1;
+            } else if (*p == '2') {
+                Filn->opt_sq_mode = 2;
+            } else if (*p == 'W' || *p == 'w') {
+                p++;
+                if (*p == '0') {
+                    Filn->opt_wq_mode = 0;
+                } else if (*p == '1') {
+                    Filn->opt_wq_mode = 1;
+                } else if (*p == '2') {
+                    Filn->opt_wq_mode = 2;
+                } else {
+                    goto OPT_ERR;
+                }
+            } else {
+                goto OPT_ERR;
+            }
+            break;
+        case 'R':
+            c = toupper(*p); p++;
+            if (c == 'Q') {
+                Filn->opt_sq_mode = 2;
+                if (*p == '-')
+                    Filn->opt_sq_mode = 1;
+            } else if (c == 'D') {
+                Filn->opt_mot_doll = 1;
+                if (*p == '-')
+                    Filn->opt_mot_doll = 0;
+            }
+            break;
+        case 'O':
+            if (*p == '-') {
+                Filn->opt_oct = 0;
+            } else {
+                Filn->opt_oct = 1;
+            }
+            break;
+        case 'M':
+            if (*p == 'M' || *p == 'm') {
+                ++p;
+                Filn->mac_chr2 = *p;                /* ãƒã‚¯ãƒ­è¡Œé–‹å§‹æ–‡å­— */
+            } else {
+                Filn->mac_chr  = *p;                /* ãƒã‚¯ãƒ­è¡Œé–‹å§‹æ–‡å­— */
+                Filn->mac_chr2 = *p;                /* ãƒã‚¯ãƒ­è¡Œé–‹å§‹æ–‡å­— */
+            }
+            c = 0;
+            goto N1;
+        case 'L':
+            c = *p;
+            goto N1;
+        case 'N':
+            c = 0;
      N1:
-    	    if (*p == '#' || *p == '@' || *p == '?' || *p == '$' || *p == '.') {
-    	    	if (*p == '$')	Filn->sym_chr_doll = c;
-    	    	if (*p == '@')	Filn->sym_chr_atmk = c;
-    	    	if (*p == '?')	Filn->sym_chr_qa   = c;
-    	    	if (*p == '#')	Filn->sym_chr_shp  = c;
-    	    	if (*p == '.')	Filn->sym_chr_prd  = c;
-    	    } else {
-    	    	err_exit("-pm,-pn,-pl‚Åw’èo—ˆ‚é•¶š‚Í # @ ? $ . ‚Ì‚¢‚¸‚ê‚©‚Ì‚İ\n");
-    	    }
-    	    break;
-    	case 'E':
-    	    if (*p == 'T' || *p == 't') {
-    	    	if (cmtcht_i > 1)
-    	    	    err_exit("-pet ‚Ìw’è‚Í 2ŒÂ‚Ü‚Å\n");
-    	    	p++;
-    	    	Filn->cmt_chrTop[cmtcht_i++] = *p;
-    	    } else {
-    	    	if (cmtchr_i > 1)
-    	    	    err_exit("-pe ‚Ìw’è‚Í 3ŒÂ‚Ü‚Å\n");
-    	    	Filn->cmt_chr[cmtchr_i++] = *p;
-    	    }
-    	    break;
-    	case 'Z':
-    	    Filn->macErrFlg = (*p == '-') ? 0 : 1;  	/* ƒ}ƒNƒ’†‚ÌƒGƒ‰[s”Ô†‚à•\¦ 1:‚·‚é 0:‚µ‚È‚¢ */
-    	    break;
+            if (*p == '#' || *p == '@' || *p == '?' || *p == '$' || *p == '.') {
+                if (*p == '$')  Filn->sym_chr_doll = c;
+                if (*p == '@')  Filn->sym_chr_atmk = c;
+                if (*p == '?')  Filn->sym_chr_qa   = c;
+                if (*p == '#')  Filn->sym_chr_shp  = c;
+                if (*p == '.')  Filn->sym_chr_prd  = c;
+            } else {
+                //err_exit("-pm,-pn,-plã§æŒ‡å®šå‡ºæ¥ã‚‹æ–‡å­—ã¯ # @ ? $ . ã®ã„ãšã‚Œã‹ã®ã¿\n");
+                err_exit("Only # @ ? $ . can be specified for -pm, -pn, -pl\n");
+            }
+            break;
+        case 'E':
+            if (*p == 'T' || *p == 't') {
+                if (cmtcht_i > 1) {
+                    //err_exit("-pet ã®æŒ‡å®šã¯ 2å€‹ã¾ã§\n");
+                    err_exit("The -pet option can be specified up to 2 times\n");
+                }
+                p++;
+                Filn->cmt_chrTop[cmtcht_i++] = *p;
+            } else {
+                if (cmtchr_i > 1) {
+                    //err_exit("-pe ã®æŒ‡å®šã¯ 3å€‹ã¾ã§\n");
+                    err_exit("The -pe option can be specified up to 3 times\n");
+                }
+                Filn->cmt_chr[cmtchr_i++] = *p;
+            }
+            break;
+        case 'Z':
+            Filn->macErrFlg = (*p == '-') ? 0 : 1;      /* ãƒã‚¯ãƒ­ä¸­ã®ã‚¨ãƒ©ãƒ¼è¡Œç•ªå·ã‚‚è¡¨ç¤º 1:ã™ã‚‹ 0:ã—ãªã„ */
+            break;
 
-    	case 'H':
-    	case '?':
-    	case '\0':
-    	    UsageOptP();
-    	default:
-    	    goto OPT_ERR;
-    	}
-    	break;
+        case 'H':
+        case '?':
+        case '\0':
+            UsageOptP();
+        default:
+            goto OPT_ERR;
+        }
+        break;
 
     case 'Z':
-    	debugflag = (*p == '-') ? 0 : 1;
-    	break;
+        debugflag = (*p == '-') ? 0 : 1;
+        break;
 
-    case '\0':	//‰½‚à‚µ‚È‚¢BƒIƒvƒVƒ‡ƒ“–³‚µ‚ÅA•W€“ü—Í‚µ‚½‚¢‚Æ‚«—p
-    	break;
+    case '\0':  //ä½•ã‚‚ã—ãªã„ã€‚ã‚ªãƒ—ã‚·ãƒ§ãƒ³ç„¡ã—ã§ã€æ¨™æº–å…¥åŠ›ã—ãŸã„ã¨ãç”¨
+        break;
 
     case 'H':
     case '?':
-    	Usage();
+        Usage();
     default:
   OPT_ERR:
-    	err_exit("Incorrect command line option : %s\n", a);
+        err_exit("Incorrect command line option : %s\n", a);
     }
     return 0;
 }
@@ -433,7 +471,8 @@ static int Opts(char *a)
 
 static char *Pchk(int n)
 {
-    return (n) ? "‚·‚é" : "‚µ‚È‚¢";
+    //return (n) ? "ã™ã‚‹" : "ã—ãªã„";
+    return (n) ? "On " : "Off";
 }
 
 
@@ -451,11 +490,11 @@ static void UsageOptP(void)
     sc[3] = Filn->sym_chr_qa   ? " ?":"";
     sc[4] = Filn->sym_chr_prd  ? " .":"";
 
-    cc[0] = !Filn->sym_chr_shp	? " #":"";
+    cc[0] = !Filn->sym_chr_shp  ? " #":"";
     cc[1] = !Filn->sym_chr_doll ? " $":"";
     cc[2] = !Filn->sym_chr_atmk ? " @":"";
-    cc[3] = !Filn->sym_chr_qa	? " ?":"";
-    cc[4] = !Filn->sym_chr_prd	? " .":"";
+    cc[3] = !Filn->sym_chr_qa   ? " ?":"";
+    cc[4] = !Filn->sym_chr_prd  ? " .":"";
 
     cmc[0] = Filn->cmt_chr[0] ? Filn->cmt_chr[0] : ' ';
     cmc[2] = Filn->cmt_chr[1] ? Filn->cmt_chr[1] : ' ';
@@ -463,39 +502,74 @@ static void UsageOptP(void)
     cmc2[2] = Filn->cmt_chrTop[1] ? Filn->cmt_chrTop[1] : ' ';
 
     for (i = 0; i < 5; i++) {
-    	if (ac[i] == Filn->mac_chr)
-    	    cc[i] = "";
-    	if (ac[i] == Filn->mac_chr2)
-    	    cc[i] = "";
+        if (ac[i] == Filn->mac_chr)
+            cc[i] = "";
+        if (ac[i] == Filn->mac_chr2)
+            cc[i] = "";
     }
 
-    printf("-p‚Ån‚Ü‚éƒIƒvƒVƒ‡ƒ“F                                     Œ»İ‚Ìİ’è\n");
-    printf("  -pm[C]    ƒ}ƒNƒŠJn•¶š‚ğ C ‚É‚·‚é.   C ‚Í # $ @ ? .    %c\n", Filn->mac_chr);
-    printf("  -pmm[C]   ##,#ƒ‰ƒxƒ‹,#(®)‚Å‚Ì#‚ğ•ÏX. C ‚Í # $ @ ? .    %c\n", Filn->mac_chr2);
-    printf("  -pl[C]    C ‚ğƒ‰ƒxƒ‹\¬•¶š‚Æ‚·‚é.    C ‚Í # $ @ ? .   %s%s%s%s%s\n",sc[0],sc[1],sc[2],sc[3],sc[4]);
-    printf("  -pn[C]    C ‚ğƒ‰ƒxƒ‹\¬•¶š‚Æ‚µ‚È‚¢.  C ‚Í # $ @ ? .   %s%s%s%s%s\n",cc[0],cc[1],cc[2],cc[3],cc[4]);
-    printf("  -pp[NAME] #local ‚Å¶¬‚·‚éƒ‰ƒxƒ‹‚ÌƒvƒŒƒtƒBƒbƒNƒX        %s\n", Filn->localPrefix);
-    printf("  -pc[N]    Œ³ƒ\[ƒX‚ğƒRƒƒ“ƒg‚É‚µ‚Äo—Í 0:‚µ‚È‚¢ 1:‚·‚é   %d\n", Filn->opt_orgSrc);
-    printf("            2:TAGŒ`®‚Å‚·‚é 3:# s”Ô† ƒtƒ@ƒCƒ‹–¼ ‚ğo—Í   \n");
-    printf("  -pcs[STR] -pc1|2 AƒRƒƒ“ƒg‚Ìs“ª‚É‚Â‚¯‚é•¶š—ñ        %s\n", Filn->orgSrcPre);
-    printf("  -pce[STR] -pc1|2 AƒRƒƒ“ƒg‚Ìs––‚É‚Â‚¯‚é•¶š—ñ        %s\n", Filn->orgSrcPost);
-    printf("  -pe[C]    C ‚ğƒRƒƒ“ƒgŠJnƒLƒƒƒ‰‚Æ‚·‚é(2ŒÂ‰Â)            %s\n", cmc);
-    printf("  -pet[C]   C ‚ğs“ª‚Ì‚İ‚ÌƒRƒƒ“ƒgŠJn•¶š‚Æ‚·‚é(2ŒÂ‰Â)    %s\n", cmc2);
-    printf("  -py[N][t] \\‚Ì“Áêˆµ‚¢ 0:–³ 1:—L(''\"\"’†‚Ì‚İ) t•t:•ÏŠ·‚à   %s\n", optYen[Filn->opt_yen]);
-    printf("  -ps[-]    //ƒRƒƒ“ƒg‚ğíœ‚·‚é           -ps- ‚µ‚È‚¢     %s\n", Pchk(Filn->opt_sscomment));
-    printf("  -pb[-]    /*ƒRƒƒ“ƒg*/‚ğíœ‚·‚é         -pb- ‚µ‚È‚¢     %s\n", Pchk(Filn->opt_blkcomment));
-    printf("  -pf[-]    \\‰üsƒR[ƒh‚É‚æ‚és˜AŒ‹‚ğ‚·‚é -pf- ‚µ‚È‚¢      %s\n", Pchk(Filn->opt_dellf));
-    printf("  -pt[-]    ‹ó”’‚Ìˆ³k‚ğ‚·‚é               -pt- ‚µ‚È‚¢     %s\n", Pchk(Filn->opt_delspc));
-    printf("  -pj[-]    MS‘SŠp‚É‘Î‰‚·‚é               -pj- ‚µ‚È‚¢     %s\n", Pchk(Filn->opt_kanji));
-    printf("  -po[-]    0‚Ån‚Ü‚é”‚ğ8i”‚É‚·‚é       -po- ‚µ‚È‚¢     %s\n", Pchk(Filn->opt_oct));
-    printf("  -prd[-]   $‚Ìˆµ‚¢‚ğ16i”ŠJn•¶š‚Æ‚·‚é  -prd-‚µ‚È‚¢     %s\n", Pchk(Filn->opt_mot_doll));
-//  printf("  -prq[-]	'‚ğ‘Î‚Å‚È‚­A'C ‚Å 68xxƒAƒZƒ“ƒuƒ‰—p‚É‚·‚é      %s\n", Pchk(Filn->opt_sq_mode == 0));
-    printf("  -pq[N]    '•¶š'‚ğ 0:–³Œø 1:ƒyƒA'‚Å—LŒø 2:•Ğ'‚Å—LŒø('a)  %d\n", Filn->opt_sq_mode);
-    printf("  -pqw[N]   '•¶š—ñ'‚ğ 0:–³Œø 1:—LŒø                       %d\n", Filn->opt_wq_mode);
-    printf("  -pd[-]    ”’l(31,0x3,0b10,077,'a'“™)‚ğ\i”‚É•ÏŠ·      %s\n", Pchk(Filn->immMode));
-/*  printf("  -pd[N]	1:•„†•t‚« 2:•„†–³‚µ\i  3:C‚Ì16i”	       \n");*/
-/*  printf("	    	4:²İÃÙ‚È16i  5:ÓÄÛ°×‚È16i 	    	       \n");*/
-/*  printf("È—ª: -pm# -pl$ -pl@ -pl? -pj -ps -pb -pf -pt- -pc3 -o-\n");*/
+ #if defined(USE_JAPANESE_CONSOLE)
+    if (s_jpFlag) {
+        USE_JAPANESE_CONSOLE();
+        printf("-pã§å§‹ã¾ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ï¼š                                     ç¾åœ¨ã®è¨­å®š\n");
+        printf("  -pm[C]    ãƒã‚¯ãƒ­é–‹å§‹æ–‡å­—ã‚’ C ã«ã™ã‚‹.   C ã¯ # $ @ ? .    %c\n", Filn->mac_chr);
+        printf("  -pmm[C]   ##,#ãƒ©ãƒ™ãƒ«,#(å¼)ã§ã®#ã‚’å¤‰æ›´. C ã¯ # $ @ ? .    %c\n", Filn->mac_chr2);
+        printf("  -pl[C]    C ã‚’ãƒ©ãƒ™ãƒ«æ§‹æˆæ–‡å­—ã¨ã™ã‚‹.    C ã¯ # $ @ ? .   %s%s%s%s%s\n",sc[0],sc[1],sc[2],sc[3],sc[4]);
+        printf("  -pn[C]    C ã‚’ãƒ©ãƒ™ãƒ«æ§‹æˆæ–‡å­—ã¨ã—ãªã„.  C ã¯ # $ @ ? .   %s%s%s%s%s\n",cc[0],cc[1],cc[2],cc[3],cc[4]);
+        printf("  -pp[NAME] #local ã§ç”Ÿæˆã™ã‚‹ãƒ©ãƒ™ãƒ«ã®ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹        %s\n", Filn->localPrefix);
+        printf("  -pc[N]    å…ƒã‚½ãƒ¼ã‚¹ã‚’ã‚³ãƒ¡ãƒ³ãƒˆã«ã—ã¦å‡ºåŠ› 0:ã—ãªã„ 1:ã™ã‚‹   %d\n", Filn->opt_orgSrc);
+        printf("            2:TAGå½¢å¼ã§ã™ã‚‹ 3:# è¡Œç•ªå· ãƒ•ã‚¡ã‚¤ãƒ«å ã‚’å‡ºåŠ›   \n");
+        printf("  -pcs[STR] -pc1|2 æ™‚ã€ã‚³ãƒ¡ãƒ³ãƒˆã®è¡Œé ­ã«ã¤ã‘ã‚‹æ–‡å­—åˆ—        %s\n", Filn->orgSrcPre);
+        printf("  -pce[STR] -pc1|2 æ™‚ã€ã‚³ãƒ¡ãƒ³ãƒˆã®è¡Œæœ«ã«ã¤ã‘ã‚‹æ–‡å­—åˆ—        %s\n", Filn->orgSrcPost);
+        printf("  -pe[C]    C ã‚’ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹ã‚­ãƒ£ãƒ©ã¨ã™ã‚‹(2å€‹å¯)            %s\n", cmc);
+        printf("  -pet[C]   C ã‚’è¡Œé ­ã®ã¿ã®ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹æ–‡å­—ã¨ã™ã‚‹(2å€‹å¯)    %s\n", cmc2);
+        printf("  -py[N][t] \\ã®ç‰¹æ®Šæ‰±ã„ 0:ç„¡ 1:æœ‰(''\"\"ä¸­ã®ã¿) tä»˜:å¤‰æ›ã‚‚   %s\n", optYen[Filn->opt_yen]);
+        printf("  -ps[-]    //ã‚³ãƒ¡ãƒ³ãƒˆã‚’å‰Šé™¤ã™ã‚‹           -ps- ã—ãªã„     %s\n", Pchk(Filn->opt_sscomment));
+        printf("  -pb[-]    /*ã‚³ãƒ¡ãƒ³ãƒˆ*/ã‚’å‰Šé™¤ã™ã‚‹         -pb- ã—ãªã„     %s\n", Pchk(Filn->opt_blkcomment));
+        printf("  -pf[-]    \\æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã«ã‚ˆã‚‹è¡Œé€£çµã‚’ã™ã‚‹ -pf- ã—ãªã„      %s\n", Pchk(Filn->opt_dellf));
+        printf("  -pt[-]    ç©ºç™½ã®åœ§ç¸®ã‚’ã™ã‚‹               -pt- ã—ãªã„     %s\n", Pchk(Filn->opt_delspc));
+        printf("  -pj[-]    MSå…¨è§’ã«å¯¾å¿œã™ã‚‹               -pj- ã—ãªã„     %s\n", Pchk(Filn->opt_kanji));
+        printf("  -po[-]    0ã§å§‹ã¾ã‚‹æ•°ã‚’8é€²æ•°ã«ã™ã‚‹       -po- ã—ãªã„     %s\n", Pchk(Filn->opt_oct));
+        printf("  -prd[-]   $ã®æ‰±ã„ã‚’16é€²æ•°é–‹å§‹æ–‡å­—ã¨ã™ã‚‹  -prd-ã—ãªã„     %s\n", Pchk(Filn->opt_mot_doll));
+    //  printf("  -prq[-]   'ã‚’å¯¾ã§ãªãã€'C ã§ 68xxã‚¢ã‚»ãƒ³ãƒ–ãƒ©ç”¨ã«ã™ã‚‹      %s\n", Pchk(Filn->opt_sq_mode == 0));
+        printf("  -pq[N]    'æ–‡å­—'ã‚’ 0:ç„¡åŠ¹ 1:ãƒšã‚¢'ã§æœ‰åŠ¹ 2:ç‰‡'ã§æœ‰åŠ¹('a)  %d\n", Filn->opt_sq_mode);
+        printf("  -pqw[N]   'æ–‡å­—åˆ—'ã‚’ 0:ç„¡åŠ¹ 1:æœ‰åŠ¹                       %d\n", Filn->opt_wq_mode);
+        printf("  -pd[-]    æ•°å€¤(31,0x3,0b10,077,'a'ç­‰)ã‚’åé€²æ•°ã«å¤‰æ›      %s\n", Pchk(Filn->immMode));
+    /*  printf("  -pd[N]    1:ç¬¦å·ä»˜ã 2:ç¬¦å·ç„¡ã—åé€²  3:Cã®16é€²æ•°         \n");*/
+    /*  printf("            4:ï½²ï¾ï¾ƒï¾™ãª16é€²  5:ï¾“ï¾„ï¾›ï½°ï¾—ãª16é€²                    \n");*/
+    /*  printf("çœç•¥æ™‚: -pm# -pl$ -pl@ -pl? -pj -ps -pb -pf -pt- -pc3 -o-\n");*/
+    } else
+ #endif
+    {
+        printf("-Options starting with -p:                                    Current settings\n");
+        printf("  -pm[C]    Set macro start character to C.     C is #$@?.    %c\n", Filn->mac_chr);
+        printf("  -pmm[C]   Change # in ##, #label, #(expr).    C is #$@?.    %c\n", Filn->mac_chr2);
+        printf("  -pl[C]    Make C a valid label character.     C is #$@?.   %s%s%s%s%s\n",sc[0],sc[1],sc[2],sc[3],sc[4]);
+        printf("  -pn[C]    Make C not a valid label character. C is #$@?.   %s%s%s%s%s\n",cc[0],cc[1],cc[2],cc[3],cc[4]);
+        printf("  -pp[NAME] Prefix for labels generated by #local             %s\n", Filn->localPrefix);
+        printf("  -pc[N]    Output original source as comments 0:No 1:Yes     %d\n", Filn->opt_orgSrc);
+        printf("            2:TAG format  3:# line-number file-name output\n");
+        printf("  -pcs[STR] String to add at start of comment in -pc1|2       %s\n", Filn->orgSrcPre);
+        printf("  -pce[STR] String to add at end of comment in -pc1|2         %s\n", Filn->orgSrcPost);
+        printf("  -pe[C]    Use C as comment start character (up to 2)        %s\n", cmc);
+        printf("  -pet[C]   Use C as line-head-only comment start char        %s\n", cmc2);
+        printf("  -py[N][t] Special treatment for \\                           %s\n", optYen[Filn->opt_yen]);
+        printf("            0:None 1:Yes (only in ''/\"\") t:convert as well\n");
+        printf("  -ps[-]    Remove // comments           -ps- Do not remove   %s\n", Pchk(Filn->opt_sscomment));
+        printf("  -pb[-]    Remove /* comments */        -pb- Do not remove   %s\n", Pchk(Filn->opt_blkcomment));
+        printf("  -pf[-]    Join lines with backslash-newline  -pf- Do not    %s\n", Pchk(Filn->opt_dellf));
+        printf("  -pt[-]    Compress spaces              -pt- Do not compress %s\n", Pchk(Filn->opt_delspc));
+        printf("  -pj[-]    Support MS double-byte chars -pj- Do not support  %s\n", Pchk(Filn->opt_kanji));
+        printf("  -po[-]    Numbers starting with 0 are octal   -po- Do not   %s\n", Pchk(Filn->opt_oct));
+        printf("  -prd[-]   Treat $ as hex prefix        -prd- Do not treat   %s\n", Pchk(Filn->opt_mot_doll));
+    //  printf("  -prq[-]   Use ' not as a pair, but as 'C for 68xx assembler %s\n", Pchk(Filn->opt_sq_mode == 0));
+        printf("  -pq[N]    'char' is 0:invalid 1:pair 2:single 'a            %d\n", Filn->opt_sq_mode);
+        printf("  -pqw[N]   'string' is 0:invalid 1:valid                     %d\n", Filn->opt_wq_mode);
+        printf("  -pd[-]    Convert values (31,0b10,'a', etc.) to decimal     %s\n", Pchk(Filn->immMode));
+    /*  printf("  -pd[N]    1:signed 2:unsigned decimal  3:C hex             \n");*/
+    /*  printf("            4:intel hex   5:motorola hex                     \n");*/
+    /*  printf("Default: -pm# -pl$ -pl@ -pl? -pj -ps -pb -pf -pt- -pc3 -o-\n");*/
+    }
     exit(1);
 }
 
@@ -510,7 +584,7 @@ volatile void err_exit(char *fmt, ...)
     va_list app;
 
     va_start(app, fmt);
-    /*	err_printf("%s %5d : ", src_name, src_line);*/
+    /*  err_printf("%s %5d : ", src_name, src_line);*/
     vfprintf(STDERR, fmt, app);
     va_end(app);
     exit(1);
@@ -536,11 +610,13 @@ char *FIL_BaseName(char *adr)
 
     p = adr;
     while (*p != '\0') {
-    	if (*p == ':' || *p == '/' || *p == '\\')
-    	    adr = p + 1;
-    	if (ISKANJI((*(unsigned char *)p)) && *(p+1) )
-    	    p++;
-    	p++;
+        if (*p == ':' || *p == '/' || *p == '\\')
+            adr = p + 1;
+      #ifdef USE_SJIS
+        if (ISKANJI((*(unsigned char *)p)) && *(p+1) )
+            p++;
+      #endif
+        p++;
     }
     return adr;
 }
@@ -553,15 +629,15 @@ char *FIL_ChgExt(char filename[], char *ext)
     p = FIL_BaseName(filename);
     p = strrchr( p, '.');
     if (p == NULL) {
-    	if (ext) {
-    	    strcat(filename,".");
-    	    strcat( filename, ext);
-    	}
+        if (ext) {
+            strcat(filename,".");
+            strcat( filename, ext);
+        }
     } else {
-    	if (ext == NULL)
-    	    *p = 0;
-    	else
-    	    strcpy(p+1, ext);
+        if (ext == NULL)
+            *p = 0;
+        else
+            strcpy(p+1, ext);
     }
     return filename;
 }
@@ -570,8 +646,8 @@ char *FIL_ChgExt(char filename[], char *ext)
 char *FIL_AddExt(char filename[], char *ext)
 {
     if (strrchr(FIL_BaseName(filename), '.') == NULL) {
-    	strcat(filename,".");
-    	strcat(filename, ext);
+        strcat(filename,".");
+        strcat(filename, ext);
     }
     return filename;
 }
@@ -582,60 +658,61 @@ char *FIL_DelLastDirSep(char *dir)
     char *p;
 
     if (dir) {
-    	p = FIL_BaseName(dir);
-    	if (strlen(p) > 1) {
-    	    p = p+strlen(p);
-    	    if (p[-1] == '\\' || p[-1] == '/')
-    	    	p[-1] = 0;
-    	}
+        p = FIL_BaseName(dir);
+        if (strlen(p) > 1) {
+            p = p+strlen(p);
+            if (p[-1] == '\\' || p[-1] == '/')
+                p[-1] = 0;
+        }
     }
     return dir;
 }
 
 
 
-/** ƒGƒ‰[‚ª‚ ‚ê‚Î‘¦exit‚Ì malloc()
+/** ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚Œã°å³exitã® malloc()
  */
 void *mallocE(size_t a)
 {
     void *p;
 
     if (a == 0)
-    	a = 1;
+        a = 1;
     p = malloc(a);
     if (p == NULL) {
-    	err_exit("ƒƒ‚ƒŠ‚ª‘«‚è‚È‚¢(%d byte(s))\n",a);
+        err_exit("Out of memory(%d byte(s))\n",a);
     }
     return p;
 }
 
 
-/** ƒGƒ‰[‚ª‚ ‚ê‚Î‘¦exit‚Ì calloc()
+/** ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚Œã°å³exitã® calloc()
  */
 void *callocE(size_t a, size_t b)
 {
     void *p;
 
     if (b == 0)
-    	b = 1;
+        b = 1;
     p = calloc(a,b);
     if (p == NULL) {
-    	err_exit("ƒƒ‚ƒŠ‚ª‘«‚è‚È‚¢(%d*%d byte(s))\n",a,b);
+        err_exit("Out of memory(%d*%d byte(s))\n",a,b);
     }
     return p;
 }
 
 
-/** ƒGƒ‰[‚ª‚ ‚ê‚Î‘¦exit‚Ì strdup()
+/** ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚Œã°å³exitã® strdup()
  */
 char *strdupE(char *s)
 {
     char *p;
     if (s == NULL)
-    	return callocE(1,1);
+        return callocE(1,1);
     p = strdup(s);
     if (p == NULL) {
-    	err_exit("ƒƒ‚ƒŠ‚ª‘«‚è‚È‚¢(’·‚³%d+1)\n",strlen(s));
+        //err_exit("ãƒ¡ãƒ¢ãƒªãŒè¶³ã‚Šãªã„(é•·ã•%d+1)\n",strlen(s));
+        err_exit("Out of memory(%d+1)\n",strlen(s));
     }
     return p;
 }
@@ -644,7 +721,7 @@ char *strdupE(char *s)
 int freeE(void *p)
 {
     if (p)
-    	free(p);
+        free(p);
     return 0;
 }
 
@@ -655,21 +732,40 @@ SLIST *SLIST_Add(SLIST **p0, char *s)
     SLIST* p;
     p = *p0;
     if (p == NULL) {
-    	p = callocE(1, sizeof(SLIST));
-    	if (s)
-    	    p->s = strdupE(s);
-    	*p0 = p;
+        p = callocE(1, sizeof(SLIST));
+        if (s)
+            p->s = strdupE(s);
+        *p0 = p;
     } else {
-    	while (p->link != NULL) {
-    	    p = p->link;
-    	}
-    	p->link = callocE(1, sizeof(SLIST));
-    	p = p->link;
-    	if (s)
-    	    p->s = strdupE(s);
+        while (p->link != NULL) {
+            p = p->link;
+        }
+        p->link = callocE(1, sizeof(SLIST));
+        p = p->link;
+        if (s)
+            p->s = strdupE(s);
     }
     return p;
 }
 
 
 /* ------------------------------------------------------------------------ */
+#if !defined(_WIN32)
+int main(int argc, char *argv[])
+{
+    return Main(argc, argv);
+}
+#else
+int main(int argc, char *argv[])
+{
+    int rc;
+    int savCP = GetConsoleOutputCP();
+ #if defined(USE_JAPANESE_CONSOLE)
+    //SetConsoleOutputCP(65001);
+    s_jpFlag  = GetSystemDefaultLangID() == 0x0411;
+ #endif
+    rc = Main(argc, argv);
+    SetConsoleOutputCP(savCP);
+    return rc;
+}
+#endif
