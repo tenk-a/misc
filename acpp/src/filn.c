@@ -15,6 +15,7 @@
 #include <time.h>
 #include <stdint.h>
 #include "Filn.h"
+#include "ujfile.h"
 #include "mbc.h"
 
 
@@ -56,7 +57,7 @@ typedef struct SRCLIST {
 } SRCLIST;
 
 typedef struct FILN_INC_T {
-    FILE*       fp;
+    ujfile_t*   fp;
     char*       name;
     uint32_t    line;
     uint32_t    linCnt;
@@ -136,6 +137,8 @@ typedef struct filn_local_t {
     int         inclNo;
     FILN_INC_T* inclp;
     FILN_INC_T  inclStk[FILN_INCL_NUM];
+
+    mbc_enc_t   text_enc;
 
     /*char      Z.pc3name[1026];*/
     /*long      Z.pc3line = -1;*/
@@ -286,8 +289,9 @@ void Filn_GetErrNum(int* errNum, int* warnNum)
 #define STREND(p)       ((p)+strlen(p))
 #define STPCPY(d,s)     (strcpy(d,s) + strlen(s))
 
-#define FILN_MBC_IS_LEAD(c) (V.opt_kanji && mbs_islead(c))
-
+#define MBC_IS_LEAD(c)  (V.opt_kanji && mbc_isLead(Z.text_enc, (c)))
+#define MBS_LEN1(s)     mbc_strLen1(Z.text_enc, (s))
+#define MBS_GETC(s)     mbc_getChr(Z.text_enc, (s))
 
 /**
  * strncpy with guaranteed null-termination.
@@ -853,6 +857,7 @@ filn_t  *Filn_Init(void)
     V.opt_sscomment = 1;        /* 0以外ならば//コメントを削除する      */
     V.opt_blkcomment= 1;        /* 0以外ならば／＊コメント＊／を削除する*/
     V.opt_kanji     = 1;        /* 0以外ならばMS全角に対応              */
+    V.opt_cp        = 0;        /* Code Page : 0=auto, 437, 932, 65001  */
     V.opt_sq_mode   = 1;        /* ' を ペアで文字定数として扱う */
     V.opt_wq_mode   = 1;        /* " を ペアで文字列定数として扱う */
     V.opt_mot_doll  = 0;        /* $ を モトローラな 16進数定数開始文字として扱う */
@@ -901,6 +906,8 @@ filn_t  *Filn_Init(void)
     Z.M_mbuf      = callocE(1, Z.M_mbuf_size);
     Z.M_mbuf_end  = Z.M_mbuf + Z.M_mbuf_size;
 
+    Z.text_enc    = mbc_cpToEnc(437);
+
     // 名前管理の木の初期化
     MTREE_Init();
     MM_Init();
@@ -924,7 +931,7 @@ void Filn_Term(void)
     SAFE_FREE(Z.M_mbuf);
     for (i = 0; i < FILN_INCL_NUM; i++) {
         if (Z.inclStk[i].fp) {
-            fclose(Z.inclStk[i].fp);
+            ujfile_fclose(Z.inclStk[i].fp);
             Z.inclStk[i].fp = NULL;
             SAFE_FREE(Z.inclStk[i].name);
         }
@@ -949,7 +956,7 @@ static int  Filn_Close(void)
         Filn_Exit("PrgErr: too many 'Close'\n");
     }
     /*printf("%d %lx %s %d %lx ]\n",Z.inclNo, Z.inclp, Z.inclp->name, Z.inclp->line, Z.inclp->fp);*/
-    fclose(Z.inclp->fp);
+    ujfile_fclose(Z.inclp->fp);
     SAFE_FREE(Z.inclp->name);
     memset(Z.inclp, 0, sizeof(*Z.inclp));
     --Z.inclNo;
@@ -1031,17 +1038,44 @@ void Filn_AddIncDir(char* dirname)
 #endif
 
 
+/* テキスト・エンコーディングを設定 */
+void Filn_SetEnc(int cp)
+{
+    if (cp == MBC_CP_UTF8 || cp == MBC_CP_SJIS || cp == MBC_CP_1BYTE || cp == MBC_CP_EUCJP) {
+        if (V.opt_cp != cp) {
+            V.opt_cp   = cp;
+            Z.text_enc = mbc_cpToEnc(cp);
+	    }
+    } else {
+        Filn_Exit("Invalid character code specified (%d)\n", cp);
+    }
+}
+
 int  Filn_Open(char const* name)
 {
     return Filn_Open0(name, 0);
 }
 
+static ujfile_t* textOpen(char const* fname)
+{
+    ujfile_opts_t opts = { MBC_CP_NONE, MBC_CP_NONE, 1, 1, 0 };
+    opts.dst_cp  = V.opt_cp; //MBC_CP_UTF8;
+    ujfile_t* fp = ujfile_open(fname, &opts);
+    if (fp) {
+        int cp = ujfile_curCP(fp);
+        if (V.opt_cp == 0) {
+            V.opt_cp = cp;
+        }
+        Z.text_enc = mbc_cpToEnc(cp);
+    }
+    return fp;
+}
 
 /** md = 0 なら、カレントから検索。md!=0なら、カレント以外を検索。
  */
 static int  Filn_Open0(char const* name, int md)
 {
-    FILE*       fp = NULL;
+    ujfile_t*   fp = NULL;
     char        fnam[FILN_FNAME_SIZE];
     char*       p;
     char const* d;
@@ -1058,11 +1092,11 @@ static int  Filn_Open0(char const* name, int md)
     }
     if (name == NULL) {
         strcpy(fnam, "");
-        fp = stdin;
+        fp = textOpen(NULL);    //stdin;
     } else {
         strcpy(fnam, name);
         if (md == 0)
-            fp = fopen(fnam, "rt");
+            fp = textOpen(fnam);
         if (fp == NULL) {
             for (dl = V.dir; dl; dl = dl->link) {
                 d = dl->s;
@@ -1070,9 +1104,9 @@ static int  Filn_Open0(char const* name, int md)
                     strcpy(fnam, d);
                     p = STREND(fnam);
                     if (p[-1] != '\\' && p[-1] != '/')
-                        *p++ = '\\';
+                        *p++ = '/';
                     strcpy(p, name);
-                    fp = fopen(fnam, "rt");
+                    fp = textOpen(fnam);
                     if (fp != NULL)
                         break;
                 }
@@ -1080,7 +1114,7 @@ static int  Filn_Open0(char const* name, int md)
           #if 0
             if (md && fp == NULL) {
                 strcpy(fnam, name);
-                fp = fopen(fnam, "rt");
+                fp = textOpen(fnam);
             }
           #endif
             if (fp == NULL) {
@@ -1091,7 +1125,7 @@ static int  Filn_Open0(char const* name, int md)
         }
     }
     ++Z.inclNo;
-    Z.inclp = &Z.inclStk[Z.inclNo];
+    Z.inclp       = &Z.inclStk[Z.inclNo];
     Z.inclp->name = strdupE(fnam);
     Z.inclp->line = 0;
     Z.inclp->fp   = fp;
@@ -1148,8 +1182,8 @@ char *Filn_GetStr(char* buf, size_t len)
             Filn_Error("Line too long\n");
             break;
         }
-        c = fgetc(Z.inclp->fp);
-        if (feof(Z.inclp->fp)) {
+        c = ujfile_get1(Z.inclp->fp);
+        if (ujfile_eof(Z.inclp->fp)) {
           #if 0
          // if (Filn_Close()) {
          //     *p = 0;
@@ -1163,10 +1197,12 @@ char *Filn_GetStr(char* buf, size_t len)
             return NULL;
           #endif
         }
-        if (ferror(Z.inclp->fp)) {
+     #if 0
+        if (ujfile_error(Z.inclp->fp)) {
             //Filn_Exit("リードエラーが起きました.\n");
             Filn_Exit("Read error.\n");
         }
+     #endif
         if (c == '\0') {
             //Filn_Error("行中に '\\0' が混ざっている\n");
             Filn_Error("Null character '\\0' mixed in line\n");
@@ -1431,9 +1467,9 @@ static char *Filn_GetLine(void)
             }
             break;
 
-        } else if (FILN_MBC_IS_LEAD(c)) {                           /* 全角 */
+        } else if (MBC_IS_LEAD(c)) {    /* 全角 */
             --s;
-            l = mbs_len1(s);
+            l = MBS_LEN1(s);
             for (j = 0; j < l; ++j) {
                 c = GetC(s);
                 StC(d, c);
@@ -1475,7 +1511,7 @@ static char *Filn_GetLine(void)
                         --s;
                         break;
                     }
-                    if (FILN_MBC_IS_LEAD(c)) {
+                    if (MBC_IS_LEAD(c)) {
                         //Filn_Warnning("\\の直後に全角文字がある\n");
                         Filn_Warnning("Full-width char follows '\\'\n");
                         goto J1;
@@ -1494,10 +1530,10 @@ static char *Filn_GetLine(void)
                     }
                     StC(d,c);
 
-                } else if (FILN_MBC_IS_LEAD(c)) {
+                } else if (MBC_IS_LEAD(c)) {
               J1:
                     --s;
-                    l = mbs_len1(s);
+                    l = MBS_LEN1(s);
                     for (j = 0; j < l; ++j) {
                         c = GetC(s);
                         StC(d, c);
@@ -1847,9 +1883,9 @@ static char const* M_GetSymLabel(int c, char const* s, char const* p)
                 *t++ = c;
                 l--;
             }
-        } else if (FILN_MBC_IS_LEAD(c)) {
+        } else if (MBC_IS_LEAD(c)) {
             --s;
-            k = mbs_len1(s);
+            k = MBS_LEN1(s);
             if (k < 2) {
                 //Filn_Error("全角文字２バイト目(以降)がおかしい(%02x:%02x)\n",c,*s);
                 Filn_Error("The second byte (or later) of a full-width character is invalid.(%02x:%02x)\n",c,*s);
@@ -1875,16 +1911,16 @@ static char const* M_GetSymLabel(int c, char const* s, char const* p)
 static char const* M_GetSymSqt(unsigned c, char const* s)
 {
     while ((c = *s++) != '\'') {
-        if (FILN_MBC_IS_LEAD(c)) {
+        if (MBC_IS_LEAD(c)) {
             unsigned l;
             --s;
-            l = mbs_len1(s);
+            l = MBS_LEN1(s);
             if (l < 2) {
                 //Filn_Warnning("'で囲まれた中に不正な全角がある\n");
                 Filn_Warnning("Invalid multibyte character in single quotes\n");
                 goto E1;
             }
-            c = mbs_getc(&s);
+            c = MBS_GETC(&s);
             if (c <= 0xffff && Z.M_val <= 0xFFFF)
                 Z.M_val = (Z.M_val << 16) | c;
             else
@@ -1935,10 +1971,10 @@ static char const* M_GetSymWqt(unsigned c, char const* s)
             *p++ = '"';
             break;
         }
-        if (FILN_MBC_IS_LEAD(c)) {
+        if (MBC_IS_LEAD(c)) {
             unsigned l;
             --s;
-            l = mbs_len1(s);
+            l = MBS_LEN1(s);
             if (l < 2) {
                 //Filn_Warnning("'で囲まれた中に不正な全角がある\n");
                 Filn_Warnning("Invalid multibyte character in single quotes\n");
@@ -2118,7 +2154,7 @@ static char const* M_GetSym0(char const* s)
         Z.M_sym = ' ';
         goto RET;
     }
-    if (isalpha(c) || IsSymKigo(c) || FILN_MBC_IS_LEAD(c)) {
+    if (isalpha(c) || IsSymKigo(c) || MBC_IS_LEAD(c)) {
         s = M_GetSymLabel(c, s, p);
         strcpy(Z.M_str,Z.M_name);
         Z.M_sym = 'A';
@@ -3137,8 +3173,8 @@ static int M_Print(char const* s)
             p = Z.M_str+1;
             while (*p) {
                 c = *p;
-                if (FILN_MBC_IS_LEAD(c)) {
-                    unsigned l = mbs_len1(p);
+                if (MBC_IS_LEAD(c)) {
+                    unsigned l = MBS_LEN1(p);
                     unsigned j;
                     for (j = 0; j < l; ++j) {
                         c = *p++;

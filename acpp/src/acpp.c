@@ -242,6 +242,7 @@ static void OptsInit(void)
     Filn->opt_sscomment = 1;        /* 0以外ならば//コメントを削除する      */
     Filn->opt_blkcomment= 1;        /* 0以外ならば／＊コメント＊／を削除する*/
     Filn->opt_kanji     = 1;        /* 0以外ならば ascii 以外に対応         */
+    Filn->opt_cp        = 0;        /* Code Page                            */
     Filn->opt_sq_mode   = 1;        /* ' を ペアで文字定数として扱う        */
     Filn->opt_wq_mode   = 1;        /* " を ペアで文字列定数として扱う      */
     Filn->opt_mot_doll  = 0;        /* $ を モトローラな 16進数定数開始文字として扱う */
@@ -350,6 +351,16 @@ static int Opts(char *a)
             break;
         case 'J':
             Filn->opt_kanji = (*p != '-');      /* 0以外ならばMS全角に対応 */
+            if (Filn->opt_kanji && *p) {
+                if (strcmp(p, "utf8") == 0 || strcmp(p, "utf-8") == 0 || strcmp(p, "65001") == 0)
+                    Filn_SetEnc(65001);
+                else if (strcmp(p, "sjis") == 0 || strcmp(p, "932") == 0)
+                    Filn_SetEnc(932);
+                else if (strcmp(p, "eucjp") == 0 || strcmp(p, "euc-jp") == 0 || strcmp(p, "51932") == 0)
+                    Filn_SetEnc(51932);
+                else if (strcmp(p, "cp437") == 0 || strcmp(p, "437") == 0)
+                    Filn_SetEnc(437);
+            }
             break;
         case 'Q':
             if (*p == '0') {
@@ -526,7 +537,8 @@ static void UsageOptP(void)
         printf("  -pb[-]    /*コメント*/を削除する         -pb- しない     %s\n", Pchk(Filn->opt_blkcomment));
         printf("  -pf[-]    \\改行コードによる行連結をする -pf- しない      %s\n", Pchk(Filn->opt_dellf));
         printf("  -pt[-]    空白の圧縮をする               -pt- しない     %s\n", Pchk(Filn->opt_delspc));
-        printf("  -pj[-]    MS全角に対応する               -pj- しない     %s\n", Pchk(Filn->opt_kanji));
+        printf("  -pj[ENC]  全角に対応する                 -pj- しない     %s\n", Pchk(Filn->opt_kanji));
+        printf("            ENC utf8:65001 sjis:932 eucjp:51932 cp437:437  %d\n", Filn->opt_cp);
         printf("  -po[-]    0で始まる数を8進数にする       -po- しない     %s\n", Pchk(Filn->opt_oct));
         printf("  -prd[-]   $の扱いを16進数開始文字とする  -prd-しない     %s\n", Pchk(Filn->opt_mot_doll));
     //  printf("  -prq[-]   'を対でなく、'C で 68xxアセンブラ用にする      %s\n", Pchk(Filn->opt_sq_mode == 0));
@@ -557,7 +569,8 @@ static void UsageOptP(void)
         printf("  -pb[-]    Remove /* comments */        -pb- Do not remove   %s\n", Pchk(Filn->opt_blkcomment));
         printf("  -pf[-]    Join lines with backslash-newline  -pf- Do not    %s\n", Pchk(Filn->opt_dellf));
         printf("  -pt[-]    Compress spaces              -pt- Do not compress %s\n", Pchk(Filn->opt_delspc));
-        printf("  -pj[-]    Support MS double-byte chars -pj- Do not support  %s\n", Pchk(Filn->opt_kanji));
+        printf("  -pj[-]    Support multi-byte chars     -pj- Do not support  %s\n", Pchk(Filn->opt_kanji));
+        printf("            ENC utf8:65001 sjis:932 eucjp:51932 cp437:437     %d\n", Filn->opt_cp);
         printf("  -po[-]    Numbers starting with 0 are octal   -po- Do not   %s\n", Pchk(Filn->opt_oct));
         printf("  -prd[-]   Treat $ as hex prefix        -prd- Do not treat   %s\n", Pchk(Filn->opt_mot_doll));
     //  printf("  -prq[-]   Use ' not as a pair, but as 'C for 68xx assembler %s\n", Pchk(Filn->opt_sq_mode == 0));

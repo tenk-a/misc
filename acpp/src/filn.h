@@ -53,7 +53,8 @@ typedef struct FILN_DIRS {
 
 typedef struct filn_t {
 /* public:*/ /* ユーザが設定を変更することのある変数 */
-    int         opt_kanji;      /* 0以外ならばMS全角に対応 */
+    int         opt_kanji;      /* 0以外ならば ascii 以外もラベルに対応 */
+    int         opt_cp;         /* code page */
     int         opt_sscomment;  /* 0以外ならば//コメントを削除する */
     int         opt_blkcomment; /* 0以外ならば／＊コメント＊／を削除する */
     int         opt_dellf;      /* 0以外ならば￥改行による行連結を行う */
@@ -93,6 +94,8 @@ extern  filn_t *Filn;
 
 filn_t *Filn_Init(void);                                /* Filnの初期化ルーチン。真っ先に呼び出すこと*/
 void Filn_Term(void);                                   /* Filnの終了. メモリ開放など. Filn_ErrCloseは行わない */
+
+void Filn_SetEnc(int cp);                               /* テキスト・エンコーディングを設定 */
 
 int  Filn_Open(char const* name);                       /* ソースファイルをオープンする */
 char *Filn_Gets(void);                                  /* マクロ展開付１行入力. malloc したメモリを返すので、呼出側で開放のこと*/
