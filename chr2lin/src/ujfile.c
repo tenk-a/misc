@@ -136,7 +136,7 @@ static ujfile_t* ujfile_set(ujfile_t* uj, char* malloc_buf, size_t size, char co
  */
 ujfile_t* ujfile_fopen(char const* fname, char const* mode)
 {
-    ujfile_opts_t opts = { 0, MBC_CP_UTF8, 1, 0, 0, };
+    ujfile_opts_t opts = { 0, UJFILE_FOPEN_CODE_PAGE, 1, 0, 0, };
     while (*mode) {
         int c = *mode++;
         if (c == 'b')
@@ -205,15 +205,19 @@ static ujfile_t*    ujfile_set(ujfile_t* uj, char* malloc_buf, size_t size, char
     uj->has_bom = (unsigned char)bomSize;
     if (curCP != dstCP && dstCP > 0 ) {
         mbc_enc_t   dstEnc  = mbc_cpToEnc((mbc_cp_t)dstCP);
-        size_t      dstSize = 0;
-        char*       dst     = mbc_strConvMalloc(dstEnc, curEnc, src, size, &dstSize);
-        free(malloc_buf);
-        if (dst == NULL)
-            return NULL;
-        malloc_buf  = dst;
-        src         = dst;
-        size        = dstSize;
-        uj->cur_cp  = curCP = dstCP;
+        if (dstEnc->cp) {
+            size_t      dstSize = 0;
+            char* dst = mbc_strConvMalloc(dstEnc, curEnc, src, size, &dstSize);
+            free(malloc_buf);
+            if (dst == NULL)
+                return NULL;
+            malloc_buf = dst;
+            src = dst;
+            size = dstSize;
+            uj->cur_cp = curCP = dstCP;
+        } else {
+            //dstCP = curCP;
+        }
     }
     if (opts->crlf_to_lf) {
         int         crToLf = (opts->crlf_to_lf >= 2);
@@ -239,6 +243,7 @@ static ujfile_t*    ujfile_set(ujfile_t* uj, char* malloc_buf, size_t size, char
     uj->malloc_buf  = malloc_buf;
     uj->curpos      = src;
     uj->end         = src + size;
+    uj->unget_c     = 0;
  #ifndef NDEBUG
     uj->fname       = fname;
  #endif
@@ -359,3 +364,42 @@ char*   ujfile_fgets(char* buf, size_t size, ujfile_t* uj)
     return (n != (size_t)-1) ? buf : NULL;
 }
 
+
+int     ujfile_fgetc(ujfile_t* uj)
+{
+    int c;
+    if (uj->unget_c) {
+        c = uj->unget_c;
+        uj->unget_c = 0;
+    } else {
+        c = ujfile_get1(uj);
+    }
+    return c;
+}
+
+int     ujfile_ungetc(int c, ujfile_t* uj)
+{
+    if (uj->unget_c)
+        c = -1;
+    else if ((unsigned)c <= 0xff)
+        uj->unget_c = c;
+    return c;
+}
+
+
+ptrdiff_t ujfile_fseek(ujfile_t* uj, ptrdiff_t offset, int origin)
+{
+    switch (origin) {
+    case 0: uj->curpos = uj->malloc_buf + offset;   break;
+    case 1: uj->curpos += offset;                   break;
+    case 2: uj->curpos = uj->end + offset;          break;
+    }
+    if (offset < 0) {
+        if (uj->curpos < uj->malloc_buf || uj->curpos >= uj->end)
+            uj->curpos = uj->malloc_buf;
+    } else {
+        if (uj->curpos < uj->malloc_buf || uj->curpos >= uj->end)
+            uj->curpos = uj->end;
+    }
+    return uj->curpos - uj->malloc_buf;
+}
