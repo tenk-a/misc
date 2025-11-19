@@ -14,10 +14,12 @@
 
 // [] Enable wildcard specification: 1=enabled, 0=disabled, undefined=1
 //#define EXARGV_USE_WC             1
+#define EXARGV_USE_WC               1
 
 // [] For wildcard enabled, recursive search if wildcard ** is present:
 //      1=enabled, 0=disabled, undefined=1
 //#define EXARGV_USE_WC_REC         1
+#define EXARGV_USE_WC_REC           1
 
 // [] Enable @response files:
 //      1=enabled, 0=disabled, undefined=0

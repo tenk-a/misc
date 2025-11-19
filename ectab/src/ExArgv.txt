@@ -30,7 +30,7 @@
  *  -   ExArgv.h は、ヘッダだが、ExArgv.c の設定ファイルでもある.
  *      アプリごとに ExArgv.h ExArgv.c をコピーして、ExArgv.h
  *      をカスタムして使うのを想定.
- *      - あるいは ExArgv_conf.h を用意, (EXARGV_UE_CONF_Hを定義して)
+ *      - あるいは ExArgv_conf.h を用意, (EXARGV_USE_CONF_Hを定義して)
  *        そちらに設定する.
  *
  *  -   設定できる要素は,

@@ -260,8 +260,10 @@ void    ujfile_close(ujfile_t** uj)
 void    ujfile_fclose(ujfile_t* uj)
 {
     if (uj) {
-        if (uj->malloc_buf)
+        if (uj->malloc_buf) {
             free(uj->malloc_buf);
+            uj->malloc_buf = NULL;
+        }
         free(uj);
     }
 }
