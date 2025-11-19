@@ -2656,7 +2656,7 @@ char*  mbc_strConvMalloc(mbc_enc_t dstMbc, mbc_enc_t srcMbc
         return NULL;
     d = (char*)calloc(1, bytes);
     l = mbc_strConv(dstMbc, d, bytes, srcMbc, src, srcSz);
-    if (l > 0) {
+    if (l > 0 || srcSz == 0) {
         if (pDstSz)
             *pDstSz = l;
         return d;
