@@ -16,20 +16,20 @@ extern "C" {
 #endif
 
 typedef struct ujfile_opts_t {
-    unsigned short  src_cp;         // > 0 win codepage  0=auto
-    unsigned short  dst_cp;         // > 0 win codepage  0=auto
+    int             src_cp;         // > 0 win codepage  0=auto
+    int             dst_cp;         // > 0 win codepage  0=auto
     unsigned char   remove_bom;     // Remove BOM if UNICODE.
     unsigned char   crlf_to_lf;     // 0:none  1:CRLF to LF  2:CR,CRLF to LF
     unsigned char   opt_getline;    // bit0:No line-break  bit1:CR as line-break
+    unsigned char   add_last_lf;    // 0:none  1:CRLF to LF  2:CR,CRLF to LF
 } ujfile_opts_t;
 
 typedef struct ujfile_t {
     char*           malloc_buf;
     char*           end;
     char*           curpos;
-    unsigned short  cur_cp;         // code page.
-    unsigned short  src_cp;         //
-    int             unget_c;
+    int             cur_cp;         // code page.
+    int             src_cp;         //
     unsigned char   has_bom;
     unsigned char   unkown_enc;
     ujfile_opts_t   opts;
@@ -37,6 +37,11 @@ typedef struct ujfile_t {
     char const*     fname;
  #endif
 } ujfile_t;
+
+ujfile_t*   ujfile_fopen(char const* fname, char const* mode);  // "rbt"    // u:utf8,s:sjis,e:eucjp
+char*       ujfile_fgets(char* buf, size_t bufSz, ujfile_t* uj);
+
+void        ujfile_fclose(ujfile_t* uj);
 
 ujfile_t*   ujfile_open(char const* fname, ujfile_opts_t const* opts);
 void        ujfile_close(ujfile_t** pUj);
@@ -54,24 +59,7 @@ static inline int       ujfile_curCP( ujfile_t* uj) { return uj->cur_cp; }  // c
 static inline int       ujfile_srcCP( ujfile_t* uj) { return uj->src_cp; }  // code page
 static inline int       ujfile_hasBOM(ujfile_t* uj) { return uj->has_bom > 0; }
 static inline int       ujfile_unkownEnc(ujfile_t* uj) { return uj->unkown_enc != 0; }
-static inline ujfile_opts_t* ujfile_opts(ujfile_t* uj) { return &uj->opts; }
-
-#ifndef UJFILE_FOPEN_CODE_PAGE
-//#define UJFILE_FOPEN_CODE_PAGE    0
-#define UJFILE_FOPEN_CODE_PAGE      65001   // convert to utf-8
-#endif
-
-// std c lib like.
-ujfile_t*   ujfile_fopen(char const* fname, char const* mode/*"rbt"*/);
-char*       ujfile_fgets(char* buf, size_t bufSz, ujfile_t* uj);
-void        ujfile_fclose(ujfile_t* uj);
-int         ujfile_fgetc(ujfile_t* uj);
-int         ujfile_ungetc(int c, ujfile_t* uj);
-ptrdiff_t   ujfile_fseek(ujfile_t* uj, ptrdiff_t offset, int origin);
-static inline ptrdiff_t ujfile_ftell(ujfile_t* uj) { return uj->curpos - uj->malloc_buf; }
-static inline int  ujfile_feof(ujfile_t* uj) { return ujfile_eof(uj); }
-static inline int  ujfile_ferror(ujfile_t* uj) { return 0; }
-
+static inline ujfile_opts_t*    ujfile_opts(  ujfile_t* uj) { return &uj->opts; }
 
 #if defined(__cplusplus)
 }

@@ -47,6 +47,7 @@ static int usage(void)
            "  -x[EXT]   出力ファイル名に拡張子 EXT を付加.\n"
            "  -m        行末の空白を削除.\n"
            "  -r[0-3]   改行を 0:入力のまま 1:'\\n' 2:'\\r' 3:'\\r\\n' に変換(file出力時のみ)\n"
+           "  -e        入力ファイル末に改行がなければ付加.\n"
            "  -s[N]     出力のタブサイズを N にする(空白->タブ)\n"
            "  -t[N]     入力のタブサイズを N にする(タブ->空白)\n"
            "  -z        出力のタブサイズが空白1文字にしかならない場合は空白で出力.\n"
@@ -84,6 +85,7 @@ typedef struct opts_t {
     BOOL        eofSw;
     BOOL        uprSw;
     BOOL        lwrSw;
+    BOOL        lastLF;
     BOOL        verbose;
     unsigned    numbering;
     unsigned    numbStart;
@@ -124,7 +126,7 @@ void charbuf_set(CharBuf* b, char const* src, size_t capa) {
     if (src && b->ptr) {
         if (capa)
             memcpy(b->ptr, src, capa);
-        b->ptr[capa] = 0;
+        b->ptr[capa  ] = 0;
         b->ptr[capa+1] = 0;
         b->ptr[capa+2] = 0;
         b->ptr[capa+3] = 0;
@@ -231,6 +233,7 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
     opts.remove_bom = 1;
     opts.crlf_to_lf = 0;
     opts.opt_getline= (crAsLf << 1) | noLineBreak;
+	opts.add_last_lf= o->lastLF != 0;
 
     uj =ujfile_open(iname, &opts);
     if (uj == NULL) {
@@ -534,6 +537,7 @@ static int opts_get(char *arg, opts_t *o)
         case 'm': o->trimSw = opts_getVal(arg, &p, 1, 1); break;
         case 'r': o->crlfMd = opts_getVal(arg, &p, 0, 7); break;
         case 'a': o->eofSw  = opts_getVal(arg, &p, 1, 1); break;
+        case 'e': o->lastLF = opts_getVal(arg, &p, 1, 1); break;
         case 'u': o->uprSw  = opts_getVal(arg, &p, 1, 1); break;
         case 'l': o->lwrSw  = opts_getVal(arg, &p, 1, 1); break;
         case 'z': o->sp1ntb = opts_getVal(arg, &p, 1, 9) ? 1 : 0; break;
