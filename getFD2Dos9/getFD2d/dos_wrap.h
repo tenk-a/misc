@@ -16,7 +16,7 @@
 #endif
 
 #if defined(__WATCOMC__)
- #if defined(__PC98__)
+ #if defined(__PC98__) && !defined(__WATCOM_PC98__)
   #define __WATCOM_PC98__
  #endif
  #include <bios.h>
@@ -37,6 +37,20 @@
  #include <malloc.h>
  #include <dos.h>
  #include <conio.h>
+#elif (defined(__TURBOC__) || defined(__BORLANDC__)) && !defined(__FLAT__)
+ #include <bios.h>
+ #include <dos.h>
+ #include <conio.h>
+ #include <alloc.h>
+ #ifndef __far
+  #define __far     _far
+ #endif
+ #ifndef _fmalloc
+  #define _fmalloc  farmalloc
+ #endif
+ #ifndef _ffree
+  #define _ffree    farfree
+ #endif
 #else //__IA16__
  #include <unistd.h>
  #include <ia16.h>
@@ -60,7 +74,7 @@
  #define DOS_POKEW(ofs,w)   (*(uint16_t volatile __far*)(ofs) = (w))
  #define DOS_POKED(ofs,d)   (*(uint32_t volatile __far*)(ofs) = (d))
  #define DOS_MEMPUT(srcptr,bytes,dosadr)    _fmemcpy((void __far*)(dosadr), (srcptr), (bytes))
- #define DOS_MEMGET(dosadr,bytes,dstptr)    _fmemcpy(dstptr, (void __far*)(dosadr), (bytes))
+ #define DOS_MEMGET(dosadr,bytes,dstptr)    _fmemcpy((dstptr), (void __far*)(dosadr), (bytes))
  #define DOS_ADDR_TO(x)     ((uint8_t FAR*)(x))
  #define DOS_ADDR_FROM(x)   ((uint32_t)(x))
  #define DOS_ADDR_INIT()    (1)
@@ -78,9 +92,19 @@
   #define _W                 w
   #define INTR_REGS          intr_regs_t
   #define INTR(n,r)          intr((n),(r))
+ #elif defined(__TURBOC__) || defined(__BORLANDC__) // mikakunin.
+  #define _W                 x
+  #define INTR_REGS          union REGS             // kari
+  #define INTR(n,r)          int86((n),(r),(r))     // kari
+  typedef void (interrupt FAR *DOS_VECT_ADR)();
+  #define DOS_CLEAR_VECT_ADR(v) ((v) = 0)
+  #define DOS_GETVECT(n)     getvect(n)
+  #define DOS_RESETVECT(n,h) setvect((n),(h))
+  #define DOS_SETVECT(n,h)   setvect((n),(h))
  #endif
  #undef  __loadds
  #define __loadds
+
 #elif defined(__FLAT__)   // 32bit DOS
  #define FAR
  #define MK_FAR_PTR(a,b)    (((a) << 4) | (b))
