@@ -90,7 +90,7 @@ typedef struct opts_t {
     unsigned    numbering;
     unsigned    numbStart;
     int         numbSkip;
-    char       *numbSep;
+    char*       numbSep;
 
     char*       outname;
     char const* extname;
@@ -233,7 +233,7 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
     opts.remove_bom = 1;
     opts.crlf_to_lf = 0;
     opts.opt_getline= (crAsLf << 1) | noLineBreak;
-	opts.add_last_lf= o->lastLF != 0;
+    opts.add_last_lf= o->lastLF != 0;
 
     uj =ujfile_open(iname, &opts);
     if (uj == NULL) {
@@ -382,7 +382,7 @@ static int convFile(const char *iname, const char *oname, opts_t *o)
             break;
     }
 
-    // eofをつかる場合.
+    // eofを付ける場合.
     if (o->eofSw) {
      #if defined(_WIN32)
         if (ofp == stdout)
@@ -716,16 +716,19 @@ static int Main(int argc, char *argv[])
 }
 
 
+#if !defined(_WIN32)
+int main(int argc, char* argv[])
+{
+    return Main(argc, argv);
+}
+#else
 int main(int argc, char* argv[])
 {
     int rc;
- #if defined(_WIN32)
     int savCP = GetConsoleOutputCP();
     setConsoleCodePage(65001);
- #endif
     rc = Main(argc, argv);
- #if defined(_WIN32)
     SetConsoleOutputCP(savCP);
- #endif
     return rc;
 }
+#endif
