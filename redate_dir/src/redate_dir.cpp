@@ -121,11 +121,11 @@ private:
 
         for (auto& entry : fs::directory_iterator(dir)) {
             auto& fpath = entry.path();
+            if (fpath == "." || fpath == "..") {
+                continue;
+            }
             try {
                 if (entry.is_directory()) {
-                    if (fpath == "." || fpath == "..") {
-                        continue;
-                    }
                     FileTime sub_latest = updateLatestTime(fpath);
                     if (latest_time < sub_latest) {
                         latest_time = sub_latest;
