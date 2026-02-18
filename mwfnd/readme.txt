@@ -1,9 +1,9 @@
 mwfnd
 
-•¡”‚ÌƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚©‚ç•¡”‚Ì’PŒê‚ðŒŸõ‚µ‚ÄA‚»‚ÌŒ©‚Â‚©‚Á‚½ˆÊ’u‚ð
-ƒtƒ@ƒCƒ‹–¼•s”Ô†‚Ìƒ^ƒOEƒWƒƒƒ“ƒvŒ`Ž®‚Å•\Ž¦‚·‚é
+è¤‡æ•°ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰è¤‡æ•°ã®å˜èªžã‚’æ¤œç´¢ã—ã¦ã€ãã®è¦‹ã¤ã‹ã£ãŸä½ç½®ã‚’
+ãƒ•ã‚¡ã‚¤ãƒ«åï¼†è¡Œç•ªå·ã®ã‚¿ã‚°ãƒ»ã‚¸ãƒ£ãƒ³ãƒ—å½¢å¼ã§è¡¨ç¤ºã™ã‚‹
 
-ƒ‰ƒCƒZƒ“ƒX‚Í Boost software license Version 1.0
+ãƒ©ã‚¤ã‚»ãƒ³ã‚¹ã¯ Boost software license Version 1.0
 
 
-mwfnd.txt ‚ðŽQÆ‚Ì‚±‚Æ
+mwfnd.txt ã‚’å‚ç…§ã®ã“ã¨

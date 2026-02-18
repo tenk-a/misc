@@ -1,11 +1,11 @@
 /*
     mwfnd
-    1995/??/??  v1.00   ì¬
-    1996/??/??  v1.01   -m ƒ‚[ƒh‚ğ•t‰Á
-    1997/08/17  v1.02   usageC³. bcc32‚ÅÄƒRƒ“ƒpƒCƒ‹‚·‚é‚½‚ß‚ÌC³.
-    2007/04/28  v1.03   -l’Ç‰Á. ƒ\[ƒX®Œ`.
-    200?/??/??  v1.04   -l0‘Î‰. -i’Ç‰Á. -a’Ç‰Á.
-    2022/11/25  v1.05   -lŠg’£.
+    1995/??/??  v1.00   ä½œæˆ
+    1996/??/??  v1.01   -m ãƒ¢ãƒ¼ãƒ‰ã‚’ä»˜åŠ 
+    1997/08/17  v1.02   usageä¿®æ­£. bcc32ã§å†ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã™ã‚‹ãŸã‚ã®ä¿®æ­£.
+    2007/04/28  v1.03   -lè¿½åŠ . ã‚½ãƒ¼ã‚¹æ•´å½¢.
+    200?/??/??  v1.04   -l0å¯¾å¿œ. -iè¿½åŠ . -aè¿½åŠ .
+    2022/11/25  v1.05   -læ‹¡å¼µ.
 */
 
 #include <stdio.h>
@@ -17,25 +17,25 @@
 #include "tree.h"
 
 
-/** g‚¢•û•\¦.
+/** ä½¿ã„æ–¹è¡¨ç¤º.
  */
 void usage(void)
 {
-    puts("[mwfnd] •¡”‚Ìƒtƒ@ƒCƒ‹‚©‚ç•¡”‚Ì’PŒê‚ğŒŸõ‚µAŠeX‚ÌŒ©‚Â‚©‚Á‚½ˆÊ’u‚ğo—Í\n"
+    puts("[mwfnd] è¤‡æ•°ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰è¤‡æ•°ã®å˜èªã‚’æ¤œç´¢ã—ã€å„ã€…ã®è¦‹ã¤ã‹ã£ãŸä½ç½®ã‚’å‡ºåŠ›\n"
          "usage mwfnd [-option(s)] <file(s)>\n"
-         "  -oNAME    o—Íƒtƒ@ƒCƒ‹w’è\n"
-         "  --        ‚±‚ê‚æ‚èŒã‚ë‚Ì–¼‘O‚Íƒtƒ@ƒCƒ‹–¼\n"
-         "  ++        ‚±‚ê‚æ‚èŒã‚ë‚Ì–¼‘O‚ÍŒŸõ’PŒê–¼\n"
-         "  -q        QÆ‚Ì–³‚¢’PŒê‚Ío—Í‚µ‚È‚¢\n"
-         "  -n        QÆ‚Ío—Í‚¹‚¸Œ©‚Â‚©‚Á‚½’PŒê‚Ì‚İo—Í\n"
-         "  -lN       QÆ‚ªNˆÈ‰º‚Ì”‚Ì‚Æ‚«‚Ì‚İo—Í\n"
-         "  -lN:M     QÆ‚ª [N,M] ”ÍˆÍ‚Ì”‚Ì‚Æ‚«‚Ì‚İo—Í\n"
-         "  -m[-]     Œ©‚Â‚©‚Á‚½s‚Ì“à—e‚ğ•Û(ƒfƒtƒHƒ‹ƒg)  -m- ‚µ‚È‚¢\n"
-         "  -i        –¼‘O‚Ì‘å•¶š¬•¶š‚ğ–³‹\n"
-         "  -aCHARS   ‰p” _ ˆÈŠO‚Ì•¶š‚ğ–¼‘O‚Ég‚¦‚é‚æ‚¤‚É‚·‚é\n"
-         "  -xN       o—Íƒ‚[ƒh\n"
-         "  -v-       ƒƒbƒZ[ƒWo—Íoff\n"
-         "  @RESFILE  ƒŒƒXƒ|ƒ“ƒXEƒtƒ@ƒCƒ‹“ü—Í\n");
+         "  -oNAME    å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«æŒ‡å®š\n"
+         "  --        ã“ã‚Œã‚ˆã‚Šå¾Œã‚ã®åå‰ã¯ãƒ•ã‚¡ã‚¤ãƒ«å\n"
+         "  ++        ã“ã‚Œã‚ˆã‚Šå¾Œã‚ã®åå‰ã¯æ¤œç´¢å˜èªå\n"
+         "  -q        å‚ç…§ã®ç„¡ã„å˜èªã¯å‡ºåŠ›ã—ãªã„\n"
+         "  -n        å‚ç…§ã¯å‡ºåŠ›ã›ãšè¦‹ã¤ã‹ã£ãŸå˜èªã®ã¿å‡ºåŠ›\n"
+         "  -lN       å‚ç…§ãŒNä»¥ä¸‹ã®æ•°ã®ã¨ãã®ã¿å‡ºåŠ›\n"
+         "  -lN:M     å‚ç…§ãŒ [N,M] ç¯„å›²ã®æ•°ã®ã¨ãã®ã¿å‡ºåŠ›\n"
+         "  -m[-]     è¦‹ã¤ã‹ã£ãŸè¡Œã®å†…å®¹ã‚’ä¿æŒ(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ)  -m- ã—ãªã„\n"
+         "  -i        åå‰ã®å¤§æ–‡å­—å°æ–‡å­—ã‚’ç„¡è¦–\n"
+         "  -aCHARS   è‹±æ•° _ ä»¥å¤–ã®æ–‡å­—ã‚’åå‰ã«ä½¿ãˆã‚‹ã‚ˆã†ã«ã™ã‚‹\n"
+         "  -xN       å‡ºåŠ›ãƒ¢ãƒ¼ãƒ‰\n"
+         "  -v-       ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡ºåŠ›off\n"
+         "  @RESFILE  ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›\n");
     exit(0);
 }
 
@@ -44,7 +44,7 @@ void usage(void)
 /*------------------------------------------------------------------------*/
 typedef unsigned char UCHAR;
 
-#ifdef UNIX                 /** utf8|euc-jp‚ğ‘z’è. */
+#ifdef UNIX                 /** utf8|euc-jpã‚’æƒ³å®š. */
 #define FNAME_ISDIRSEP(c)   ((c) == '/' || (c) == ':')
 #define ISKANJI(c)          (0)
 #define STRCASECMP(a,b)     strcasecmp(a,b)
@@ -57,12 +57,12 @@ typedef unsigned char UCHAR;
 #endif
 
 
-#ifdef DOS16    // 16bit MS-DOS ‚Ìê‡
+#ifdef DOS16    // 16bit MS-DOS ã®å ´åˆ
 #define MAX_PATH        (264)
 #define LINE_SIZE       (1024)
 #define TOKENNAME_SIZE  (260)
 #define MLINE           0
-#else           // 32ƒrƒbƒgŠÂ‹«‚Ìê‡.
+#else           // 32ãƒ“ãƒƒãƒˆç’°å¢ƒã®å ´åˆ.
 #define MAX_PATH        (0x2000)
 #define LINE_SIZE       (0x8000)
 #define TOKENNAME_SIZE  (0x1000)
@@ -71,24 +71,24 @@ typedef unsigned char UCHAR;
 
 
 
-int     opt_qk          = 0;    /**< on‚È‚ç QÆ‚Ì–³‚¢’PŒê‚Í•\¦‚µ‚È‚¢.     */
-int     opt_msgFlg      = 1;    /**< Œo‰ßƒƒbƒZ[ƒW‚ğ•\¦‚·‚é/‚µ‚È‚¢        */
-int     opt_nameOnly    = 0;    /**< –¼‘O‚µ‚©•\¦‚µ‚È‚¢.                    */
-int     opt_ex          = 0;    /**< file line : word ‚Å•\¦                */
-int     opt_miNum       = -1;   /**< ”ñ•‰‚Ìw’è”–¢–‚ÌQÆ”‚È‚ç•\¦–³  .  */
-int     opt_maNum       = -1;   /**< ”ñ•‰‚Ìw’è”ˆÈãQÆ‚ª‚ ‚é‚È‚ç•\¦–³.  */
-int     opt_ignorecase  = 0;    /**< ‘å•¶š¬•¶š‚Ì‹æ•Ê‚ğ‚µ‚È‚¢             */
+int     opt_qk          = 0;    /**< onãªã‚‰ å‚ç…§ã®ç„¡ã„å˜èªã¯è¡¨ç¤ºã—ãªã„.     */
+int     opt_msgFlg      = 1;    /**< çµŒéãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹/ã—ãªã„        */
+int     opt_nameOnly    = 0;    /**< åå‰ã—ã‹è¡¨ç¤ºã—ãªã„.                    */
+int     opt_ex          = 0;    /**< file line : word ã§è¡¨ç¤º                */
+int     opt_miNum       = -1;   /**< éè² ã®æŒ‡å®šæ•°æœªæº€ã®å‚ç…§æ•°ãªã‚‰è¡¨ç¤ºç„¡  .  */
+int     opt_maNum       = -1;   /**< éè² ã®æŒ‡å®šæ•°ä»¥ä¸Šå‚ç…§ãŒã‚ã‚‹ãªã‚‰è¡¨ç¤ºç„¡.  */
+int     opt_ignorecase  = 0;    /**< å¤§æ–‡å­—å°æ–‡å­—ã®åŒºåˆ¥ã‚’ã—ãªã„             */
 int     opt_dq          = 0;
-char    opt_outname[MAX_PATH];  /**< o—Íƒtƒ@ƒCƒ‹–¼.                        */
-char*   opt_addnamechr  = "";   /**< ‰p”_ˆÈŠO‚Ì(‹L†)•¶š‚ğ–¼‘O‚ÉŠÜ‚ß‚é    */
+char    opt_outname[MAX_PATH];  /**< å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«å.                        */
+char*   opt_addnamechr  = "";   /**< è‹±æ•°_ä»¥å¤–ã®(è¨˜å·)æ–‡å­—ã‚’åå‰ã«å«ã‚ã‚‹    */
 
 #ifdef MLINE
-int     opt_linmemFlg   =MLINE; /**< Œ©‚Â‚©‚Á‚½s‚Ì“à—e‚ğ•Û.              */
+int     opt_linmemFlg   =MLINE; /**< è¦‹ã¤ã‹ã£ãŸè¡Œã®å†…å®¹ã‚’ä¿æŒ.              */
 #endif
 
 
 
-/** ƒIƒvƒVƒ‡ƒ“‰ğÍ
+/** ã‚ªãƒ—ã‚·ãƒ§ãƒ³è§£æ
  */
 void options(char *s)
 {
@@ -101,28 +101,28 @@ void options(char *s)
     c   = toupper(c);
 
     switch (c) {
-    case 'Q':       /* QÆ‚Ì–³‚¢’PŒê‚Í•\¦‚µ‚È‚¢.      */
+    case 'Q':       /* å‚ç…§ã®ç„¡ã„å˜èªã¯è¡¨ç¤ºã—ãªã„.      */
         opt_qk = 1;
         break;
 
-    case 'V':       /* Œo‰ßƒƒbƒZ[ƒW‚ğ•\¦‚·‚é/‚µ‚È‚¢  */
+    case 'V':       /* çµŒéãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹/ã—ãªã„  */
         opt_msgFlg = 1;
         if (*p == '-')
             opt_msgFlg = 0;
         break;
 
-    case 'X':       /* •\¦ƒ‚[ƒh. */
+    case 'X':       /* è¡¨ç¤ºãƒ¢ãƒ¼ãƒ‰. */
         if (*p == 0)
             opt_ex = 1;
         else
             opt_ex = strtoul(p, NULL, 10);
         break;
 
-    case 'N':       /* QÆ‚Í•\¦‚¹‚¸Œ©‚Â‚©‚Á‚½’PŒê‚Ì‚İo—Í. */
+    case 'N':       /* å‚ç…§ã¯è¡¨ç¤ºã›ãšè¦‹ã¤ã‹ã£ãŸå˜èªã®ã¿å‡ºåŠ›. */
         opt_nameOnly = 1;
         break;
 
-    case 'L':       /* QÆ‚ªNˆÈ‰º‚Ì”‚Ì‚Æ‚«‚Ì‚İo—Í        */
+    case 'L':       /* å‚ç…§ãŒNä»¥ä¸‹ã®æ•°ã®ã¨ãã®ã¿å‡ºåŠ›        */
         opt_maNum    = strtoul(p, &p, 0);
         if (*p == ':' || *p == '~' || *p == '-' || *p == ',') {
             ++p;
@@ -142,14 +142,14 @@ void options(char *s)
         break;
 
   #ifdef MLINE
-    case 'M':       /* Œ©‚Â‚©‚Á‚½s‚Ì“à—e‚ğ•Û */
+    case 'M':       /* è¦‹ã¤ã‹ã£ãŸè¡Œã®å†…å®¹ã‚’ä¿æŒ */
         opt_linmemFlg     = 1;
         if (*p == '-')
             opt_linmemFlg = 0;
         break;
   #endif
 
-    case 'O':       /* o—Íƒtƒ@ƒCƒ‹w’è         */
+    case 'O':       /* å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«æŒ‡å®š         */
         strncpy(opt_outname, p, MAX_PATH-1);
         opt_outname[MAX_PATH-1] = '\0';
         break;
@@ -161,7 +161,7 @@ void options(char *s)
 
     /* case '\0': */
     case 'H':
-    case '?':       /* ƒwƒ‹ƒv                   */
+    case '?':       /* ãƒ˜ãƒ«ãƒ—                   */
         usage();
 
     default:
@@ -172,7 +172,7 @@ void options(char *s)
 
 
 
-/*---------- ƒGƒ‰[ˆ—•t‚«‚Ì•W€ŠÖ”-----------------------*/
+/*---------- ã‚¨ãƒ©ãƒ¼å‡¦ç†ä»˜ãã®æ¨™æº–é–¢æ•°-----------------------*/
 
 void       *mallocE(size_t a)
 {
@@ -180,7 +180,7 @@ void       *mallocE(size_t a)
 
     p = malloc(a);
     if (p == NULL) {
-        printf("ƒƒ‚ƒŠ‚ª‘«‚è‚È‚¢\n");
+        printf("ãƒ¡ãƒ¢ãƒªãŒè¶³ã‚Šãªã„\n");
         exit(1);
     }
     return p;
@@ -194,7 +194,7 @@ void       *callocE(size_t a, size_t b)
 
     p = calloc(a, b);
     if (p == NULL) {
-        printf("ƒƒ‚ƒŠ‚ª‘«‚è‚È‚¢\n");
+        printf("ãƒ¡ãƒ¢ãƒªãŒè¶³ã‚Šãªã„\n");
         exit(1);
     }
     return p;
@@ -206,7 +206,7 @@ char       *strdupE(char *p)
 {
     p = strdup(p);
     if (p == NULL) {
-        printf("ƒƒ‚ƒŠ‚ª‘«‚è‚È‚¢\n");
+        printf("ãƒ¡ãƒ¢ãƒªãŒè¶³ã‚Šãªã„\n");
         exit(1);
     }
     return p;
@@ -220,7 +220,7 @@ FILE       *fopenE(char *name, char *mod)
 
     fp = fopen(name, mod);
     if (fp == NULL) {
-        printf("ƒtƒ@ƒCƒ‹ %s ‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ\n", name);
+        printf("ãƒ•ã‚¡ã‚¤ãƒ« %s ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“\n", name);
         exit(1);
     }
     return fp;
@@ -242,18 +242,18 @@ typedef struct LBLINK_T {
 
 
 typedef struct LBL_T {
-    LBLINK_T   *next;                           /**< ƒ‰ƒxƒ‹‚ÌQÆƒŠƒXƒg */
-    char       *name;                           /**< ’è‹`ƒ‰ƒxƒ‹–¼       */
+    LBLINK_T   *next;                           /**< ãƒ©ãƒ™ãƒ«ã®å‚ç…§ãƒªã‚¹ãƒˆ */
+    char       *name;                           /**< å®šç¾©ãƒ©ãƒ™ãƒ«å       */
 } LBL_T;
 
-TREE        *LBL_tree;                          /**< ƒ‰ƒxƒ‹‚ğ“o˜^‚·‚é–Ø */
+TREE        *LBL_tree;                          /**< ãƒ©ãƒ™ãƒ«ã‚’ç™»éŒ²ã™ã‚‹æœ¨ */
 
-char        *LBL_fname = NULL;                  /**< Œ»İ‚Ìƒtƒ@ƒCƒ‹–¼   */
-LINENUM_T   LBL_line;                           /**< Œ»İ‚Ìs”Ô†       */
+char        *LBL_fname = NULL;                  /**< ç¾åœ¨ã®ãƒ•ã‚¡ã‚¤ãƒ«å   */
+LINENUM_T   LBL_line;                           /**< ç¾åœ¨ã®è¡Œç•ªå·       */
 
 
 
-/** TREE ƒ‹[ƒ`ƒ“‚ÅAV‚µ‚¢—v‘f‚ğ‘¢‚é‚Æ‚«‚ÉŒÄ‚Î‚ê‚é.
+/** TREE ãƒ«ãƒ¼ãƒãƒ³ã§ã€æ–°ã—ã„è¦ç´ ã‚’é€ ã‚‹ã¨ãã«å‘¼ã°ã‚Œã‚‹.
  */
 static void *LBL_new(LBL_T * t)
 {
@@ -267,7 +267,7 @@ static void *LBL_new(LBL_T * t)
 
 
 
-/** TREE ƒ‹[ƒ`ƒ“‚ÅAƒƒ‚ƒŠŠJ•ú‚Ì‚Æ‚«‚ÉŒÄ‚Î‚ê‚é.
+/** TREE ãƒ«ãƒ¼ãƒãƒ³ã§ã€ãƒ¡ãƒ¢ãƒªé–‹æ”¾ã®ã¨ãã«å‘¼ã°ã‚Œã‚‹.
  */
 static void LBL_del(void *ff)
 {
@@ -276,7 +276,7 @@ static void LBL_del(void *ff)
 
 
 
-/** TREE ƒ‹[ƒ`ƒ“‚ÅA—p‚¢‚ç‚ê‚é”äŠrğŒ.
+/** TREE ãƒ«ãƒ¼ãƒãƒ³ã§ã€ç”¨ã„ã‚‰ã‚Œã‚‹æ¯”è¼ƒæ¡ä»¶.
  */
 static int LBL_cmp(LBL_T * f1, LBL_T * f2)
 {
@@ -288,7 +288,7 @@ static int LBL_cmp(LBL_T * f1, LBL_T * f2)
 
 
 
-/** TREE ‚ğ‰Šú‰».
+/** TREE ã‚’åˆæœŸåŒ–.
  */
 void LBL_init(void)
 {
@@ -297,7 +297,7 @@ void LBL_init(void)
 
 
 
-/** TREE ‚ğŠJ•ú.
+/** TREE ã‚’é–‹æ”¾.
  */
 void LBL_term(void)
 {
@@ -306,7 +306,7 @@ void LBL_term(void)
 
 
 
-/** Œ»İ‚Ì–¼‘O‚ª–Ø‚É“o˜^‚³‚ê‚½ƒ‰ƒxƒ‹‚©‚Ç‚¤‚©’T‚·.
+/** ç¾åœ¨ã®åå‰ãŒæœ¨ã«ç™»éŒ²ã•ã‚ŒãŸãƒ©ãƒ™ãƒ«ã‹ã©ã†ã‹æ¢ã™.
  */
 LBL_T      *LBL_search(char *lbl_name)
 {
@@ -315,7 +315,7 @@ LBL_T      *LBL_search(char *lbl_name)
     memset(&t, 0, sizeof(LBL_T));
     t.name = lbl_name;
     if (t.name == NULL) {
-        printf("ƒƒ‚ƒŠ‚ª‚½‚è‚È‚¢‚º‚æ\n");
+        printf("ãƒ¡ãƒ¢ãƒªãŒãŸã‚Šãªã„ãœã‚ˆ\n");
         exit(1);
     }
     t.next = NULL;
@@ -324,7 +324,7 @@ LBL_T      *LBL_search(char *lbl_name)
 
 
 
-/** ƒ‰ƒxƒ‹(–¼‘O)‚ğ–Ø‚É“o˜^‚·‚é.
+/** ãƒ©ãƒ™ãƒ«(åå‰)ã‚’æœ¨ã«ç™»éŒ²ã™ã‚‹.
  */
 void LBL_add(char *lbl_name)
 {
@@ -334,8 +334,8 @@ void LBL_add(char *lbl_name)
     t.name = lbl_name;
     t.next = NULL;
     TREE_Insert(LBL_tree, &t);
-    if (LBL_tree->flag == 0) {                  /* V‹K“o˜^‚Å‚È‚©‚Á‚½ */
-        printf("%-12s\t%6ld : %s ‚ª‘½d’è‹`‚©‚à\n", LBL_fname, (long)LBL_line, lbl_name);
+    if (LBL_tree->flag == 0) {                  /* æ–°è¦ç™»éŒ²ã§ãªã‹ã£ãŸ */
+        printf("%-12s\t%6ld : %s ãŒå¤šé‡å®šç¾©ã‹ã‚‚\n", LBL_fname, (long)LBL_line, lbl_name);
     }
 }
 
@@ -348,12 +348,12 @@ void LBL_add(char *lbl_name)
 
 
 
-char        tokenName[TOKENNAME_SIZE + 2];      /**< ¡‰ñæ“¾‚µ‚½ƒ‰ƒxƒ‹–¼ */
+char        tokenName[TOKENNAME_SIZE + 2];      /**< ä»Šå›å–å¾—ã—ãŸãƒ©ãƒ™ãƒ«å */
 
 
 
-/** ƒXƒy[ƒX‚ÌƒXƒLƒbƒv.
- * @return Ÿ‚Ì•¶šˆÊ’u.
+/** ã‚¹ãƒšãƒ¼ã‚¹ã®ã‚¹ã‚­ãƒƒãƒ—.
+ * @return æ¬¡ã®æ–‡å­—ä½ç½®.
  */
 char    *skipSpc(char *s)
 {
@@ -364,8 +364,8 @@ char    *skipSpc(char *s)
 
 
 
-/** tokenName‚Éƒ‰ƒxƒ‹‚ğƒRƒs[‚·‚é.
- *  @return Ÿ‚Ì•¶šˆÊ’u
+/** tokenNameã«ãƒ©ãƒ™ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹.
+ *  @return æ¬¡ã®æ–‡å­—ä½ç½®
  */
 char    *getName(char *s)
 {
@@ -407,7 +407,7 @@ char    *getName(char *s)
         }
     }
 
-    /* æ“ª‚ª”š‚Ì */
+    /* å…ˆé ­ãŒæ•°å­—ã®æ™‚ */
     if (isdigit(tokenName[0])) {
         tokenName[0] = '\0';
     }
@@ -416,8 +416,8 @@ char    *getName(char *s)
 
 
 
-/** ƒ‰ƒxƒ‹‚ğ\¬‚·‚é•¶šˆÈŠO‚ğƒXƒLƒbƒv‚·‚é.
- *  @return Ÿ‚Ì•¶šˆÊ’u
+/** ãƒ©ãƒ™ãƒ«ã‚’æ§‹æˆã™ã‚‹æ–‡å­—ä»¥å¤–ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹.
+ *  @return æ¬¡ã®æ–‡å­—ä½ç½®
  */
 char    *skipKigo(char *s)
 {
@@ -432,14 +432,14 @@ char    *skipKigo(char *s)
 
 
 
-/** QÆƒŠƒXƒg‚É’Ç‰Á‚·‚é
+/** å‚ç…§ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
  */
 void    addRefList(LBL_T *p, char *linbuf)
 {
     LBLINK_T   *k;
     LBLINK_T   *s;
 
-    /* “o˜^ */
+    /* ç™»éŒ² */
     k        = callocE(1, sizeof(LBLINK_T));
     k->next  = NULL;
     k->fname = LBL_fname;
@@ -457,7 +457,7 @@ void    addRefList(LBL_T *p, char *linbuf)
 
 
 
-/** ’è‹`ƒ‰ƒxƒ‹ŠeX‚Ìg‚í‚ê‚é(QÆ)ˆÊ’u‚ğ’T‚µƒŠƒXƒg‚ğì¬
+/** å®šç¾©ãƒ©ãƒ™ãƒ«å„ã€…ã®ä½¿ã‚ã‚Œã‚‹(å‚ç…§)ä½ç½®ã‚’æ¢ã—ãƒªã‚¹ãƒˆã‚’ä½œæˆ
  */
 void ref(char *name)
 {
@@ -486,7 +486,7 @@ void ref(char *name)
     }
 
     if (ferror(fp)) {
-        printf("%s %ld : ƒŠ[ƒhƒGƒ‰[‚ª‹N‚«‚Ü‚µ‚½B\n", name, (long) LBL_line);
+        printf("%s %ld : ãƒªãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼ãŒèµ·ãã¾ã—ãŸã€‚\n", name, (long) LBL_line);
         exit(1);
     }
 
@@ -496,13 +496,13 @@ void ref(char *name)
 
 
 /*-------------------------------------------------------------------------*/
-FILE        *outFp;                             /* o—Íƒtƒ@ƒCƒ‹ */
-int         fname_len = 4/*12 */;               /* •\¦‚ğ‘µ‚¦‚é‚½‚ß‚ÌŒ…” */
+FILE        *outFp;                             /* å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ« */
+int         fname_len = 4/*12 */;               /* è¡¨ç¤ºã‚’æƒãˆã‚‹ãŸã‚ã®æ¡æ•° */
 
 char       *Fname_baseName(char *adr);
 
 
-/** ‚P‚Â‚Ì’è‹`ƒ‰ƒxƒ‹–¼‚ÆA‚»‚ÌQÆƒŠƒXƒg‚ğ•\¦
+/** ï¼‘ã¤ã®å®šç¾©ãƒ©ãƒ™ãƒ«åã¨ã€ãã®å‚ç…§ãƒªã‚¹ãƒˆã‚’è¡¨ç¤º
  */
 void disp(void *p0)
 {
@@ -511,12 +511,12 @@ void disp(void *p0)
 
     p = p0;
 
-    if (opt_maNum >= 0) {           /* ”‚ğƒ`ƒFƒbƒN‚·‚éê‡ */
+    if (opt_maNum >= 0) {           /* æ•°ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹å ´åˆ */
         int         n = 0;
 
         for (q = p->next; q != NULL; q = q->next) {
             ++n;
-            if (n > opt_maNum)      /* w’èŒÂ”ˆÈã‚ÌQÆ‚ª‚ ‚ê‚ÎA‚»‚ê‚Í–³‹ */
+            if (n > opt_maNum)      /* æŒ‡å®šå€‹æ•°ä»¥ä¸Šã®å‚ç…§ãŒã‚ã‚Œã°ã€ãã‚Œã¯ç„¡è¦– */
                 return;
         }
         if (n < opt_miNum)
@@ -529,7 +529,7 @@ void disp(void *p0)
         if (opt_qk && p->next == NULL)
             return;
         if (opt_ex) {
-            if (opt_ex != 2) {      /* ƒ^ƒOƒWƒƒƒ“ƒvŒ`® */
+            if (opt_ex != 2) {      /* ã‚¿ã‚°ã‚¸ãƒ£ãƒ³ãƒ—å½¢å¼ */
                 if (opt_ex & 16) {
                     char const* base;
                   #ifdef MLINE
@@ -582,13 +582,13 @@ void disp(void *p0)
                             fprintf(outFp, "%-*s\t%6ld : %s\n", fname_len, q->fname, (long) q->line, p->name);
                     }
                 }
-            } else {                /* ƒtƒ@ƒCƒ‹–¼ : ’PŒê */
+            } else {                /* ãƒ•ã‚¡ã‚¤ãƒ«å : å˜èª */
                 for (q = p->next; q != NULL; q = q->next)
                     fprintf(outFp, "%-*s : %s\n", fname_len, q->fname, p->name);
             }
         } else {
             fprintf(outFp, "; %s\n", p->name);
-            /* QÆs‚ğ•\¦ */
+            /* å‚ç…§è¡Œã‚’è¡¨ç¤º */
           #ifdef MLINE
             if (opt_linmemFlg) {
                 for (q = p->next; q != NULL; q = q->next)
@@ -609,7 +609,7 @@ void disp(void *p0)
 char       *dspSameFile_name;
 
 /**
- * ‚P‚Â‚Ì’è‹`ƒ‰ƒxƒ‹–¼‚ÆA‚»‚ÌQÆƒŠƒXƒg‚ğ•\¦
+ * ï¼‘ã¤ã®å®šç¾©ãƒ©ãƒ™ãƒ«åã¨ã€ãã®å‚ç…§ãƒªã‚¹ãƒˆã‚’è¡¨ç¤º
  */
 void dspSameFile(void *p0)
 {
@@ -675,7 +675,7 @@ FLIST_T    *FLIST_top = NULL;
 
 
 
-/** ƒtƒ@ƒCƒ‹–¼ƒŠƒXƒg‚É’Ç‰Á.
+/** ãƒ•ã‚¡ã‚¤ãƒ«åãƒªã‚¹ãƒˆã«è¿½åŠ .
  */
 void FLIST_link(char *fname)
 {
@@ -701,7 +701,7 @@ void FLIST_link(char *fname)
 int         flg_sep = 0;
 
 
-/** ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”‚ÌA1Œê‚Ìˆ—.
+/** ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°ã®ã€1èªã®å‡¦ç†.
  */
 void getWord(char *p)
 {
@@ -712,9 +712,9 @@ void getWord(char *p)
     } else if (flg_sep == 0 && *p == '-') {
         options(p);
     } else {
-        if (flg_sep == 0)   /* ’PŒê‚ğæ“¾       */
+        if (flg_sep == 0)   /* å˜èªã‚’å–å¾—       */
             LBL_add(p);
-        else                /* ƒtƒ@ƒCƒ‹–¼‚ğæ“¾ */
+        else                /* ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾— */
             FLIST_link(p);
     }
 }
@@ -722,7 +722,7 @@ void getWord(char *p)
 
 
 /**
- *ƒŒƒXƒ|ƒ“ƒXEƒtƒ@ƒCƒ‹‚©‚çƒtƒ@ƒCƒ‹–¼‚ğæ‚èo‚·
+ *ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–ã‚Šå‡ºã™
  */
 void readResFile(char *name)
 {
@@ -750,7 +750,7 @@ void readResFile(char *name)
         }
     }
     if (ferror(fp)) {
-        printf("%s %d : ƒŠ[ƒhƒGƒ‰[\n", name, n);
+        printf("%s %d : ãƒªãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼\n", name, n);
         exit(1);
     }
     fclose(fp);
@@ -767,10 +767,10 @@ int main(int argc, char *argv[])
     if (argc < 2)
         usage();
 
-    /* ƒ‰ƒxƒ‹‚ÌƒcƒŠ[‰Šú‰» */
+    /* ãƒ©ãƒ™ãƒ«ã®ãƒ„ãƒªãƒ¼åˆæœŸåŒ– */
     LBL_init();
 
-    /*-- ƒIƒvƒVƒ‡ƒ“^ƒtƒ@ƒCƒ‹–¼‚Ìæ“¾ --*/
+    /*-- ã‚ªãƒ—ã‚·ãƒ§ãƒ³ï¼ãƒ•ã‚¡ã‚¤ãƒ«åã®å–å¾— --*/
     for (i = 1; i < argc; i++) {
         p = argv[i];
         if (*p == '@')
@@ -780,25 +780,25 @@ int main(int argc, char *argv[])
     }
 
     if (FLIST_top == NULL) {
-        printf("ƒtƒ@ƒCƒ‹–¼‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢\n");
+        printf("ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®šã—ã¦ãã ã•ã„\n");
         return 0;
     }
 
-    /* ƒtƒ@ƒCƒ‹–¼‚Ì•¶š—ñ’·‚ğ‹‚ß‚é...•\¦‚Å‚ÌŒ…‘µ‚¦‚Ì‚½‚ß */
+    /* ãƒ•ã‚¡ã‚¤ãƒ«åã®æ–‡å­—åˆ—é•·ã‚’æ±‚ã‚ã‚‹...è¡¨ç¤ºã§ã®æ¡æƒãˆã®ãŸã‚ */
     for (lk = FLIST_top; lk != NULL; lk = lk->next) {
         i = (int)strlen(lk->fname);
         if (i > fname_len)
             fname_len = i;
     }
 
-    /*-- QÆˆ— --*/
+    /*-- å‚ç…§å‡¦ç† --*/
     for (lk = FLIST_top; lk != NULL; lk = lk->next) {
         if (opt_msgFlg)
             printf("[%s]\n", lk->fname);
         ref(lk->fname);
     }
 
-    /*-- Œ‹‰Êo—Í --*/
+    /*-- çµæœå‡ºåŠ› --*/
     if (opt_ex == 4) {
         for (lk = FLIST_top; lk != NULL; lk = lk->next) {
             dspSameFile_name  = lk->fname;
@@ -830,7 +830,7 @@ int main(int argc, char *argv[])
             fclose(outFp);
     }
 
-    /* ƒ‰ƒxƒ‹EƒcƒŠ[I—¹ */
+    /* ãƒ©ãƒ™ãƒ«ãƒ»ãƒ„ãƒªãƒ¼çµ‚äº† */
     LBL_term();
 
     return 0;
