@@ -18,7 +18,8 @@ BuildLog.htm
 err.txt
 
 build
-bld
+bld/*
+!bld/gen_bld.bat
 bin
 thirdparty/ccwrap
 
