@@ -5,6 +5,7 @@
     1997/08/17  v1.02   usage修正. bcc32で再コンパイルするための修正.
     2007/04/28  v1.03   -l追加. ソース整形.
     200?/??/??  v1.04   -l0対応. -i追加. -a追加.
+    2022/11/25  v1.05   -l拡張.
 */
 
 #include <stdio.h>
@@ -12,6 +13,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <ctype.h>
+#include <limits.h>
 #include "tree.h"
 
 
@@ -27,6 +29,7 @@ void usage(void)
          "  -q        参照の無い単語は出力しない\n"
          "  -n        参照は出力せず見つかった単語のみ出力\n"
          "  -lN       参照がN以下の数のときのみ出力\n"
+         "  -lN:M     参照が [N,M] 範囲の数のときのみ出力\n"
          "  -m[-]     見つかった行の内容を保持(デフォルト)  -m- しない\n"
          "  -i        名前の大文字小文字を無視\n"
          "  -aCHARS   英数 _ 以外の文字を名前に使えるようにする\n"
@@ -72,8 +75,10 @@ int     opt_qk          = 0;    /**< onなら 参照の無い単語は表示しない.     */
 int     opt_msgFlg      = 1;    /**< 経過メッセージを表示する/しない        */
 int     opt_nameOnly    = 0;    /**< 名前しか表示しない.                    */
 int     opt_ex          = 0;    /**< file line : word で表示                */
-int     opt_ltNum       = -1;   /**< 非負の指定数以上参照があるなら表示無.  */
+int     opt_miNum       = -1;   /**< 非負の指定数未満の参照数なら表示無  .  */
+int     opt_maNum       = -1;   /**< 非負の指定数以上参照があるなら表示無.  */
 int     opt_ignorecase  = 0;    /**< 大文字小文字の区別をしない             */
+int     opt_dq          = 0;
 char    opt_outname[MAX_PATH];  /**< 出力ファイル名.                        */
 char*   opt_addnamechr  = "";   /**< 英数_以外の(記号)文字を名前に含める    */
 
@@ -118,7 +123,14 @@ void options(char *s)
         break;
 
     case 'L':       /* 参照がN以下の数のときのみ出力        */
-        opt_ltNum    = strtoul(p, NULL, 0);
+        opt_maNum    = strtoul(p, &p, 0);
+        if (*p == ':' || *p == '~' || *p == '-' || *p == ',') {
+            ++p;
+            opt_miNum = opt_maNum;
+            opt_maNum = strtoul(p, &p, 0);
+            if (opt_maNum < opt_miNum)
+                opt_maNum = INT_MAX;
+        }
         break;
 
     case 'I':
@@ -140,6 +152,11 @@ void options(char *s)
     case 'O':       /* 出力ファイル指定         */
         strncpy(opt_outname, p, MAX_PATH-1);
         opt_outname[MAX_PATH-1] = '\0';
+        break;
+
+    case 'D':
+        if (*p == 'q' || *p == 'Q')
+            opt_dq = 1;
         break;
 
     /* case '\0': */
@@ -353,17 +370,43 @@ char    *skipSpc(char *s)
 char    *getName(char *s)
 {
     int     i;
+    int     dq;
 
     i = 0;
+    dq = 0;
     s = skipSpc(s);
-    while (isalnum(*s) || CHK_LBLKIGO(*s) || strchr(opt_addnamechr, *s)) {
-        if (i < TOKENNAME_SIZE - 1) {
-            tokenName[i] = *s;
-            i++;
+    if (opt_dq) {
+        if (*s == '"') {
+            ++s;
+            dq |= 1;
         }
-        s++;
+        while (isalnum(*s) || CHK_LBLKIGO(*s) || strchr(opt_addnamechr, *s)) {
+            if (i < TOKENNAME_SIZE - 1) {
+                tokenName[i] = *s;
+                i++;
+            }
+            s++;
+        }
+    } else {
+        while (isalnum(*s) || CHK_LBLKIGO(*s) || strchr(opt_addnamechr, *s)) {
+            if (i < TOKENNAME_SIZE - 1) {
+                tokenName[i] = *s;
+                i++;
+            }
+            s++;
+        }
     }
     tokenName[i] = '\0';
+    if (opt_dq) {
+        if (*s == '"') {
+            ++s;
+            dq |= 2;
+        }
+        if (dq != 3) {
+            tokenName[0] = '\0';
+        }
+    }
+
     /* 先頭が数字の時 */
     if (isdigit(tokenName[0])) {
         tokenName[0] = '\0';
@@ -379,8 +422,11 @@ char    *getName(char *s)
 char    *skipKigo(char *s)
 {
     s = skipSpc(s);
-    while (!(isalnum(*s) || CHK_LBLKIGO(*s) || CHK_EOS(*s)))
+    while (!(isalnum(*s) || CHK_LBLKIGO(*s) || CHK_EOS(*s))) {
+        if (opt_dq && *s == '"')
+            break;
         s++;
+    }
     return s;
 }
 
@@ -453,6 +499,7 @@ void ref(char *name)
 FILE        *outFp;                             /* 出力ファイル */
 int         fname_len = 4/*12 */;               /* 表示を揃えるための桁数 */
 
+char       *Fname_baseName(char *adr);
 
 
 /** １つの定義ラベル名と、その参照リストを表示
@@ -464,14 +511,16 @@ void disp(void *p0)
 
     p = p0;
 
-    if (opt_ltNum >= 0) {           /* 数をチェックする場合 */
+    if (opt_maNum >= 0) {           /* 数をチェックする場合 */
         int         n = 0;
 
         for (q = p->next; q != NULL; q = q->next) {
             ++n;
-            if (n > opt_ltNum)      /* 指定個数以上の参照があれば、それは無視 */
+            if (n > opt_maNum)      /* 指定個数以上の参照があれば、それは無視 */
                 return;
         }
+        if (n < opt_miNum)
+            return;
     }
     if (opt_nameOnly) {
         if (p->next)
@@ -481,15 +530,57 @@ void disp(void *p0)
             return;
         if (opt_ex) {
             if (opt_ex != 2) {      /* タグジャンプ形式 */
-              #ifdef MLINE
-                if (opt_linmemFlg) {
-                    for (q = p->next; q != NULL; q = q->next)
-                        fprintf(outFp, "%-*s\t%6ld [%s] : %s", fname_len, q->fname, (long) q->line, p->name, q->mlin);
-                } else
-              #endif
-                {
-                    for (q = p->next; q != NULL; q = q->next)
-                        fprintf(outFp, "%-*s\t%6ld : %s\n", fname_len, q->fname, (long) q->line, p->name);
+                if (opt_ex & 16) {
+                    char const* base;
+                  #ifdef MLINE
+                    if (opt_linmemFlg) {
+                        for (q = p->next; q != NULL; q = q->next) {
+                            char* d = q->mlin;
+                            while (*d) {
+                                if (*d == '\t')
+                                    *d = ' ';
+                                ++d;
+                            }
+                            base = Fname_baseName(q->fname);
+                            fprintf(outFp, "%-*s\t%6ld\t%s\t%s\t%s", fname_len, q->fname, (long) q->line, base, p->name, skipSpc(q->mlin));
+                        }
+                    } else
+                  #endif
+                    {
+                        for (q = p->next; q != NULL; q = q->next) {
+                            base = Fname_baseName(q->fname);
+                            fprintf(outFp, "%-*s\t%6ld\t%s\t%s\n", fname_len, q->fname, (long) q->line, base, p->name);
+                        }
+                    }
+                } else if (opt_ex & 8) {
+                  #ifdef MLINE
+                    if (opt_linmemFlg) {
+                        for (q = p->next; q != NULL; q = q->next) {
+                            char* d = q->mlin;
+                            while (*d) {
+                                if (*d == '\t')
+                                    *d = ' ';
+                                ++d;
+                            }
+                            fprintf(outFp, "%-*s\t%6ld\t%s\t%s", fname_len, q->fname, (long) q->line, p->name, skipSpc(q->mlin));
+                        }
+                    } else
+                  #endif
+                    {
+                        for (q = p->next; q != NULL; q = q->next)
+                            fprintf(outFp, "%-*s\t%6ld\t%s\n", fname_len, q->fname, (long) q->line, p->name);
+                    }
+                } else {
+                  #ifdef MLINE
+                    if (opt_linmemFlg) {
+                        for (q = p->next; q != NULL; q = q->next)
+                            fprintf(outFp, "%-*s\t%6ld [%s] : %s", fname_len, q->fname, (long) q->line, p->name, q->mlin);
+                    } else
+                  #endif
+                    {
+                        for (q = p->next; q != NULL; q = q->next)
+                            fprintf(outFp, "%-*s\t%6ld : %s\n", fname_len, q->fname, (long) q->line, p->name);
+                    }
                 }
             } else {                /* ファイル名 : 単語 */
                 for (q = p->next; q != NULL; q = q->next)
@@ -690,12 +781,12 @@ int main(int argc, char *argv[])
 
     if (FLIST_top == NULL) {
         printf("ファイル名を指定してください\n");
-        exit(1);
+        return 0;
     }
 
     /* ファイル名の文字列長を求める...表示での桁揃えのため */
     for (lk = FLIST_top; lk != NULL; lk = lk->next) {
-        i = strlen(lk->fname);
+        i = (int)strlen(lk->fname);
         if (i > fname_len)
             fname_len = i;
     }
@@ -744,4 +835,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
