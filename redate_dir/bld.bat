@@ -57,6 +57,7 @@ if /I "%1"=="vc140"    set Compiler=vc140
 if /I "%1"=="vc141"    set Compiler=vc141
 if /I "%1"=="vc142"    set Compiler=vc142
 if /I "%1"=="vc143"    set Compiler=vc143
+if /I "%1"=="vc145"    set Compiler=vc145
 if /I "%1"=="vc2003"   set Compiler=vc71
 if /I "%1"=="vc2005"   set Compiler=vc80
 if /I "%1"=="vc2008"   set Compiler=vc90
@@ -67,6 +68,7 @@ if /I "%1"=="vc2015"   set Compiler=vc140
 if /I "%1"=="vc2017"   set Compiler=vc141
 if /I "%1"=="vc2019"   set Compiler=vc142
 if /I "%1"=="vc2022"   set Compiler=vc143
+if /I "%1"=="vc2026"   set Compiler=vc145
 if /I "%1"=="msys"     set Compiler=mingw
 if /I "%1"=="msys2"    set Compiler=mingw
 if /I "%1"=="mingw"    set Compiler=mingw
@@ -119,6 +121,7 @@ if /I "%Compiler%"=="vc"    goto L_VCVER
 @if /I not "%PATH:Microsoft Visual Studio\2017=%"=="%PATH%" set Compiler=vc141
 @if /I not "%PATH:Microsoft Visual Studio\2019=%"=="%PATH%" set Compiler=vc142
 @if /I not "%PATH:Microsoft Visual Studio\2022=%"=="%PATH%" set Compiler=vc143
+@if /I not "%PATH:Microsoft Visual Studio\18=%"=="%PATH%" set Compiler=vc145
 
 if "%Arch%"=="" call :CheckArch
 exit /b 0
@@ -129,6 +132,7 @@ exit /b 0
 set VcVer=%Compiler%
 if /I "%VcVer:~0,2%"=="vc" set /a "VcVer=%VcVer:~2%"
 set /a VcVer=%VcVer%
+@if "%VcVer%"=="145"      if /I not "%PATH:\bin\HostX64\x64=%"=="%PATH%" set Arch=x64
 @if "%VcVer%"=="143"      if /I not "%PATH:\bin\HostX64\x64=%"=="%PATH%" set Arch=x64
 @if "%VcVer%"=="142"      if /I not "%PATH:\bin\HostX64\x64=%"=="%PATH%" set Arch=x64
 @if "%VcVer%"=="141"      if /I not "%PATH:\bin\HostX64\x64=%"=="%PATH%" set Arch=x64
@@ -193,6 +197,7 @@ if %VcVer% equ 140 set "Gen=Visual Studio 14 2015"
 if %VcVer% equ 141 set "Gen=Visual Studio 15 2017"
 if %VcVer% equ 142 set "Gen=Visual Studio 16 2019"
 if %VcVer% equ 143 set "Gen=Visual Studio 17 2022"
+if %VcVer% equ 145 set "Gen=Visual Studio 18 2026"
 if "%Gen%"=="NMake Makefiles" goto L_MAKE
 
 set BldOpts=--config %BldTyp%

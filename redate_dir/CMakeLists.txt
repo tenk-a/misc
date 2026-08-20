@@ -2,12 +2,13 @@ cmake_minimum_required(VERSION 3.24)
 
 project(redate_dir LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 20)      # 17
+set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(ROOT_DIR         "${CMAKE_SOURCE_DIR}")
 set(SRC_DIR          "${CMAKE_SOURCE_DIR}/src")
-# set(THIRDPARTY_DIR "${ROOT_DIR}/thirdparty")
+set(CCWRAP_DIR       "${ROOT_DIR}/thirdparty/ccwrap")
 
 set(CMN_INC_DIRS     "${CMAKE_CURRENT_SOURCE_DIR}")
 set(CMN_LIB_DIRS     "")
@@ -15,7 +16,6 @@ set(CMN_LIBS         "")
 set(CMN_DEFS         "")
 set(CMN_COMPILE_OPTS "")
 set(CMN_RES          "")
-
 
 # #####################################
 # Platform-specific settings
@@ -33,12 +33,12 @@ if(MSVC AND WIN32)
   if(CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "19.14.26428.1")
     list(APPEND CMN_COMPILE_OPTS  "-Zc:__cplusplus")
   endif()
-  #if(CMAKE_C_COMPILER_VERSION VERSION_LESS "19.0")
-  #  set(NEED_CCWARP 1)
-  #  list(APPEND CMN_INC_DIRS "${THIRDPARTY_DIR}/ccwrap/vc/" "${THIRDPARTY_DIR}/ccwrap/ccwrap/")
-  #  list(APPEND CMN_COMPILE_OPTS  "-FIccwrap_header.h")
-  #  list(APPEND CMN_DEFS _UNICODE)
-  #endif()
+  if(CMAKE_C_COMPILER_VERSION VERSION_LESS "19.10")
+    set(NEED_CCWARP 1)
+    list(APPEND CMN_INC_DIRS "${CCWRAP_DIR}/vc/std")
+    list(APPEND CMN_COMPILE_OPTS  "-FIccwrap_header.h")
+    list(APPEND CMN_DEFS _UNICODE)
+  endif()
   list(APPEND CMN_RES  "${SRC_DIR}/win/ActiveCodePageUTF8.manifest")
   set(CMAKE_MSVC_RUNTIME_LIBRARY  "MultiThreaded$<$<CONFIG:Debug>:Debug>")
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
@@ -58,26 +58,20 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang
   if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     list(APPEND CMN_COMPILE_OPTS  "-finput-charset=utf-8" "-fexec-charset=utf-8" "-fwide-exec-charset=utf-32LE")
   endif()
-#elseif(CMAKE_C_COMPILER_ID MATCHES "Watcom")
-#  set(NEED_CCWARP 1)
-#  set(CMAKE_WATCOM_RUNTIME_LIBRARY "MultiThreaded")
-#  list(APPEND CMN_INC_DIRS "${THIRDPARTY_DIR}/ccwrap/watcom/" "${THIRDPARTY_DIR}/ccwrap/ccwrap/")
-#  list(APPEND CMN_COMPILE_OPTS  "-fi=ccwrap_header.h")
-#  list(APPEND CMN_DEFS  CCWRAP_NO_EXCEPTIONS)
-#elseif(CMAKE_C_COMPILER_ID STREQUAL "Borland")
-#  set(NEED_CCWARP 1)
-#  list(APPEND CMN_INC_DIRS "${THIRDPARTY_DIR}/ccwrap/etc/borland/")
-#elseif(DEFINED ENV{CC} AND "$ENV{CC}" MATCHES "dmc-cc")
-#  set(NEED_CCWARP 1)
-#  list(APPEND CMN_INC_DIRS "${THIRDPARTY_DIR}/ccwrap/etc/dmc/")
-#  list(APPEND CMN_DEFS     _WIN32_WINNT=0x0500)
+elseif(CMAKE_C_COMPILER_ID MATCHES "Watcom")
+  set(NEED_CCWARP 1)
+  set(CMAKE_WATCOM_RUNTIME_LIBRARY "MultiThreaded")
+  string(REGEX REPLACE "(^| )-xs($| )" "\\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  list(APPEND CMN_INC_DIRS "${CCWRAP_DIR}/watcom/std")
+  list(PREPEND CMN_LIB_DIRS  "${CCWRAP_DIR}/watcom/lib/nt")
+  list(APPEND CMN_COMPILE_OPTS  "-fi=${CCWRAP_DIR}/watcom/std/ccwrap_header.h" "-xst" "-xr" "-zm" "$<$<COMPILE_LANGUAGE:CXX>:-zv>")
+  string(APPEND CMAKE_EXE_LINKER_FLAGS " option eliminate option vfremoval")
 else()
 endif()
 
-#if(DEFINED NEED_CCWARP AND NOT EXISTS "${THIRDPARTY_DIR}/ccwrap")
+#if(DEFINED NEED_CCWARP AND NOT EXISTS "${CCWRAP_DIR}")
 #  message(FATAL_ERROR "This is an old compiler, so run thirdparty/install_ccwap.bat")
 #endif()
-
 
 # #####################################
 # Target

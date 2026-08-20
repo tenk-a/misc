@@ -19,14 +19,14 @@
 
 using namespace std;
 namespace fs   = std::filesystem;
-using FileTime = fs::file_time_type;
+typedef fs::file_time_type FileTime;
 
 #if !defined(_WIN32)
 #define PATH_TO_STRZ(p)     ((p).c_str())
 #define STRZ_TO_PATH(s)     std::path(s)
 #else   // for windows
 #define PATH_TO_STRZ(p)     (reinterpret_cast<char const*>((p).u8string().c_str()))
-#if defined(__cpp_char8_t) && __cpp_char8_t >= 201811L
+#if __cpp_char8_t >= 201811L || _CCW_TARGET_CXX >= 2020
 #define STRZ_TO_PATH(s)     fs::path(reinterpret_cast<char8_t const*>(s))
 #define U8_STRING           std::u8string
 #else
@@ -53,6 +53,13 @@ private:
 
 struct App {
     enum { Ok = 0, Er = 1 };
+
+    App()
+        : offset_sec_(60)
+        , file_count_(0)
+        , dir_count_(0)
+        , verbose_(false)
+    {}
 
     static int usage() {
         printf(
@@ -100,7 +107,8 @@ struct App {
         max_time_ = FileTime::clock::now() + std::chrono::seconds(offset_sec_);
         updateLatestTime(target_dir);
 
-        printf("Done. Processed %zu files, %zu directories.\n", file_count_, dir_count_);
+        printf("Done. Processed %lu files, %lu directories.\n",
+            static_cast<unsigned long>(file_count_), static_cast<unsigned long>(dir_count_));
         return Ok;
     }
 
@@ -119,8 +127,10 @@ private:
     FileTime updateLatestTime(fs::path const& dir) {
         FileTime latest_time = FileTime::min();
 
-        for (auto& entry : fs::directory_iterator(dir)) {
-            auto& fpath = entry.path();
+        fs::directory_iterator end;
+        for (fs::directory_iterator it(dir); it != end; ++it) {
+            fs::directory_entry const& entry = *it;
+            fs::path const& fpath = entry.path();
             if (fpath == "." || fpath == "..") {
                 continue;
             }
@@ -202,11 +212,11 @@ private:
 
 private:
     FileTime    max_time_;
-    ptrdiff_t   offset_sec_ = 60;
-    size_t      file_count_ = 0;
-    size_t      dir_count_  = 0;
+    ptrdiff_t   offset_sec_;
+    size_t      file_count_;
+    size_t      dir_count_;
 
-    bool        verbose_    = false;
+    bool        verbose_;
 };
 
 
