@@ -16,3 +16,5 @@ my_*
 *.manifest.res
 BuildLog.htm
 err.txt
+.claude*
+.codex*
