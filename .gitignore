@@ -19,3 +19,5 @@ err.txt
 .claude*
 .codex*
 *.py
+AGENTS*.md
+.agents*
