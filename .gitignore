@@ -18,3 +18,4 @@ BuildLog.htm
 err.txt
 .claude*
 .codex*
+*.py
